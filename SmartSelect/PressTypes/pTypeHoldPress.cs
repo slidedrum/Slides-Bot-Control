@@ -2,22 +2,78 @@
 using BotControl.SmartSelect.PressActions;
 using Enemies;
 using Il2CppInterop.Runtime;
+using InControl;
 using LevelGeneration;
 using Player;
+using PrioritySet;
+using SlideDrum.sInputSystem;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static BotControl.SmartSelect.PressTypes.IPressType;
 
 namespace BotControl.SmartSelect.PressTypes
 {
-    public class pTypeHoldPress : PressType
+    public class pTypeHoldPress : IPressType
     {
-        private HashSet<Il2CppSystem.Type> _SelectableTypes;
+        // ── Current State ─────────────────────────────────────────────────────────
+        public Component CurrentComponent { get => _CurrentComponent; set { _CurrentComponent = value; } }
+        public IPressAction CurrentAction { get => _CurrentAction; set { _CurrentAction = value; } }
+
+        // ── Action Maps ───────────────────────────────────────────────────────────
+        public PrioritySet<IPressAction> NullTypeActions { get { return _NullTypeActions; } set { _NullTypeActions = value; } }
+        public Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> TypeActionMap { get { return _TypeActionMap; } set { _TypeActionMap = value; } }
+
+        // ── Identity / Configuration ──────────────────────────────────────────────
+        public string FriendlyName => "Hold";
+        public fallbackType FallbackType => fallbackType.Nothing;
+        public sSequenceDefinition PressSequence
+        {
+            get
+            {
+                if (_PressSequences == null)
+                {
+                    _PressSequences = sInputSystemDefaults.OnHoldImmediateExclusive;
+                }
+                return _PressSequences;
+            }
+        }
+        public HashSet<Il2CppSystem.Type> SelectableTypes // MUST BE CHANGED
+        {
+            get
+            {
+                if (SelectableTypes == null)
+                {
+                    _SelectableTypes = new HashSet<Il2CppSystem.Type>();
+                    _SelectableTypes.Add(Il2CppType.Of<PlayerAgent>());
+                    _SelectableTypes.Add(Il2CppType.Of<ItemInLevel>());
+                    _SelectableTypes.Add(Il2CppType.Of<SentryGunInstance>());
+                    _SelectableTypes.Add(Il2CppType.Of<LG_WeakResourceContainer>());
+                    _SelectableTypes.Add(Il2CppType.Of<LG_WeakDoor>());
+                    _SelectableTypes.Add(Il2CppType.Of<EnemyAgent>());
+                    _SelectableTypes.Add(Il2CppType.Of<LG_PowerGenerator_Core>());
+                }
+                return _SelectableTypes;
+            }
+        }
+
+        // ── Private Backing Fields ────────────────────────────────────────────────
         private Component _CurrentComponent = null;
-        private PressAction _CurrentAction = null;
-        public override HashSet<Il2CppSystem.Type> SelectableTypes => _SelectableTypes;
-        public override Component CurrentComponent => _CurrentComponent;
-        public override PressAction CurrentAction => _CurrentAction;
+        private IPressAction _CurrentAction = null;
+        private sSequenceDefinition _PressSequences = null;
+        private PrioritySet<IPressAction> _NullTypeActions = new();
+        private Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> _TypeActionMap = new();
+        private HashSet<Il2CppSystem.Type> _SelectableTypes = null;
+
+
+
+
+        //private HashSet<Il2CppSystem.Type> _SelectableTypes;
+        //private Component _CurrentComponent = null;
+        //private PressActionManager _CurrentAction = null;
+        //public override HashSet<Il2CppSystem.Type> SelectableTypes => _SelectableTypes;
+        //public override Component CurrentComponent => _CurrentComponent;
+        //public override PressActionManager CurrentAction => _CurrentAction;
         public pTypeHoldPress()
         {
             _SelectableTypes = new HashSet<Il2CppSystem.Type>();
@@ -29,7 +85,14 @@ namespace BotControl.SmartSelect.PressTypes
             _SelectableTypes.Add(Il2CppType.Of<EnemyAgent>());
             _SelectableTypes.Add(Il2CppType.Of<LG_PowerGenerator_Core>());
         }
-        public override bool SetCurrentAction()
+        //public bool SeCurrentComponent()
+        //{
+        //    if (!zSmartSelect.MainSelection.Selected<PlayerAIBot>())
+        //        _CurrentComponent = null;
+        //    _CurrentComponent = zSearch.FindBestInView(zStaticRefrences.CameraTransform, _SelectableTypes, MaxAngle: SelectionAngle);
+        //    return _CurrentComponent != null;
+        //}
+        public bool SetCurrentAction()
         {
             if (!zSmartSelect.MainSelection.Selected<PlayerAIBot>())
             {
@@ -64,7 +127,7 @@ namespace BotControl.SmartSelect.PressTypes
                     _CurrentAction = null;
                     return false;
                 }
-                _CurrentAction = PressAction.GetAction("Pickup Item");
+                _CurrentAction = PressActionManager.GetAction("Pickup Item");
                 return true;
             }
             else if (zHelpers.IsOfType<SentryGunInstance>(type))
@@ -87,7 +150,7 @@ namespace BotControl.SmartSelect.PressTypes
                     _CurrentAction = null;
                     return false;
                 }
-                _CurrentAction = PressAction.GetAction("Open Container");
+                _CurrentAction = PressActionManager.GetAction("Open Container");
                 return true;
             }
             else if (zHelpers.IsOfType<LG_WeakDoor>(type))
@@ -106,7 +169,7 @@ namespace BotControl.SmartSelect.PressTypes
                 }
                 if (zHelpers.GetAgentBackpackItemId(BestBot.Agent, InventorySlot.Consumable) == 115) // cFoamGrenade
                 {
-                    _CurrentAction = PressAction.GetAction("Secure Door");
+                    _CurrentAction = PressActionManager.GetAction("Secure Door");
                     return true;
                 }
                 _CurrentAction = null;
@@ -121,7 +184,7 @@ namespace BotControl.SmartSelect.PressTypes
                     _CurrentAction = null;
                     return false;
                 }
-                _CurrentAction = PressAction.GetAction("Attack Enemy");
+                _CurrentAction = PressActionManager.GetAction("Attack Enemy");
                 return true;
             }
             else if (zHelpers.IsOfType<LG_PowerGenerator_Core>(type))
@@ -133,7 +196,7 @@ namespace BotControl.SmartSelect.PressTypes
                     _CurrentAction = null;
                     return false;
                 }
-                _CurrentAction = PressAction.GetAction("Insert Cell");
+                _CurrentAction = PressActionManager.GetAction("Insert Cell");
                 return true;
             }
             _CurrentAction = null;
@@ -149,20 +212,12 @@ namespace BotControl.SmartSelect.PressTypes
                 bool haveTool = (zHelpers.GetAgentBackpackItemId(bot.Agent, InventorySlot.ResourcePack) == (uint)ShareActionPatch.ResourceIDs.ToolPack);
                 if (haveTool)
                 {
-                    _CurrentAction = PressAction.GetAction("Refill Sentry");
+                    _CurrentAction = PressActionManager.GetAction("Refill Sentry");
                     return true;
                 }
             }
             _CurrentAction = null;
             return false;
-        }
-
-        public override bool SeCurrentComponent()
-        {
-            if (!zSmartSelect.MainSelection.Selected<PlayerAIBot>())
-                _CurrentComponent = null;
-            _CurrentComponent = zSearch.FindBestInView(zStaticRefrences.CameraTransform, _SelectableTypes, MaxAngle: SelectionAngle);
-            return _CurrentComponent != null;
         }
         public bool SetCurrentActionPlayerAgent(PlayerAgent Agent)
         {
@@ -189,13 +244,13 @@ namespace BotControl.SmartSelect.PressTypes
                     }
                     if (!needsResourceIhave)
                         continue;
-                    _CurrentAction = PressAction.GetAction("Share Resource");
+                    _CurrentAction = PressActionManager.GetAction("Share Resource");
                     return true;
                 }
             }
             else // Agent is dead
             {
-                _CurrentAction = PressAction.GetAction("Revive");
+                _CurrentAction = PressActionManager.GetAction("Revive");
                 return true;
             }
             _CurrentAction = null;

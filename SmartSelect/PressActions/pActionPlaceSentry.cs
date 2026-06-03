@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions
 {
-    public class pActionDeploySentry : PressAction
+    public class pActionPlaceSentry : PressActionManager
     {
-        public override string FriendlyName => "Deploy Sentry";
+        public override string FriendlyName => "Place Sentry";
         public override string FriendlyNameShort => "Deploy";
         public override bool Invoke(Component BestComponent)
         {

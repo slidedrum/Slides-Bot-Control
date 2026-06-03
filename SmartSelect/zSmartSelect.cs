@@ -107,6 +107,11 @@ namespace BotControl.SmartSelect
             PlayerAIBot bot = zSearch.FindBestAligned(zStaticRefrences.CameraTransform, zStaticRefrences.AllBotObjects, SelectionAngle)?.GetComponent<PlayerAIBot>();
             return bot;
         }
+        public static PlayerAgent GetPlayerAgentLookingAt()
+        {
+            PlayerAgent agent = zSearch.FindBestAligned(zStaticRefrences.CameraTransform, zStaticRefrences.AllPlayerAgentObjectsInLevel, SelectionAngle)?.GetComponent<PlayerAgent>();
+            return agent;
+        }
         public static void OnKeyTap()
         {
             if (TapPress.Invoke())

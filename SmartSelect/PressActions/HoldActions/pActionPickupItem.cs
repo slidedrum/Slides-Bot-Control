@@ -1,0 +1,40 @@
+﻿using Il2CppInterop.Runtime;
+using LevelGeneration;
+using Player;
+using System.Linq;
+using UnityEngine;
+
+namespace BotControl.SmartSelect.PressActions
+{
+    public class pActionPickupItem : IPressAction
+    {
+        public string FriendlyName => "Pickup Item";
+        public string FriendlyNameShort => "Pickup";
+        public Il2CppSystem.Type Type => Il2CppType.Of<ItemInLevel>();
+        public string pressTypeIdentifier => "Hold";
+        public bool Invoke(Component BestComponent)
+        {
+            ItemInLevel Item = BestComponent.TryCast<ItemInLevel>();
+            if (Item == null)
+                return false;
+            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>().FirstOrDefault();
+            if (BestBot == null)
+                return false;
+            zBotActions.SendBotToPickupItem(BestBot, Item, zStaticRefrences.LocalPlayer);
+            return true;
+        }
+        public bool IsActionValid(Component candidate)
+        {
+            ItemInLevel Item = candidate.TryCast<ItemInLevel>();
+            if (Item == null) return false;
+            var status = Item?.GetSyncComponent()?.GetCurrentState().status;
+            if (status == null) return false;
+            if (status != ePickupItemStatus.PlacedInLevel) return false;
+            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            if (BestBot == null) return false;
+            if (!BestBot.Agent.Alive) return false;
+            if (!zHelpers.CanBotReach(BestBot, Item.transform.position)) return false;
+            return true;
+        }
+    }
+}

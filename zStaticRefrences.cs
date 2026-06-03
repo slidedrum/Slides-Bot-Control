@@ -1,4 +1,5 @@
-﻿using Il2CppInterop.Runtime;
+﻿using BetterBots.Utils;
+using Il2CppInterop.Runtime;
 using Player;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,6 +51,10 @@ namespace BotControl
                 return _CameraTransform;
             }
         }
+        public static HashSet<PlayerAgent> AllPlayerAgentsInLevel => 
+            PlayerManager.PlayerAgentsInLevel.ToArray().ToHashSet();
+        public static HashSet<GameObject> AllPlayerAgentObjectsInLevel =>
+            PlayerManager.PlayerAgentsInLevel.ToArray().Select(agent => agent.gameObject).ToHashSet();
         private static HashSet<PlayerAgent> _AllBotAgents;
         public static HashSet<PlayerAgent> AllBotAgents
         {

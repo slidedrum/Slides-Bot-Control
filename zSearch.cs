@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PrioritySet;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BotControl
@@ -133,6 +134,46 @@ namespace BotControl
                 }
             }
             return Candidates;
+        }
+        public static PrioritySet<Component> FindAllInViewSorted(Transform Look, HashSet<Il2CppSystem.Type> types, float MaxDistance = 10000f, float radius = 3, float MaxAngle = 180f)
+        {
+            HashSet<Component> BigCandidateList = new();
+            foreach (var type in types)
+            {
+                HashSet<Component> CandidateList = FindAllInView(Look, type, MaxDistance, radius);
+                BigCandidateList.UnionWith(CandidateList);
+            }
+
+            Vector3 lookDirection = Look.forward;
+            PrioritySet<Component> sorted = new();
+
+            foreach (Component comp in BigCandidateList)
+            {
+                Vector3 targetDirection = (comp.transform.position - Look.position).normalized;
+                float angle = Vector3.Angle(lookDirection, targetDirection);
+
+                if (angle >= MaxAngle)
+                    continue;
+
+                bool inserted = false;
+                for (int i = 0; i < sorted.Count; i++)
+                {
+                    Vector3 existingDirection = (sorted[i].transform.position - Look.position).normalized;
+                    float existingAngle = Vector3.Angle(lookDirection, existingDirection);
+
+                    if (angle < existingAngle)
+                    {
+                        sorted.InsertRelative(comp, sorted[i], insertAfter: false);
+                        inserted = true;
+                        break;
+                    }
+                }
+
+                if (!inserted)
+                    sorted.Add(comp);
+            }
+
+            return sorted;
         }
     }
 }

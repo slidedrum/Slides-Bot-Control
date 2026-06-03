@@ -1,15 +1,17 @@
-﻿using Player;
-using SlideMenu;
+﻿using Il2CppInterop.Runtime;
+using Player;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BotControl.SmartSelect.PressActions
+namespace BotControl.SmartSelect.PressActions.TapActions
 {
-    public class pActionDeselect : PressAction
+    public class pActionDeselect : IPressAction
     {
-        public override string FriendlyName => "Deselect All Bots";
-        public override string FriendlyNameShort => "Deselect";
-        public override bool Invoke(Component BestComponent)
+        public string FriendlyName => "Deselect All Bots";
+        public string FriendlyNameShort => "Deselect";
+        public Il2CppSystem.Type Type => null;
+        public string pressTypeIdentifier => "Tap";
+        public bool Invoke(Component BestComponent)
         {
             if (!zSmartSelect.MainSelection.Selected<PlayerAIBot>())
                 return false;
@@ -25,6 +27,16 @@ namespace BotControl.SmartSelect.PressActions
             }
             zSmartSelect.MainSelection.Deselect<PlayerAIBot>();
             return true;
+        }
+        public bool IsActionValid(Component candidate)
+        {
+            // Candidate is irrelevant for this action, we just need to check if we have any bots selected
+            if (!zSmartSelect.MainSelection.Selected<PlayerAIBot>())
+                return false;
+            bool facingUp = Vector3.Angle(zStaticRefrences.CameraTransform.forward, Vector3.up) < 15f;
+            if (facingUp)
+                return true;
+            return false;
         }
     }
 }

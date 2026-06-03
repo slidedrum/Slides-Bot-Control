@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions
 {
-    public class pActionFollow : PressAction
+    public class pActionFollow : PressActionManager
     {
         public override string FriendlyName => "Follow Me";
         private string _FriendlyNameShort = "Follow";
@@ -14,7 +14,7 @@ namespace BotControl.SmartSelect.PressActions
         public override string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         public override bool Invoke(Component BestComponent)
         {
-            PlayerAgent Agent = BestComponent.Cast<PlayerAgent>();
+            PlayerAgent Agent = BestComponent.TryCast<PlayerAgent>();
             PlayerAIBot bot = Agent?.GetComponent<PlayerAIBot>();
             if (bot == null)
                 return false;

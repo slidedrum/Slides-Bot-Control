@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions
 {
-    public class pActionPickupAllSentries : PressAction
+    public class pActionPickupAllSentries : PressActionManager
     {
         public override string FriendlyName => "Pickup All Sentries";
         public override string FriendlyNameShort => "Pickup";

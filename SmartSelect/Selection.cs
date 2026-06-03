@@ -1,5 +1,7 @@
 ﻿using Player;
+using SlideDrum;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace BotControl.SmartSelect
@@ -22,6 +24,15 @@ namespace BotControl.SmartSelect
         {
             return SelectedObjects.Remove(component);
         }
+        public bool Selected<T>(T candidate) where T : Component
+        {
+            foreach (Component obj in SelectedObjects)
+            {
+                if (obj == candidate)
+                    return true;
+            }
+            return false;
+        }
         public bool Selected<T>() where T : Component
         {
             foreach (Component obj in SelectedObjects)
@@ -40,6 +51,34 @@ namespace BotControl.SmartSelect
                     ret.Add(tObj);
             }
             return ret;
+        }
+        public PlayerAIBot GetBestBot()
+        {
+            return GetSelected<PlayerAIBot>().FirstOrDefault();
+        }
+        public bool AnyBotsSelected()
+        {
+            return Selected<PlayerAIBot>();
+        }
+        public bool AnySelectedBotsAlive()
+        {
+            if (!AnyBotsSelected())
+                return false;
+            foreach (PlayerAIBot bot in GetSelected<PlayerAIBot>())
+                if (bot?.Agent != null && bot.Agent.Alive)
+                    return true;
+            return false;
+        }
+        public bool AnySelectedBotCanReach(Vector3 location)
+        {
+            if (!AnyBotsSelected())
+                return false;
+            HashSet<PlayerAIBot> SelectedBots = GetSelected<PlayerAIBot>();
+            foreach (PlayerAIBot bot in SelectedBots)
+                if (bot.Agent.Alive)
+                    if (zHelpers.CanBotReach(bot, location))
+                        return true;
+            return false;
         }
     }
 }

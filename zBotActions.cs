@@ -106,6 +106,18 @@ namespace BotControl
             zActions.manualActions.Add(desc);
             aiBot.StartAction(desc);
         }
+        [Obsolete("TODO: This method is not yet implemented and should not be used yet.")]
+        public static void SendBotToReviveAgent(PlayerAIBot aiBot, PlayerAgent downedAgent, PlayerAgent commander = null, ulong netsender  = 0)
+        {
+            ZiMain.sendChatMessage($"I would have revived {downedAgent.PlayerName}, but I'm stupid.", aiBot.Agent, commander);
+            //todo
+        }
+        [Obsolete("TODO: This method is not yet implemented and should not be used yet.")]
+        public static void SendBotToRefillSentry(PlayerAIBot aiBot, SentryGunInstance sentry, PlayerAgent commander = null, ulong netsender = 0)
+        {
+            ZiMain.sendChatMessage($"I would have refilled the sentry, but I'm stupid.", aiBot.Agent, commander);
+            //todo
+        }
         public static void SendBotToCarryItem(PlayerAIBot aiBot, CarryItemPickup_Core item, PlayerAgent commander = null, ulong netsender = 0)
         {
             //todo add to manual action list for refrence later.

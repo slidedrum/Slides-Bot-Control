@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions
 {
-    public class pActionMove : PressAction
+    public class pActionMove : PressActionManager
     {
         public override string FriendlyName => "Move To";
         public override string FriendlyNameShort => "Move";

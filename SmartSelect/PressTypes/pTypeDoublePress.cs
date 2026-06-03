@@ -9,14 +9,14 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressTypes
 {
-    public class pTypeDoublePress : PressType
+    public class pTypeDoublePress : PressTypeManager
     {
         private HashSet<Il2CppSystem.Type> _SelectableTypes;
         private Component _CurrentComponent = null;
-        private PressAction _CurrentAction = null;
+        private PressActionManager _CurrentAction = null;
         public override HashSet<Il2CppSystem.Type> SelectableTypes => _SelectableTypes;
         public override Component CurrentComponent => _CurrentComponent;
-        public override PressAction CurrentAction => _CurrentAction;
+        public override PressActionManager CurrentAction => _CurrentAction;
 
         public pTypeDoublePress()
         {
@@ -54,9 +54,9 @@ namespace BotControl.SmartSelect.PressTypes
                     return false;
                 }
                 Vector3 placePosition = hit.point;
-                Quaternion placeRotation = Quaternion.LookRotation(pActionDeploySentry.FlatForward(zStaticRefrences.CameraTransform));
+                Quaternion placeRotation = Quaternion.LookRotation(pActionPlaceSentry.FlatForward(zStaticRefrences.CameraTransform));
                 Pose sentryPose = new Pose(placePosition, placeRotation);
-                if (!pActionDeploySentry.CanPlaceTurret(ref sentryPose))
+                if (!pActionPlaceSentry.CanPlaceTurret(ref sentryPose))
                 {
                     _CurrentAction = null;
                     return false;
@@ -66,19 +66,19 @@ namespace BotControl.SmartSelect.PressTypes
                     _CurrentAction = null;
                     return false;
                 }
-                _CurrentAction = PressAction.GetAction("Deploy Sentry");
+                _CurrentAction = PressActionManager.GetAction("Deploy Sentry");
                 return true; // TODO fallback to Follow Me
             }
             else if (zHelpers.IsOfType<PlayerAgent>(type))
             {
                 PlayerAgent Agent = _CurrentComponent.Cast<PlayerAgent>();
-                _CurrentAction = PressAction.GetAction("Follow Me");
+                _CurrentAction = PressActionManager.GetAction("Follow Me");
                 return true;
             }
             else if (zHelpers.IsOfType<SentryGunInstance>(type))
             {
                 SentryGunInstance Sentry = _CurrentComponent.Cast<SentryGunInstance>();
-                _CurrentAction = PressAction.GetAction("Pickup All Sentries");
+                _CurrentAction = PressActionManager.GetAction("Pickup All Sentries");
                 return true;
             }
             else if (zHelpers.IsOfType<LG_WeakResourceContainer>(type))
@@ -97,7 +97,7 @@ namespace BotControl.SmartSelect.PressTypes
                     _CurrentAction = null;
                     return false;
                 }
-                _CurrentAction = PressAction.GetAction("Place Item In Container");
+                _CurrentAction = PressActionManager.GetAction("Place Item In Container");
                 return true;
             }
             else if (zHelpers.IsOfType<LG_WeakDoor>(type))
@@ -118,7 +118,7 @@ namespace BotControl.SmartSelect.PressTypes
                     _CurrentAction = null;
                     return false;
                 }
-                _CurrentAction = PressAction.GetAction("Destroy Door");
+                _CurrentAction = PressActionManager.GetAction("Destroy Door");
                 return true;
             }
             else if (zHelpers.IsOfType<EnemyAgent>(type))
@@ -129,13 +129,13 @@ namespace BotControl.SmartSelect.PressTypes
                     return false;
                 }
                 EnemyAgent Enemy = _CurrentComponent.Cast<EnemyAgent>();
-                _CurrentAction = PressAction.GetAction("Attack Countdown Enemy");
+                _CurrentAction = PressActionManager.GetAction("Attack Countdown Enemy");
                 return true;
             }
             var bot = zSmartSelect.GetBotLookingAt();
             if (bot != null)
             {
-                _CurrentAction = PressAction.GetAction("Follow Me");
+                _CurrentAction = PressActionManager.GetAction("Follow Me");
                 return true;
             }
             _CurrentAction = null;

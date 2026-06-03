@@ -36,6 +36,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="W:\Documents\PrioritySet\src\PrioritySet\PrioritySet.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Reference Include="BetterBots">
 	    <HintPath>..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\GTFO\profiles\Pancake\BetterBots.dll</HintPath>
 	  </Reference>

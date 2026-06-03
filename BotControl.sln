@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotControl", "BotControl.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterBots", "..\..\BB\BetterBots\BetterBots\BetterBots.csproj", "{645AAA37-6FA4-B839-C7AF-8C7190AF1AD3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrioritySet", "W:\Documents\PrioritySet\src\PrioritySet\PrioritySet.csproj", "{165CB9D3-9E6E-B270-1160-EA312C2B6481}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,10 @@ Global
 		{645AAA37-6FA4-B839-C7AF-8C7190AF1AD3}.Debug|x64.Build.0 = Debug|x64
 		{645AAA37-6FA4-B839-C7AF-8C7190AF1AD3}.Release|x64.ActiveCfg = Release|x64
 		{645AAA37-6FA4-B839-C7AF-8C7190AF1AD3}.Release|x64.Build.0 = Release|x64
+		{165CB9D3-9E6E-B270-1160-EA312C2B6481}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{165CB9D3-9E6E-B270-1160-EA312C2B6481}.Debug|x64.Build.0 = Debug|Any CPU
+		{165CB9D3-9E6E-B270-1160-EA312C2B6481}.Release|x64.ActiveCfg = Release|Any CPU
+		{165CB9D3-9E6E-B270-1160-EA312C2B6481}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

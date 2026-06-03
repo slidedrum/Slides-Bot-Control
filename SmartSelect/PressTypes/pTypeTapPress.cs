@@ -2,29 +2,60 @@
 using Il2CppInterop.Runtime;
 using LevelGeneration;
 using Player;
+using PrioritySet;
+using SlideDrum.sInputSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static BotControl.SmartSelect.PressTypes.IPressType;
 
 namespace BotControl.SmartSelect.PressTypes
 {
-    public class pTypeTapPress : PressType
+    public class pTypeTapPress : IPressType
     {
-        private HashSet<Il2CppSystem.Type> _SelectableTypes;
-        private Component _CurrentComponent = null;
-        private PressAction _CurrentAction = null;
-        public override HashSet<Il2CppSystem.Type> SelectableTypes => _SelectableTypes;
-        public override Component CurrentComponent => _CurrentComponent;
-        public override PressAction CurrentAction => _CurrentAction;
+        // ── Current State ─────────────────────────────────────────────────────────
+        public Component CurrentComponent { get => _CurrentComponent; set { _CurrentComponent = value; } }
+        public IPressAction CurrentAction { get => _CurrentAction; set { _CurrentAction = value; } }
 
-        public pTypeTapPress()
+        // ── Action Maps ───────────────────────────────────────────────────────────
+        public PrioritySet<IPressAction> NullTypeActions { get { return _NullTypeActions; } set { _NullTypeActions = value; } }
+        public Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> TypeActionMap { get { return _TypeActionMap; } set { _TypeActionMap = value; } }
+        
+        // ── Identity / Configuration ──────────────────────────────────────────────
+        public string FriendlyName => "Tap";
+        public fallbackType FallbackType => fallbackType.PlayerAiBot;
+        public sSequenceDefinition PressSequence => _PressSequences;
+        public HashSet<Il2CppSystem.Type> SelectableTypes
         {
-            _SelectableTypes = new HashSet<Il2CppSystem.Type>();
-            _SelectableTypes.Add(Il2CppType.Of<PlayerAIBot>());
-            _SelectableTypes.Add(Il2CppType.Of<SentryGunInstance>());
-            _SelectableTypes.Add(Il2CppType.Of<LG_WeakDoor>());
+            get
+            {
+                if (SelectableTypes == null)
+                {
+                    _SelectableTypes = new HashSet<Il2CppSystem.Type>();
+                    _SelectableTypes.Add(Il2CppType.Of<PlayerAIBot>());
+                    _SelectableTypes.Add(Il2CppType.Of<SentryGunInstance>());
+                    _SelectableTypes.Add(Il2CppType.Of<LG_WeakDoor>());
+                }
+                return _SelectableTypes;
+            }
         }
-        public override bool SetCurrentAction()
+
+        // ── Private Backing Fields ────────────────────────────────────────────────
+        private Component _CurrentComponent = null;
+        private IPressAction _CurrentAction = null;
+        private sSequenceDefinition _PressSequences = sInputSystemDefaults.OnTappedExclusive;
+        private PrioritySet<IPressAction> _NullTypeActions = new();
+        private Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> _TypeActionMap = new();
+        private HashSet<Il2CppSystem.Type> _SelectableTypes = null;
+
+        // this should be bound to:
+        // Deselect all Bots (tap empty space)
+        // Select Bot (tap bot)
+        // Pickup Sentry (tap sentry)
+        // Open/Close Door (tap door)
+        [Obsolete("This method is no longer used.  The logic has been made generic and moved to the action types themselves with IPressType.Update() and IPressAction.IsActionValid()")]
+        public bool SetCurrentAction()
         {
             Il2CppSystem.Type type = CurrentComponent?.GetIl2CppType();
             PlayerAIBot bot;
@@ -34,13 +65,13 @@ namespace BotControl.SmartSelect.PressTypes
                 if (facingUp && zSmartSelect.MainSelection.Selected<PlayerAIBot>())
                 {
                     //DeselectAllBots();
-                    _CurrentAction = PressAction.GetAction("Deselect All Bots");
+                    _CurrentAction = PressActionManager.GetAction("Deselect All Bots");
                     return true;
                 }
             }
             else if (zHelpers.IsOfType<PlayerAIBot>(type))
             {
-                _CurrentAction = PressAction.GetAction("Select Bot");
+                _CurrentAction = PressActionManager.GetAction("Select Bot");
                 return true;
             }
             else if (zHelpers.IsOfType<SentryGunInstance>(type))
@@ -49,7 +80,7 @@ namespace BotControl.SmartSelect.PressTypes
                 bot = sentry?.Owner?.GetComponent<PlayerAIBot>();
                 if (bot != null)
                 {
-                    _CurrentAction = PressAction.GetAction("Pickup Sentry");
+                    _CurrentAction = PressActionManager.GetAction("Pickup Sentry");
                     return true;
                 }
             }
@@ -65,27 +96,22 @@ namespace BotControl.SmartSelect.PressTypes
                     }
                     if (Door.Gate.IsTraversable)
                     {
-                        _CurrentAction = PressAction.GetAction("Close Door");
+                        _CurrentAction = PressActionManager.GetAction("Close Door");
                     }
-                    _CurrentAction = PressAction.GetAction("Open Door");
+                    _CurrentAction = PressActionManager.GetAction("Open Door");
                     return true;
                 }
             }
             bot = zSmartSelect.GetBotLookingAt();
             if (bot != null)
             {
-                _CurrentAction = PressAction.GetAction("Select Bot");
+                _CurrentAction = PressActionManager.GetAction("Select Bot");
                 return true;
             }
             _CurrentAction = null;
-            return false; 
-        }
-        public override bool SeCurrentComponent()
-        {
-            _CurrentComponent = zSearch.FindBestInView(zStaticRefrences.CameraTransform, SelectableTypes, MaxAngle: SelectionAngle);
-            if (_CurrentComponent == null)
-                _CurrentComponent = zSmartSelect.GetBotLookingAt();
-            return CurrentComponent != null;
+            return false;
+
+            // TODO the other action sets.  This one SHOULD be done.  but double check my work, I was very tired.
         }
     }
 }

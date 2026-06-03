@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlideDrum;
+using System;
 using System.Reflection;
 namespace SlideMenu
 {
@@ -126,5 +127,11 @@ namespace SlideMenu
                 listener.Invoke();
             }
         }
+    }
+    public static class Default
+    {
+        //This was added by an AI, not 100% sure why it's needed. ¯\_(ツ)_/¯
+        //but I don't understand it enough to get rid of it (yet).
+        public static readonly object Value = new object();
     }
 }

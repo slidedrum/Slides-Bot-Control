@@ -8,14 +8,14 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressTypes
 {
-    public class pTypeTapAndHoldPress : PressType
+    public class pTypeTapAndHoldPress : PressTypeManager
     {
         private HashSet<Il2CppSystem.Type> _SelectableTypes;
         private Component _CurrentComponent = null;
-        private PressAction _CurrentAction = null;
+        private PressActionManager _CurrentAction = null;
         public override HashSet<Il2CppSystem.Type> SelectableTypes => _SelectableTypes;
         public override Component CurrentComponent => _CurrentComponent;
-        public override PressAction CurrentAction => _CurrentAction;
+        public override PressActionManager CurrentAction => _CurrentAction;
 
         public pTypeTapAndHoldPress()
         {
@@ -35,7 +35,7 @@ namespace BotControl.SmartSelect.PressTypes
             var destinationPosition = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos;
             if (zHelpers.PositionIsValidForAgent(BestBot.Agent, ref destinationPosition))
             {
-                _CurrentAction = PressAction.GetAction("Move To");
+                _CurrentAction = PressActionManager.GetAction("Move To");
                 return true;
             }
             _CurrentAction = null;
