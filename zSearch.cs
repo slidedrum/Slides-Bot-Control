@@ -50,7 +50,7 @@ namespace BotControl
         public static Component FindBestInView(Transform Look, HashSet<Il2CppSystem.Type> types, out Il2CppSystem.Type Type, float MaxDistance = 10000f, float radius = 3, float MaxAngle = 180f)
         {
             Dictionary<Il2CppSystem.Type, HashSet<Component>> TypeLists = new();
-            HashSet<Component> BigCandidateList = new();
+            HashSet<Component> BigCandidateList = new(new ComponentInstanceIdComparer());
             foreach (var type in types)
             {
                 HashSet<Component> CandidateList = FindAllInView(Look, type, MaxDistance, radius);
@@ -77,7 +77,7 @@ namespace BotControl
         {
             Ray ray = new Ray(Look.position, Look.forward);
             if (!Physics.Raycast(ray, out RaycastHit hit, MaxDistance))
-                return new();
+                return new(new ComponentInstanceIdComparer());
             HashSet<Component> Candidates = FindAllNearby(hit.point, types, radius);
             return Candidates;
         }
@@ -120,7 +120,7 @@ namespace BotControl
         }
         public static HashSet<Component> FindAllNearby(Vector3 Position, HashSet<Il2CppSystem.Type> Types, float Radius = 3)
         {
-            HashSet<Component> Candidates = new();
+            HashSet<Component> Candidates = new(new ComponentInstanceIdComparer());
             Collider[] Nearby = Physics.OverlapSphere(Position, Radius);
             foreach (Collider collider in Nearby)
             {
@@ -137,7 +137,7 @@ namespace BotControl
         }
         public static PrioritySet<Component> FindAllInViewSorted(Transform Look, HashSet<Il2CppSystem.Type> types, float MaxDistance = 10000f, float radius = 3, float MaxAngle = 180f)
         {
-            HashSet<Component> BigCandidateList = new();
+            HashSet<Component> BigCandidateList = new(new ComponentInstanceIdComparer());
             foreach (var type in types)
             {
                 HashSet<Component> CandidateList = FindAllInView(Look, type, MaxDistance, radius);
@@ -145,7 +145,7 @@ namespace BotControl
             }
 
             Vector3 lookDirection = Look.forward;
-            PrioritySet<Component> sorted = new();
+            PrioritySet<Component> sorted = new(new ComponentInstanceIdComparer());
 
             foreach (Component comp in BigCandidateList)
             {

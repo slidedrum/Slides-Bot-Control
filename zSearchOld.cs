@@ -4,6 +4,7 @@ using Enemies;
 using Il2CppInterop.Runtime;
 using LevelGeneration;
 using Player;
+using SlideDrum;
 using System;
 using System.Collections;
 using System.Collections.Generic;

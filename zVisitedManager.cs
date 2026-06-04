@@ -8,6 +8,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using BotControl;
+using SlideDrum;
 
 namespace BotControl
 {

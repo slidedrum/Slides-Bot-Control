@@ -36,7 +36,7 @@ namespace BotControl.SmartSelect.PressTypes
         {
             get
             {
-                if (SelectableTypes == null)
+                if (_SelectableTypes == null)
                 {
                     _SelectableTypes = new HashSet<Il2CppSystem.Type>();
                     //_SelectableTypes.Add(Il2CppType.Of<PlayerAIBot>()); // Example
@@ -51,7 +51,7 @@ namespace BotControl.SmartSelect.PressTypes
         private IPressAction _CurrentAction = null;
         private sSequenceDefinition _PressSequences = null;
         private PrioritySet<IPressAction> _NullTypeActions = new();
-        private Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> _TypeActionMap = new();
+        private Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> _TypeActionMap = new(new Il2CppTypePtrComparer());
         private HashSet<Il2CppSystem.Type> _SelectableTypes = null;
     }
 }

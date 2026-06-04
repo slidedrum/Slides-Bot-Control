@@ -7,8 +7,17 @@ namespace BotControl.SmartSelect.PressTypes
 {
     public static class PressTypeManager
     {
-        public static Dictionary<string, IPressType> TypeMap = null; // used to get lookup instances.
-        public static bool initalized => TypeMap == null; // Does Typemap need to be created?
+        private static Dictionary<string, IPressType> _TypeMap = null;
+        public static Dictionary<string, IPressType> TypeMap 
+        { 
+            get 
+            {
+                if (_TypeMap == null)
+                    Initalize();
+                return _TypeMap;
+            } 
+        } // used to get lookup instances.
+        public static bool initalized => _TypeMap != null; // Does Typemap need to be created?
         public static IPressType GetPressType(string FriendlyName) // Used to get a press type by its friendly name, returns null if not found
         {
             if (TypeMap == null)
@@ -21,7 +30,7 @@ namespace BotControl.SmartSelect.PressTypes
         {
             if (initalized)
                 return;
-            TypeMap = new Dictionary<string, IPressType>();
+            _TypeMap = new Dictionary<string, IPressType>();
             Type baseType = typeof(IPressType);
             var types = Assembly.GetExecutingAssembly()
                 .GetTypes()
@@ -30,9 +39,9 @@ namespace BotControl.SmartSelect.PressTypes
             {
                 IPressType instance = (IPressType)Activator.CreateInstance(type, nonPublic: true);
                 string key = instance.FriendlyName;
-                if (TypeMap.ContainsKey(key))
+                if (_TypeMap.ContainsKey(key))
                     throw new Exception($"Duplicate PressAction key: {key}");
-                TypeMap[key] = instance;
+                _TypeMap[key] = instance;
                 instance.OnRegister();
             }
         }

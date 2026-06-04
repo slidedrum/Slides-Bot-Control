@@ -1,19 +1,18 @@
-﻿using LevelGeneration;
+﻿using Enemies;
+using Il2CppInterop.Runtime;
+using LevelGeneration;
 using Player;
 using UnityEngine;
 
-namespace BotControl.SmartSelect.PressActions
+namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
-    public class pActionPlaceSentry : PressActionManager
+    public class pActionPlaceSentry : IPressAction
     {
-        public override string FriendlyName => "Place Sentry";
-        public override string FriendlyNameShort => "Deploy";
-        public override bool Invoke(Component BestComponent)
-        {
-            //BestComponenet is null.  Use player position..
-            return TryPlaceTurret();
-        }
-        public static bool TryPlaceTurret()
+        public string FriendlyName => "Deploy Sentry";
+        public string FriendlyNameShort => "Deploy";
+        public Il2CppSystem.Type Type => null;
+        public string pressTypeIdentifier => "Double Tap";
+        public bool Invoke(Component BestComponent)
         { // This logic should not be done on client, send to host over network.  Maybe works now?
             var selection = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>();
             foreach (var bot in selection)
@@ -38,9 +37,7 @@ namespace BotControl.SmartSelect.PressActions
                 Quaternion placeRotation = Quaternion.LookRotation(FlatForward(zStaticRefrences.CameraTransform));
                 Pose sentryPose = new Pose(placePosition, placeRotation);
                 if (!CanPlaceTurret(ref sentryPose))
-                {
                     continue;
-                }
                 zBotActions.SendBotToPlaceSentry(bot, sentryPose, zStaticRefrences.LocalPlayer);
                 PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PUTASENTRYGUNHERE);
                 zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Put a sentry here.", 1);
@@ -50,7 +47,7 @@ namespace BotControl.SmartSelect.PressActions
 
             return false;
         }
-        public static bool CanPlaceTurret(ref Pose pose)
+        public bool CanPlaceTurret(ref Pose pose)
         {
             bool hasRayHit = false;
             pose.position = pose.position + Vector3.up * 0.3f;
@@ -90,13 +87,31 @@ namespace BotControl.SmartSelect.PressActions
 
             return hits.Length == 0;
         }
-        public static Vector3 FlatForward(Transform transform)
+        public Vector3 FlatForward(Transform transform)
         {
             Vector3 dir = transform.forward;
             dir.y = 0f;
             if (dir.sqrMagnitude < 0.0001f)
                 return Vector3.forward;
             return dir.normalized;
+        }
+
+        public bool IsActionValid(Component candidate)
+        {
+            // candidate is null
+            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            if (BestBot == null) return false;
+            if (!BestBot.Agent.Alive) return false;
+            Vector3 origin = zStaticRefrences.CameraTransform.position;
+            Vector3 direction = zStaticRefrences.CameraTransform.forward;
+            if (!Physics.Raycast(origin, direction, out RaycastHit hit, 100f, LayerManager.MASK_SENTRYGUN_CAMERARAY_MOVERHELPER))
+                return false;
+            Vector3 placePosition = hit.point;
+            if (!zHelpers.CanBotReach(BestBot, placePosition)) return false;
+            Quaternion placeRotation = Quaternion.LookRotation(FlatForward(zStaticRefrences.CameraTransform));
+            Pose sentryPose = new Pose(placePosition, placeRotation);
+            if (!CanPlaceTurret(ref sentryPose)) return false;
+            return true;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace BotControl.SmartSelect.PressTypes
         // ── Action Maps ───────────────────────────────────────────────────────────
         public abstract PrioritySet<IPressAction> NullTypeActions { get; set; } // Backing field for Type action map of key null.
         public abstract Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> TypeActionMap { get; set; } // What actions can be performed on each type?
-
+        // todo why doesn't TypeActionMap get populated?
         // ── Identity / Configuration ──────────────────────────────────────────────
         public abstract string FriendlyName { get; } // Used for logging and configuration.
         public virtual string FriendlyNameShort => FriendlyName; // Used in the UI and hud.
@@ -52,7 +52,7 @@ namespace BotControl.SmartSelect.PressTypes
             else
             {
                 if (TypeActionMap == null)
-                    TypeActionMap = new();
+                    TypeActionMap = new(new Il2CppTypePtrComparer());
                 if (!TypeActionMap.TryGetValue(Type, out set) || set == null)
                 {
                     set = new();
@@ -69,11 +69,13 @@ namespace BotControl.SmartSelect.PressTypes
         }
         public virtual bool Update() // Triggered on slow update, responsible for updating the current action and component based on where the player is looking and what actions are valid.
         {
+            CurrentAction = null;
+            CurrentComponent = null;
             // first we find all of the candiates from selectable types.
             PrioritySet<Component> candidates = zSearch.FindAllInViewSorted(zStaticRefrences.CameraTransform, SelectableTypes, MaxAngle: SelectionAngle);
             Component candidate = null;
-            if (candidates.Count == 0) // if we found none, return.
-                return false;
+            //if (candidates.Count == 0) // if we found none, we need to try nulltype actions.
+            //    return false;
             for (int i = 0; i < candidates.Count; i++) // loop through them all in order of how close they are to the center of the screen.
             {
                 candidate = candidates[i];
@@ -138,6 +140,7 @@ namespace BotControl.SmartSelect.PressTypes
                     return true;
                 }
             }
+
             return false;
         }
         public virtual void OnRegister() { }// this is for if the press type needs to do anything when it's registered, like add default actions or something idk.

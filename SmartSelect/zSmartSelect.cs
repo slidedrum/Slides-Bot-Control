@@ -1,8 +1,8 @@
-﻿using BotControl.SmartSelect.PressTypes;
+﻿using BotControl.SmartSelect.PressActions;
+using BotControl.SmartSelect.PressTypes;
 using Player;
 using SlideDrum.sInputSystem;
 using SlideMenu;
-using System.Linq;
 using UnityEngine;
 
 namespace BotControl.SmartSelect
@@ -68,26 +68,26 @@ namespace BotControl.SmartSelect
         }
         public static void SlowUpdate()
         {
-            TapPress.Update();
-            HoldPress.Update();
-            DoubleTapPress.Update();
-            TapAndHoldPress.Update();
-
+            PressTypeManager.Update();
             zSmartSelectHud.Update();
             lastSlowUpdateTime = roundedTime;
         }
         private static void SetUp()
         {
-            sInputSystem.AddListener(sInputSystemDefaults.OnTappedExclusive, new FlexibleMethodDefinition(OnKeyTap), KeyCode.V);
-            sInputSystem.AddListener(sInputSystemDefaults.OnHoldImmediateExclusive, new FlexibleMethodDefinition(OnKeyHold), KeyCode.V);
-            sInputSystem.AddListener(sInputSystemDefaults.OnDoubleTappedExclusive, new FlexibleMethodDefinition(OnKeyDoubleTap), KeyCode.V);
-            sInputSystem.AddListener(sInputSystemDefaults.OnTapAndHoldImmediateExclusive, new FlexibleMethodDefinition(OnTapAndHold), KeyCode.V);
+            PressActionManager.Initialize();
+            foreach (IPressType pressType in PressTypeManager.TypeMap.Values)
+            {
+                sInputSystem.AddListener(pressType.PressSequence, new FlexibleMethodDefinition(pressType.Invoke), KeyCode.V);
+            }
+            //sInputSystem.AddListener(sInputSystemDefaults.OnTappedExclusive, new FlexibleMethodDefinition(OnKeyTap), KeyCode.V);
+            //sInputSystem.AddListener(sInputSystemDefaults.OnHoldImmediateExclusive, new FlexibleMethodDefinition(OnKeyHold), KeyCode.V);
+            //sInputSystem.AddListener(sInputSystemDefaults.OnDoubleTappedExclusive, new FlexibleMethodDefinition(OnKeyDoubleTap), KeyCode.V);
+            //sInputSystem.AddListener(sInputSystemDefaults.OnTapAndHoldImmediateExclusive, new FlexibleMethodDefinition(OnTapAndHold), KeyCode.V);
             
             IsSetUp = true;
         }
-        public static uint GetVoiceId(PlayerAIBot bot)
+        public static uint GetVoiceId(PlayerAgent Agent)
         {
-            var Agent = bot.Agent;
             var botName = Agent.PlayerName;
             var botId = Agent.CharacterID;
             uint voiceID = 0u;
@@ -112,33 +112,33 @@ namespace BotControl.SmartSelect
             PlayerAgent agent = zSearch.FindBestAligned(zStaticRefrences.CameraTransform, zStaticRefrences.AllPlayerAgentObjectsInLevel, SelectionAngle)?.GetComponent<PlayerAgent>();
             return agent;
         }
-        public static void OnKeyTap()
-        {
-            if (TapPress.Invoke())
-                ZiMain.PlayUiSound(CorrectSound);
-            else
-                ZiMain.PlayUiSound(InvalidSound);
-        }
-        public static void OnKeyHold()
-        {
-            if (HoldPress.Invoke())
-                ZiMain.PlayUiSound(CorrectSound);
-            else
-                ZiMain.PlayUiSound(InvalidSound);
-        }
-        public static void OnKeyDoubleTap()
-        {
-            if (DoubleTapPress.Invoke())
-                ZiMain.PlayUiSound(CorrectSound);
-            else
-                ZiMain.PlayUiSound(InvalidSound);
-        }
-        public static void OnTapAndHold()
-        {
-            if (TapAndHoldPress.Invoke())
-                ZiMain.PlayUiSound(CorrectSound);
-            else
-                ZiMain.PlayUiSound(InvalidSound);
-        }
+        //public static void OnKeyTap()
+        //{
+        //    if (TapPress.Invoke())
+        //        ZiMain.PlayUiSound(CorrectSound);
+        //    else
+        //        ZiMain.PlayUiSound(InvalidSound);
+        //}
+        //public static void OnKeyHold()
+        //{
+        //    if (HoldPress.Invoke())
+        //        ZiMain.PlayUiSound(CorrectSound);
+        //    else
+        //        ZiMain.PlayUiSound(InvalidSound);
+        //}
+        //public static void OnKeyDoubleTap()
+        //{
+        //    if (DoubleTapPress.Invoke())
+        //        ZiMain.PlayUiSound(CorrectSound);
+        //    else
+        //        ZiMain.PlayUiSound(InvalidSound);
+        //}
+        //public static void OnTapAndHold()
+        //{
+        //    if (TapAndHoldPress.Invoke())
+        //        ZiMain.PlayUiSound(CorrectSound);
+        //    else
+        //        ZiMain.PlayUiSound(InvalidSound);
+        //}
     }
 }

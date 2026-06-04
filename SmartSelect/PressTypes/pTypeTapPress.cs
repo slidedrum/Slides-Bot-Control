@@ -14,14 +14,6 @@ namespace BotControl.SmartSelect.PressTypes
 {
     public class pTypeTapPress : IPressType
     {
-        // ── Current State ─────────────────────────────────────────────────────────
-        public Component CurrentComponent { get => _CurrentComponent; set { _CurrentComponent = value; } }
-        public IPressAction CurrentAction { get => _CurrentAction; set { _CurrentAction = value; } }
-
-        // ── Action Maps ───────────────────────────────────────────────────────────
-        public PrioritySet<IPressAction> NullTypeActions { get { return _NullTypeActions; } set { _NullTypeActions = value; } }
-        public Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> TypeActionMap { get { return _TypeActionMap; } set { _TypeActionMap = value; } }
-        
         // ── Identity / Configuration ──────────────────────────────────────────────
         public string FriendlyName => "Tap";
         public fallbackType FallbackType => fallbackType.PlayerAiBot;
@@ -30,7 +22,7 @@ namespace BotControl.SmartSelect.PressTypes
         {
             get
             {
-                if (SelectableTypes == null)
+                if (_SelectableTypes == null)
                 {
                     _SelectableTypes = new HashSet<Il2CppSystem.Type>();
                     _SelectableTypes.Add(Il2CppType.Of<PlayerAIBot>());
@@ -41,12 +33,20 @@ namespace BotControl.SmartSelect.PressTypes
             }
         }
 
+        // ── Current State ─────────────────────────────────────────────────────────
+        public Component CurrentComponent { get => _CurrentComponent; set { _CurrentComponent = value; } }
+        public IPressAction CurrentAction { get => _CurrentAction; set { _CurrentAction = value; } }
+
+        // ── Action Maps ───────────────────────────────────────────────────────────
+        public PrioritySet<IPressAction> NullTypeActions { get { return _NullTypeActions; } set { _NullTypeActions = value; } }
+        public Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> TypeActionMap { get { return _TypeActionMap; } set { _TypeActionMap = value; } }
+
         // ── Private Backing Fields ────────────────────────────────────────────────
         private Component _CurrentComponent = null;
         private IPressAction _CurrentAction = null;
         private sSequenceDefinition _PressSequences = sInputSystemDefaults.OnTappedExclusive;
         private PrioritySet<IPressAction> _NullTypeActions = new();
-        private Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> _TypeActionMap = new();
+        private Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> _TypeActionMap = new(new Il2CppTypePtrComparer());
         private HashSet<Il2CppSystem.Type> _SelectableTypes = null;
 
         // this should be bound to:

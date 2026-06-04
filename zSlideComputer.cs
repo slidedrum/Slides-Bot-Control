@@ -1,12 +1,11 @@
-﻿using GameData;
+﻿using BotControl.Menus;
+using BotControl.SmartSelect;
+using GameData;
 using Player;
 using SlideMenu;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BotControl.Menus;
-using BotControl;
-using BotControl.SmartSelect;
 
 namespace BotControl
 {

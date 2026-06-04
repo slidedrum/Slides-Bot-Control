@@ -10,11 +10,14 @@ namespace BotControl.SmartSelect.PressActions
         public virtual string FriendlyNameShort => FriendlyName; // Used for the hud.
         public abstract Il2CppSystem.Type Type { get; } // The type of component this action is meant to be used on.  Must be a UnityEngine.Componenet.  Or null if the pressType has a fallback type of "nothing"
         public virtual string? pressTypeIdentifier => null; // Could be null if this action handles it's own registration.  Might want to do that if you're regestering to multiple types, or something else funky.
+        public virtual bool ActionImplementationComplete => true;
         public virtual void Register() // Used to register this action to its press type.  Will be called automatically if pressTypeIdentifier is null, the implementing class MUST overide this mehtod.
         {
+            if (pressTypeIdentifier.ToLower().Contains("example"))
+                return;
             if (pressTypeIdentifier == null)
                 throw new Exception($"PressAction {FriendlyName} does not specify a press type. It must handle it's own registration.");
-            if (!zHelpers.IsOfType<Component>(Type))
+            if (Type != null && !zHelpers.IsOfType<Component>(Type))
                 throw new Exception($"PressAction {FriendlyName} has a type that is not a Component.");
             var PressType = PressTypeManager.GetPressType(pressTypeIdentifier);
             if (PressType == null)

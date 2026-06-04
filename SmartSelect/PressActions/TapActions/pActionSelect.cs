@@ -19,7 +19,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             var Agent = Bot.Agent;
             var botName = Agent.PlayerName;
             var botId = Agent.CharacterID;
-            var voiceID = zSmartSelect.GetVoiceId(Bot);
+            var voiceID = zSmartSelect.GetVoiceId(Agent);
 
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, voiceID);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Hey {botName}!", 1);

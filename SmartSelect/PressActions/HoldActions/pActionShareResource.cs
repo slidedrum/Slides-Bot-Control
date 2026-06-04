@@ -7,7 +7,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
 {
     public class pActionShareResource : IPressAction
     {
-        public string FriendlyName => "Share Self";
+        public string FriendlyName => "Share Resource";
         public string FriendlyNameShort => "Share";
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
         public string pressTypeIdentifier => "Hold";

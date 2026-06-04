@@ -1,5 +1,6 @@
 ﻿using Il2CppInterop.Runtime;
 using Player;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 #nullable enable
@@ -30,7 +31,7 @@ namespace BotControl
         public static bool IsOfType<T>(Il2CppSystem.Type type)
         {
             Il2CppSystem.Type target = Il2CppType.Of<T>();
-            return type == target || type.IsSubclassOf(target);
+            return type != null && (type == target || type.IsSubclassOf(target));
         }
         public static uint GetAgentBackpackItemId(PlayerAgent agent, InventorySlot slot)
         {
@@ -64,6 +65,37 @@ namespace BotControl
             if (!NavMesh.CalculatePath(bot.Agent.GoodPosition, hit.position, 17, path))
                 return false;
             return path.status == NavMeshPathStatus.PathComplete;
+        }
+    }
+    public class ComponentInstanceIdComparer : IEqualityComparer<Component>
+    {
+        public bool Equals(Component x, Component y)
+        {
+            if (ReferenceEquals(x, y))
+                return true;
+
+            if (x == null || y == null)
+                return false;
+
+            return x.GetInstanceID() == y.GetInstanceID();
+        }
+
+        public int GetHashCode(Component obj)
+        {
+            return obj?.GetInstanceID() ?? 0;
+        }
+    }
+    public class Il2CppTypePtrComparer : IEqualityComparer<Il2CppSystem.Type>
+    {
+        public bool Equals(Il2CppSystem.Type x, Il2CppSystem.Type y)
+        {
+            if (x == null || y == null) return false;
+            return x.Pointer == y.Pointer;
+        }
+
+        public int GetHashCode(Il2CppSystem.Type obj)
+        {
+            return obj.Pointer.GetHashCode();
         }
     }
 
