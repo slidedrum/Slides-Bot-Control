@@ -1,4 +1,5 @@
-﻿using Il2CppInterop.Runtime;
+﻿using Agents;
+using Il2CppInterop.Runtime;
 using Player;
 using UnityEngine;
 
@@ -7,7 +8,10 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     public class pActionSelect : IPressAction
     {
         public string FriendlyName => "Select Bot";
-        public string FriendlyNameShort => "Select";
+        public string _FriendlyNameShort => "Select";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAIBot>();
         public string pressTypeIdentifier => "Tap";
         public bool Invoke(Component BestComponent)
@@ -35,6 +39,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
                 return false;
             if (zSmartSelect.MainSelection.Selected(Bot))
                 return false;
+            Color = Bot.Agent.Owner.PlayerColor;
             return true;
         }
     }

@@ -23,9 +23,9 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         {
             LG_WeakResourceContainer container = candidate.TryCast<LG_WeakResourceContainer>();
             if (container == null) return false;
-            if (!container.ISOpen) return false;
+            if (container.ISOpen) return false;
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
-            if (container == null || BestBot == null) return false;
+            if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             if (!zHelpers.CanBotReach(BestBot, container.transform.position)) return false;
             return true;

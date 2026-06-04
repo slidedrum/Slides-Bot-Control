@@ -53,10 +53,6 @@ namespace BotControl.SmartSelect
             Enemy,
             Generator,
         }
-        public static pTypeTapPress TapPress = new();
-        public static pTypeHoldPress HoldPress = new();
-        public static pTypeDoublePress DoubleTapPress = new();
-        public static pTypeTapAndHoldPress TapAndHoldPress = new();
         public static void Update()
         {
             bool ready = FocusStateManager.CurrentState == eFocusState.FPS || FocusStateManager.CurrentState == eFocusState.Dead;

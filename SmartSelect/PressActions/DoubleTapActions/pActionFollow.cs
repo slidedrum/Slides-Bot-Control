@@ -14,10 +14,11 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         public string FriendlyName => "Follow me";
         private string _FriendlyNameShort = "Follow";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
-        public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
-        public string pressTypeIdentifier => "Double Tap";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
+        public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
+        public string pressTypeIdentifier => "Double Tap";
+
 
         public bool Invoke(Component BestComponent)
         {
@@ -54,6 +55,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             PlayerAgent Agent = candidate.TryCast<PlayerAgent>();
             if (Agent == null) return false;
             if (!Agent.Alive) return false;
+            Color = Agent.Owner.PlayerColor;
             return true;
         }
     }

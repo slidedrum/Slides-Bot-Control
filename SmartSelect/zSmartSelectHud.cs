@@ -1,4 +1,5 @@
-﻿using FluffyUnderware.DevTools.Extensions;
+﻿using BotControl.SmartSelect.PressTypes;
+using FluffyUnderware.DevTools.Extensions;
 using Player;
 using System.Linq;
 using TMPro;
@@ -18,6 +19,11 @@ namespace BotControl.SmartSelect
         public static float lowerFontSize = 10;
         public static float upperStaticSize = 15;
         public static Color defaultColor = new Color(1f, 1f, 1f, 0.25f);
+
+        private static IPressType Tap;
+        private static IPressType Hold;
+        private static IPressType DoubleTap;
+        private static IPressType TapAndHold;
         public static void Setup()
         {
             if (isSetup)
@@ -40,23 +46,28 @@ namespace BotControl.SmartSelect
             BottomText = BottomTextGobject.GetComponent<TextMeshPro>();
             BottomText.fontSize = lowerFontSize;
             TopText.fontSize = upperStaticSize;
+            Tap = PressTypeManager.GetPressType("Tap");
+            Hold = PressTypeManager.GetPressType("Hold");
+            DoubleTap = PressTypeManager.GetPressType("Double Tap");
+            TapAndHold = PressTypeManager.GetPressType("Tap and Hold");
         }
+
         public static void Update()
         {
             if (!isSetup)
                 return;
             string name = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>().FirstOrDefault()?.Agent.PlayerName ?? "None";
             Pad(ref name,' ');
-            string tapName = zSmartSelect.TapPress.CurrentAction?.FriendlyNameShort ?? "";
+            string tapName = Tap.CurrentAction?.FriendlyNameShort ?? "";
             ConvertToStaticSize(ref tapName, staticSize, '-');
             Pad(ref tapName, ' ');
-            string holdName = zSmartSelect.HoldPress.CurrentAction?.FriendlyNameShort ?? "";
+            string holdName = Hold.CurrentAction?.FriendlyNameShort ?? "";
             ConvertToStaticSize(ref holdName, staticSize, '-');
             Pad(ref holdName, ' ');
-            string doubleTapName = zSmartSelect.DoubleTapPress.CurrentAction?.FriendlyNameShort ?? "";
+            string doubleTapName = DoubleTap.CurrentAction?.FriendlyNameShort ?? "";
             ConvertToStaticSize(ref doubleTapName, staticSize, '-');
             Pad(ref doubleTapName, ' ');
-            string tapAndHoldName = zSmartSelect.TapAndHoldPress.CurrentAction?.FriendlyNameShort ?? "";
+            string tapAndHoldName = TapAndHold.CurrentAction?.FriendlyNameShort ?? "";
             ConvertToStaticSize(ref tapAndHoldName, staticSize, '-');
             Pad(ref tapAndHoldName, ' ');
             string tapLabel = "Tap";

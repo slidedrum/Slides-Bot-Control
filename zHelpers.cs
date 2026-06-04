@@ -64,7 +64,12 @@ namespace BotControl
             NavMeshPath path = new NavMeshPath();
             if (!NavMesh.CalculatePath(bot.Agent.GoodPosition, hit.position, 17, path))
                 return false;
-            return path.status == NavMeshPathStatus.PathComplete;
+            if (path.status == NavMeshPathStatus.PathComplete)
+                return true;
+            if (path.status == NavMeshPathStatus.PathInvalid)
+                return false;
+            Vector3 lastCorner = path.corners[path.corners.Length - 1];
+            return Vector3.Distance(lastCorner + Vector3.up * 1.5f, location) < 6f;
         }
     }
     public class ComponentInstanceIdComparer : IEqualityComparer<Component>

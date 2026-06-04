@@ -8,7 +8,10 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     public class pActionPickupSentry : IPressAction
     {
         public string FriendlyName => "Pickup Sentry";
-        public string FriendlyNameShort => "Pickup";
+        public string _FriendlyNameShort => "Pickup";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public Il2CppSystem.Type Type => Il2CppType.Of<SentryGunInstance>();
         public string pressTypeIdentifier => "Tap";
         public bool Invoke(Component BestComponent)
@@ -33,6 +36,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             if (!bot.Agent.Alive)
                 return false;
             if (!zHelpers.CanBotReach(bot, sentry.transform.position)) return false;
+            Color = bot.Agent.Owner.PlayerColor;
             return true;
         }
     }

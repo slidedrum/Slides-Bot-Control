@@ -5,6 +5,7 @@ using PrioritySet;
 using SlideDrum.sInputSystem;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressTypes
 {
@@ -74,12 +75,22 @@ namespace BotControl.SmartSelect.PressTypes
             // first we find all of the candiates from selectable types.
             PrioritySet<Component> candidates = zSearch.FindAllInViewSorted(zStaticRefrences.CameraTransform, SelectableTypes, MaxAngle: SelectionAngle);
             Component candidate = null;
-            //if (candidates.Count == 0) // if we found none, we need to try nulltype actions.
-            //    return false;
             for (int i = 0; i < candidates.Count; i++) // loop through them all in order of how close they are to the center of the screen.
             {
                 candidate = candidates[i];
                 Il2CppSystem.Type candidateType = candidate.GetIl2CppType();
+                for (Il2CppSystem.Type type = candidateType; type != null; type = type.BaseType)
+                {
+                    foreach (Il2CppSystem.Type typeToMatch in SelectableTypes)
+                    {
+                        if (typeToMatch.Pointer == type.Pointer)
+                        {
+                            candidateType = type;
+                            break;
+                        }
+                    }
+                }
+
                 if (!TypeActionMap.TryGetValue(candidateType, out var actionSet) || actionSet == null)
                     continue;
                 foreach (IPressAction action in actionSet) // loop through all of the actions for that type

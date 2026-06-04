@@ -10,9 +10,14 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
     public class pActionPickupAllSentries : IPressAction
     {
         public string FriendlyName => "Pickup all Sentries";
-        public string FriendlyNameShort => "Pickup-A";
+        public string _FriendlyNameShort => "Pickup-A";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public Il2CppSystem.Type Type => Il2CppType.Of<SentryGunInstance>();
         public string pressTypeIdentifier => "Double Tap";
+        public int cycleOffset = 0;
+
         public bool Invoke(Component BestComponent)
         {
             var Botlist = ZiMain.GetBotList();
@@ -61,7 +66,17 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
                 if (Bot.Agent.Alive)
                     AliveBotsWithTurretsOut.Add(Bot);
             }
-            if (AliveBotsWithTurretsOut.Count == 0) return false;
+            if (AliveBotsWithTurretsOut.Count <= 1) return false;
+            cycleOffset++;
+
+            int groupIndex = (cycleOffset - 1) / 1;
+
+            AliveBotsWithTurretsOut.Sort((a, b) =>
+                a.GetInstanceID().CompareTo(b.GetInstanceID()));
+
+            int index = groupIndex % AliveBotsWithTurretsOut.Count;
+
+            Color = AliveBotsWithTurretsOut[index].Agent.Owner.PlayerColor;
             return true;
         }
     }
