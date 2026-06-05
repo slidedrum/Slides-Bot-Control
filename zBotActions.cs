@@ -273,6 +273,9 @@ namespace BotControl
         }
         public static bool SendBotToThrowItem(PlayerAgent Commander, PlayerAgent botAgent, pStructs.pThrowType ThrowType, Vector3 MovePosition, Vector3 TargetPosition, ulong netSender = 0)
         {
+            // TODO Alow you to supply a target object, or target position.
+            // If you supply a target poisition, then move position will be set to commanders location.
+
             if (!SNet.Master)
                 return false;
 

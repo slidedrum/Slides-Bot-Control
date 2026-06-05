@@ -1,9 +1,12 @@
 ﻿using Agents;
 using BepInEx.Unity.IL2CPP.Utils;
+using BotControl.SmartSelect.PressTypes;
 using Enemies;
 using Il2CppInterop.Runtime;
 using Player;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,10 +19,23 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
-        public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
+        public Il2CppSystem.Type Type => null;
+        private List<Il2CppSystem.Type> Types = new() { null, Il2CppType.Of<PlayerAgent>() };
         public string pressTypeIdentifier => "Double Tap";
 
-
+        public void Register() 
+        { 
+            IPressType PressType = PressTypeManager.GetPressType(pressTypeIdentifier);
+            if (PressType == null)
+                throw new Exception($"PressAction {FriendlyName} tried to register to non existant press type {pressTypeIdentifier}");
+            foreach (Il2CppSystem.Type Type in Types)
+            {
+                if (Type == null)
+                    PressType.RegisterAction(this, Type);
+                else
+                    PressType.RegisterAction(this, Type, priority: -10);
+            }
+        }
         public bool Invoke(Component BestComponent)
         {
             PlayerAgent Agent = BestComponent.TryCast<PlayerAgent>();
@@ -52,7 +68,11 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 
         public bool IsActionValid(Component candidate)
         {
-            PlayerAgent Agent = candidate.TryCast<PlayerAgent>();
+            PlayerAgent Agent;
+            if (candidate != null)
+                Agent = candidate.TryCast<PlayerAgent>();
+            else
+                Agent = zSmartSelect.GetPlayerAgentLookingAt();
             if (Agent == null) return false;
             if (!Agent.Alive) return false;
             Color = Agent.Owner.PlayerColor;

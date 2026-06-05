@@ -30,7 +30,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (!BestBot.Agent.Alive) return false;
             if (!zHelpers.CanBotReach(BestBot, Door.transform.position)) return false;
-            return false;
+            return true;
         }
     }
 }

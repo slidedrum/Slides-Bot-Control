@@ -59,7 +59,7 @@ namespace BotControl
         }
         public static bool CanBotReach(PlayerAIBot bot, Vector3 location)
         {
-            if (!NavMesh.SamplePosition(location, out NavMeshHit hit, 1.5f, 17))
+            if (!NavMesh.SamplePosition(location, out NavMeshHit hit, 3f, 17))
                 return false;
             NavMeshPath path = new NavMeshPath();
             if (!NavMesh.CalculatePath(bot.Agent.GoodPosition, hit.position, 17, path))
