@@ -1,14 +1,11 @@
-﻿using Agents;
-using BepInEx.Unity.IL2CPP.Utils;
+﻿using BepInEx.Unity.IL2CPP.Utils;
 using BotControl.SmartSelect.PressTypes;
-using Enemies;
 using Il2CppInterop.Runtime;
 using Player;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
@@ -75,6 +72,9 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
                 Agent = zSmartSelect.GetPlayerAgentLookingAt();
             if (Agent == null) return false;
             if (!Agent.Alive) return false;
+            if (Agent == zStaticRefrences.LocalPlayer) return false;
+            PlayerAgent leader = Agent?.GetComponent<PlayerAIBot>()?.SyncValues?.Leader;
+            if (leader != null && leader == zStaticRefrences.LocalPlayer) return false; // I don't like calling get compoennet this much, but it's PROBABLY fine?
             Color = Agent.Owner.PlayerColor;
             return true;
         }

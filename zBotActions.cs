@@ -1,22 +1,26 @@
 ﻿using BotControl.Networking;
 using BotControl.Patches;
 using BotControl.zRootBotPlayerAction;
-using Dissonance.Networking.Client;
 using Enemies;
 using GTFO.API;
+using Il2CppSystem.Security.Cryptography;
 using LevelGeneration;
 using Player;
 using SlideMenu;
 using SNetwork;
 using System;
 using UnityEngine;
-using UnityEngine.UIElements;
 using static BotControl.Networking.pStructs;
 
 namespace BotControl
 {
     public static class zBotActions
     {
+        public static void StartAction(PlayerAIBot Bot, PlayerBotActionBase.Descriptor descriptor)
+        {
+            zActions.manualActions.Add(descriptor);
+            Bot.StartAction(descriptor);
+        }
         public static void SendBotToPickUpSentry(PlayerAIBot aiBot, PlayerAgent commander = null, ulong netsender = 0)
         {
 
@@ -37,8 +41,7 @@ namespace BotControl
             {
                 Prio = 15f,
             };
-            zActions.manualActions.Add(desc);
-            aiBot.StartAction(desc);
+            StartAction(aiBot, desc);
         }
         public static void SendBotToPlaceSentry(PlayerAIBot aiBot, Pose sentryPose, PlayerAgent commander = null, ulong netsender = 0)
         {
@@ -46,11 +49,11 @@ namespace BotControl
             {
                 if (netsender != 0) //Is this request coming from a different client?
                     return;
-                pPlaceSentryInfo info = new pPlaceSentryInfo();                                                                             //info.item = pStructs.Get_pStructFromRefrence(item);
+                pPlaceToolInfo info = new pPlaceToolInfo();                                                                             //info.item = pStructs.Get_pStructFromRefrence(item);
                 info.playerAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
                 info.commander = pStructs.Get_pStructFromRefrence(commander); //This might be a problem in commander is null?  Not sure. TODO look into it.
                 info.Pose = sentryPose;
-                NetworkAPI.InvokeEvent<pPlaceSentryInfo>("RequestToPlaceSentry", info);
+                NetworkAPI.InvokeEvent<pPlaceToolInfo>("RequestToPlaceSentry", info);
                 return;
             }
             // todo check if the sentry is deployed first.
@@ -60,12 +63,60 @@ namespace BotControl
                 Prio = 15f,
                 InstallationPose = sentryPose
             };
-            zActions.manualActions.Add(desc);
-            aiBot.StartAction(desc);
+            StartAction(aiBot, desc);
         }
+        public static void SendBotToPlaceMine(PlayerAIBot aiBot, Pose minePose, InventorySlot slot, PlayerAgent commander = null, ulong netsender = 0)
+        {
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                pPlaceMineInfo info = new pPlaceMineInfo();                                                                             //info.item = pStructs.Get_pStructFromRefrence(item);
+                info.Agent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
+                info.Commander = pStructs.Get_pStructFromRefrence(commander); //This might be a problem in commander is null?  Not sure. TODO look into it.
+                info.pose = minePose;
+                info.slot = slot;
+                NetworkAPI.InvokeEvent<pPlaceMineInfo>("RequestToPlaceMine", info);
+                return;
+            }
+            // todo check if the sentry is deployed first.
+            // Though it should never get called if it's not deployed already.
+            PlayerBotActionDeployTripMine.Descriptor desc = new(aiBot)
+            {
+                Prio = 15f,
+                InstallationPose = minePose,
+                BackpackItem = zHelpers.GetAgentBackpackItem(aiBot.Agent, slot)
+            };
+            StartAction(aiBot, desc);
+        }
+        public static void SendBotToUseCfoamGun(PlayerAIBot aiBot, Vector3 targetPosition, PlayerAgent commander = null, ulong netsender = 0)
+        {
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                pUseCfoamInfo info = new pUseCfoamInfo();                                                                             //info.item = pStructs.Get_pStructFromRefrence(item);
+                info.Agent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
+                info.Commander = pStructs.Get_pStructFromRefrence(commander); //This might be a problem in commander is null?  Not sure. TODO look into it.
+                info.position = targetPosition;
+                NetworkAPI.InvokeEvent<pUseCfoamInfo>("RequestToUseCfoamGun", info);
+                return;
+            }
+            // todo check if the sentry is deployed first.
+            // Though it should never get called if it's not deployed already.
+            PlayerBotActionUseGlueGun.Descriptor desc = new(aiBot)
+            {
+                Prio = 15f,
+                TargetType = PlayerBotActionUseGlueGun.TargetTypeEnum.Position,
+                TargetObject = commander.transform,
+                TargetPosition = targetPosition,
+                Haste = 1f,
+            };
+            StartAction(aiBot, desc);
+        }
+
         public static void SendBotToPickupItem(PlayerAIBot aiBot, ItemInLevel item, PlayerAgent commander = null, ulong netsender = 0)
         {
-            //todo add to manual action list for refrence later.
             if (!SNet.IsMaster) //Are we a client?
             {
                 if (netsender != 0) //Is this request coming from a different client?
@@ -103,13 +154,30 @@ namespace BotControl
             zUpdater.InvokeStatic(barkback, 1f);
             if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify confirm action"))
                 ZiMain.sendChatMessage($"Picking up {item.PublicName}", aiBot.Agent, commander);
-            zActions.manualActions.Add(desc);
-            aiBot.StartAction(desc);
+            StartAction(aiBot, desc);
         }
-        [Obsolete("TODO: This method is not yet implemented and should not be used yet.")]
-        public static void SendBotToReviveAgent(PlayerAIBot aiBot, PlayerAgent downedAgent, PlayerAgent commander = null, ulong netsender  = 0)
+        public static void SendBotToReviveAgent(PlayerAIBot Reviver, PlayerAgent Downed, PlayerAgent commander = null, ulong netsender  = 0)
         {
-            ZiMain.sendChatMessage($"I would have revived {downedAgent.PlayerName}, but I'm stupid.", aiBot.Agent, commander);
+            if (!SNet.IsMaster)
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                pReviveAgentInfo info = new pReviveAgentInfo();
+                info.Revier = pStructs.Get_pStructFromRefrence(Reviver.Agent);
+                info.Downed = pStructs.Get_pStructFromRefrence(Downed);
+                info.commander = pStructs.Get_pStructFromRefrence(commander);
+                NetworkAPI.InvokeEvent<pReviveAgentInfo>("RequestToReviveAgent", info);
+                return;
+            }
+            if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify confirm action"))
+                ZiMain.sendChatMessage($"Reving {Downed.PlayerName}", Reviver.Agent, commander);
+            PlayerBotActionRevive.Descriptor desc = new(Reviver)
+            {
+                Client = Downed,
+                Prio = 15,
+            };
+            StartAction(Reviver, desc);
+            //ZiMain.sendChatMessage($"I would have revived {downedAgent.PlayerName}, but I'm stupid.", aiBot.Agent, commander);
             //todo
         }
         [Obsolete("TODO: This method is not yet implemented and should not be used yet.")]
@@ -145,8 +213,7 @@ namespace BotControl
             if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify confirm action"))
                 ZiMain.sendChatMessage($"Carrying {item._PublicName_k__BackingField}", aiBot.Agent, commander);
             PlayerVoiceManager.WantToSay(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO); //will do
-            zActions.manualActions.Add(desc);
-            aiBot.StartAction(desc);
+            StartAction(aiBot, desc);
         }
         public static void SendBotToShareResourcePack(PlayerAIBot aiBot, PlayerAgent receiver, PlayerAgent commander = null, ulong netsender = 0)
         {
@@ -169,7 +236,7 @@ namespace BotControl
             ZiMain.log.LogInfo($"{aiBot.Agent.PlayerName} was told by {commander?.PlayerName ?? "someone"} with netid {netsender} to try to share resource pack to {receiver.PlayerName}");
             //var gotBackpackItem = aiBot.Backpack.HasBackpackItem(InventorySlot.ResourcePack) &&
             //                      aiBot.Backpack.TryGetBackpackItem(InventorySlot.ResourcePack, out backpackItem);
-            bool gotBackpackItem = aiBot.Backpack.TryGetBackpackItem(InventorySlot.ResourcePack, out backpackItem);
+            bool gotBackpackItem = zHelpers.TryGetAgentBackpackItem(aiBot.Agent, InventorySlot.ResourcePack, out backpackItem);
             if (!gotBackpackItem)
                 return;
             ItemEquippable resourcePack = backpackItem.Instance.Cast<ItemEquippable>();
@@ -184,8 +251,9 @@ namespace BotControl
             float ammoLeft = aiBot.Backpack.AmmoStorage.GetAmmoInPack(AmmoType.ResourcePackRel);
             ZiMain.sendChatMessage($"Sharing my {resourcePack.PublicName} ({ammoLeft}%) with {receiver.PlayerName}.", aiBot.Agent, commander);
             PlayerVoiceManager.WantToSay(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO);
-            aiBot.StartAction(desc);
+            StartAction(aiBot, desc);
         }
+        [Obsolete]
         public static void SendBotToClearCurrentRoom(PlayerAIBot aiBot = null, PlayerAgent commander = null, ulong netsender = 0, PlayerBotActionBase.Descriptor arg_descriptor = null)
         {
 
@@ -237,8 +305,45 @@ namespace BotControl
             FlexibleMethodDefinition callback = new(SendBotToClearCurrentRoom, [aiBot, commander, netsender]);
             zActionSub.addOnTerminated(descriptor, callback);
         }
+        public static bool SendBotToThrowItem(PlayerAgent Commander, PlayerAgent botAgent, pStructs.pThrowType ThrowType, Vector3 MovePosition, Vector3 TargetPosition, ulong netSender = 0)
+        {
+            // TODO Alow you to supply a target object, or target position.
+            // If you supply a target poisition, then move position will be set to commanders location.
+            // TODO low priority add option to revert back to old system where they throw as soon as they can see the target.
+
+            if (!SNet.Master)
+                return false;
+
+            PlayerAIBot aiBot = botAgent.GetComponent<PlayerAIBot>();
+            zHelpers.TryGetAgentBackpackItem(aiBot.Agent, InventorySlot.Consumable, out var item);
+            if (item == null)
+            {
+                ZiMain.log.LogWarning($"Wanted to throw {ThrowType} but found nothing.");
+                return false;
+            }
+            if (item.Name != ThrowItemPatch.ThrowMappings[ThrowType])
+            {
+                ZiMain.log.LogWarning($"Invalid throw item to throw.  Wanted to throw {ThrowType} but found {item.Name}");
+                return false;
+            }
+
+            PlayerBotActionThrowItem.Descriptor desc = new(aiBot)
+            {
+                Prio = 15f,
+                Haste = 0.8f,
+                TargetPosition = TargetPosition,
+                TargetObject = Commander.transform,
+                TargetType = PlayerBotActionThrowItem.TargetTypeEnum.Position,
+                Item = item.Instance.Cast<ItemEquippable>(),
+                MovementAllowed = true
+            };
+            aiBot.StartAction(desc);
+            return false;
+        }
         public static PlayerBotActionAttack.Descriptor SendBotToKillEnemy(PlayerAIBot aiBot, EnemyAgent enemy, PlayerAgent commander = null, ulong netsender = 0, PlayerBotActionAttack.StanceEnum stance = PlayerBotActionAttack.StanceEnum.All, PlayerBotActionAttack.AttackMeansEnum means = PlayerBotActionAttack.AttackMeansEnum.Melee, PlayerBotActionWalk.Descriptor.PostureEnum posture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch)
         {
+            //TODO REFACTOR
+
             float attackPrio = 5f;
             float attackHaste = 0.5f;
             if (!SNet.IsMaster) //Are we a client?
@@ -271,40 +376,6 @@ namespace BotControl
             aiBot.StartAction(descriptor);
             return descriptor;
         }
-        public static bool SendBotToThrowItem(PlayerAgent Commander, PlayerAgent botAgent, pStructs.pThrowType ThrowType, Vector3 MovePosition, Vector3 TargetPosition, ulong netSender = 0)
-        {
-            // TODO Alow you to supply a target object, or target position.
-            // If you supply a target poisition, then move position will be set to commanders location.
-
-            if (!SNet.Master)
-                return false;
-
-            PlayerAIBot aiBot = botAgent.GetComponent<PlayerAIBot>();
-            var backpack = aiBot.Backpack;
-            backpack.TryGetBackpackItem(InventorySlot.Consumable, out var item);
-            if (item == null)
-            {
-                ZiMain.log.LogWarning($"Wanted to throw {ThrowType} but found nothing.");
-                return false;
-            }
-            if (item.Name != ThrowItemPatch.ThrowMappings[ThrowType])
-            {
-                ZiMain.log.LogWarning($"Invalid throw item to throw.  Wanted to throw {ThrowType} but found {item.Name}");
-                return false;
-            }
-
-            PlayerBotActionThrowItem.Descriptor desc = new(aiBot)
-            {
-                Prio = 15f,
-                Haste = 0.8f,
-                TargetPosition = TargetPosition,
-                TargetObject = Commander.transform,
-                TargetType = PlayerBotActionThrowItem.TargetTypeEnum.Position,
-                Item = item.Instance.Cast<ItemEquippable>(),
-                MovementAllowed = true
-            };
-            aiBot.StartAction(desc);
-            return false;
-        }
+        
     }
 }

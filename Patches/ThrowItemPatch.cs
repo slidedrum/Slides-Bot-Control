@@ -152,7 +152,7 @@ namespace BotControl.Patches
             foreach (var bot in botlist)
             {
                 var backpack = bot.Backpack;
-                backpack.TryGetBackpackItem(InventorySlot.Consumable, out BackpackItem item);
+                zHelpers.TryGetAgentBackpackItem(bot.Agent, InventorySlot.Consumable, out BackpackItem item);
                 if (item == null)
                     continue;
                 if (ThrowMappings.ContainsValue(item.Name))

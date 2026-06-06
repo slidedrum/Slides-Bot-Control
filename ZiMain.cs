@@ -172,8 +172,11 @@ public class ZiMain : BasePlugin
         //NetworkAPI.RegisterEvent<pResourceThresholdDisable> ("SetResourceThresholdDisable",     zNetworking.ReciveSetResourceThresholdDisable);
         //NetworkAPI.RegisterEvent<pGenericPermission>        ("SetActionPermission",             zNetworking.ReciveSetActionPermission);
         NetworkAPI.RegisterEvent<pPickupItemInfo>           ("RequestToPickupItem",               zNetworking.ReciveRequestToPickupItem);
+        NetworkAPI.RegisterEvent<pReviveAgentInfo>          ("RequestToReviveAgent",              zNetworking.ReciveRequestToReviveAgent);
         NetworkAPI.RegisterEvent<pPickupSentryInfo>         ("RequestToPickupSentry",             zNetworking.ReciveRequestToPickupSentry);
-        NetworkAPI.RegisterEvent<pPlaceSentryInfo>          ("RequestToPlaceSentry",              zNetworking.ReciveRequestToPlaceSentry);
+        NetworkAPI.RegisterEvent<pPlaceToolInfo>            ("RequestToPlaceSentry",              zNetworking.ReciveRequestToPlaceSentry);
+        NetworkAPI.RegisterEvent<pUseCfoamInfo>             ("RequestToUseCfoamGun",              zNetworking.ReciveRequestToUseCfoam);
+        NetworkAPI.RegisterEvent<pPlaceMineInfo>            ("RequestToPlaceMine",                zNetworking.ReciveRequestToPlaceMine);
         NetworkAPI.RegisterEvent<pShareResourceInfo>        ("RequestToShareResourcePack",        zNetworking.ReciveRequestToShareResource);
         NetworkAPI.RegisterEvent<pAttackEnemyInfo>          ("RequestToKillEnemy",                zNetworking.ReciveRequestToKillEnemy);
         NetworkAPI.RegisterEvent<pThrowDataInfo>            ("RequestToThrowItem",                zNetworking.ReciveRequestToThrowItem);

@@ -13,8 +13,11 @@ namespace BotControl.SmartSelect.PressActions
         public bool Invoke(Component BestComponent)
         {
             PlayerAgent Agent = BestComponent.TryCast<PlayerAgent>();
-            //TODO
-            return false;
+            if (Agent == null) return false;
+            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            if (BestBot == null) return false;
+            zBotActions.SendBotToReviveAgent(BestBot, Agent, zStaticRefrences.LocalPlayer, 0);
+            return true;
         }
         public bool IsActionValid(Component candidate)
         {

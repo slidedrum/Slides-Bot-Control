@@ -33,7 +33,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             if (!BestBot.Agent.Alive)
                 return false;
             PlayerBackpack backpack = PlayerBackpackManager.GetBackpack(BestBot.Agent.Owner);
-            if (!backpack.TryGetBackpackItem(InventorySlot.ResourcePack, out BackpackItem pack))
+            if (!zHelpers.TryGetAgentBackpackItem(BestBot.Agent, InventorySlot.ResourcePack, out BackpackItem pack))
                 return false;
             if (pack == null || pack.ItemID != 127u) // tool refill
                 return false;
@@ -41,7 +41,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 return false;
             if (!zHelpers.CanBotReach(BestBot, Sentry.transform.position)) 
                 return false;
-            return true;
+            return false;
         }
     }
 }

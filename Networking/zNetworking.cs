@@ -88,6 +88,33 @@ namespace BotControl.Networking
             PlayerAIBot aiBot = agent.gameObject.GetComponent<PlayerAIBot>();
             zBotActions.SendBotToPickupItem(aiBot, item, commander, sender);
         }
+        internal static void ReciveRequestToReviveAgent(ulong sender, pStructs.pReviveAgentInfo info)
+        {
+            ZiMain.log.LogInfo("Recived request to revive agent!");
+            if (!SNet.IsMaster)
+                return;
+            PlayerAgent Reviver = pStructs.Get_RefFrom_pStruct(info.Revier);
+            PlayerAgent Downed = pStructs.Get_RefFrom_pStruct(info.Downed);
+            PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.commander);
+            if (Reviver == null || Downed == null || Commander == null)
+            {
+                ZiMain.log.LogError("Invalid request to revive agent: Reviver, Downed or Commander is null.");
+                return;
+            }
+            ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {Reviver.PlayerName} to revive {Downed.PlayerName}");
+            if (!Reviver.Owner.IsBot)
+            {
+                ZiMain.log.LogWarning("Invalid request to revive agent. You can't tell a player what to do.");
+                return;
+            }
+            PlayerAIBot Bot = Reviver.GetComponent<PlayerAIBot>();
+            if (Bot == null)
+            {
+                ZiMain.log.LogError($"Invalid Request to revive agent. PlayerAiBot not found on revier.  This should never happen!");
+                return;
+            }
+            zBotActions.SendBotToReviveAgent(Bot, Downed, Commander, sender);
+        }
         internal static void ReciveRequestToShareResource(ulong netSender, pStructs.pShareResourceInfo info) 
         {
             ZiMain.log.LogInfo("Recived request to share resoruce!");
@@ -158,7 +185,7 @@ namespace BotControl.Networking
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Pick up your deployables.", 1);
             zBotActions.SendBotToPickUpSentry(aiBot, commander, netSender);
         }
-        internal static void ReciveRequestToPlaceSentry(ulong netSender, pStructs.pPlaceSentryInfo info)
+        internal static void ReciveRequestToPlaceSentry(ulong netSender, pStructs.pPlaceToolInfo info)
         {
             ZiMain.log.LogInfo("Recived request to place a sentry!");
             if (!SNet.IsMaster)
@@ -200,6 +227,40 @@ namespace BotControl.Networking
                 return;
             }
             zBotActions.SendBotToThrowItem(Commander, BotAgent, ThrowType, MovePostion, TargetPosition, netSender);
+        }
+        internal static void ReciveRequestToUseCfoam(ulong netSender, pStructs.pUseCfoamInfo info)
+        {
+            ZiMain.log.LogInfo("Recived request to use cfoam launcher!");
+            if (!SNet.IsMaster)
+                return;
+            PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.Commander);
+            PlayerAgent BotAgent = pStructs.Get_RefFrom_pStruct(info.Agent);
+            Vector3 MovePostion = Commander.transform.position;
+            Vector3 TargetPosition = info.position;
+            ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to use their cfoam gun from {MovePostion} to {TargetPosition}");
+            if (!BotAgent.Owner.IsBot)
+            {
+                ZiMain.log.LogWarning("Invalid request to throw item, You can't tell a player what to do.");
+                return;
+            }
+            zBotActions.SendBotToUseCfoamGun(BotAgent.GetComponent<PlayerAIBot>(), TargetPosition, Commander, netSender);
+        }
+        internal static void ReciveRequestToPlaceMine(ulong netSender, pStructs.pPlaceMineInfo info)
+        {
+            ZiMain.log.LogInfo("Recived request to place mine!");
+            if (!SNet.IsMaster)
+                return;
+            PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.Commander);
+            PlayerAgent BotAgent = pStructs.Get_RefFrom_pStruct(info.Agent);
+            Pose pose = info.pose;
+            InventorySlot slot = info.slot;
+            ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to use place their mine from {slot} to {info.pose}");
+            if (!BotAgent.Owner.IsBot)
+            {
+                ZiMain.log.LogWarning("Invalid request to throw item, You can't tell a player what to do.");
+                return;
+            }
+            zBotActions.SendBotToPlaceMine(BotAgent.GetComponent<PlayerAIBot>(), pose, slot, Commander, netSender);
         }
     }
 }

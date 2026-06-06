@@ -18,7 +18,7 @@ namespace BotControl.SmartSelect.PressTypes
     {
         // ── Identity / Configuration ──────────────────────────────────────────────
         public string FriendlyName => "Hold";
-        public fallbackType FallbackType => fallbackType.Nothing;
+        //public fallbackType FallbackType => fallbackType.Nothing;
         public sSequenceDefinition PressSequence
         {
             get

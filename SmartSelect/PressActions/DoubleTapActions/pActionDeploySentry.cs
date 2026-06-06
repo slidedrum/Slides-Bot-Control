@@ -1,51 +1,43 @@
-﻿using Enemies;
-using Il2CppInterop.Runtime;
-using LevelGeneration;
-using Player;
+﻿using Player;
 using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
-    public class pActionPlaceSentry : IPressAction
+    public class pActionDeploySentry : IPressAction
     {
         public string FriendlyName => "Deploy Sentry";
-        public string FriendlyNameShort => "Deploy";
+        public string FriendlyNameShort => "Sentry";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Double Tap";
         public bool Invoke(Component BestComponent)
         { // This logic should not be done on client, send to host over network.  Maybe works now?
-            var selection = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>();
-            foreach (var bot in selection)
-            {
-                var backpack = bot.Backpack;
-                if (!backpack.TryGetBackpackItem(InventorySlot.GearClass, out BackpackItem backpackItem)) // this new method might work as client?  Idk.
-                    continue;
-                bool isSentry = backpackItem.Instance.ArchetypeName == "Sentry Gun";
-                bool isDeployed = backpackItem.Status == eInventoryItemStatus.Deployed;
-                if (!isSentry || isDeployed)
-                    continue;
 
-                // TODO make it so that if the turret is deployed, pick it up.  then replace it in the new locaiton.
+            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            if (!zHelpers.TryGetAgentBackpackItem(BestBot.Agent, InventorySlot.GearClass, out BackpackItem backpackItem)) // this new method might work as client?  Idk.
+                return false;
+            bool isSentry = backpackItem.Instance.ArchetypeName == "Sentry Gun";
+            bool isDeployed = backpackItem.Status == eInventoryItemStatus.Deployed;
+            if (!isSentry || isDeployed)
+                return false;
 
-                //raycast from camera to find hit position and normal,
-                //place sentry at hit position, oriented based on normal.
-                Vector3 origin = zStaticRefrences.CameraTransform.position;
-                Vector3 direction = zStaticRefrences.CameraTransform.forward;
-                if (!Physics.Raycast(origin, direction, out RaycastHit hit, 100f, LayerManager.MASK_SENTRYGUN_CAMERARAY_MOVERHELPER))
-                    continue;
-                Vector3 placePosition = hit.point;
-                Quaternion placeRotation = Quaternion.LookRotation(FlatForward(zStaticRefrences.CameraTransform));
-                Pose sentryPose = new Pose(placePosition, placeRotation);
-                if (!CanPlaceTurret(ref sentryPose))
-                    continue;
-                zBotActions.SendBotToPlaceSentry(bot, sentryPose, zStaticRefrences.LocalPlayer);
-                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PUTASENTRYGUNHERE);
-                zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Put a sentry here.", 1);
-                ZiMain.BotBarkBack(bot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
-                return true;
-            }
+            // TODO make it so that if the turret is deployed, pick it up.  then replace it in the new locaiton.
 
-            return false;
+            //raycast from camera to find hit position and normal,
+            //place sentry at hit position, oriented based on normal.
+            Vector3 origin = zStaticRefrences.CameraTransform.position;
+            Vector3 direction = zStaticRefrences.CameraTransform.forward;
+            if (!Physics.Raycast(origin, direction, out RaycastHit hit, 100f, LayerManager.MASK_SENTRYGUN_CAMERARAY_MOVERHELPER))
+                return false;
+            Vector3 placePosition = hit.point;
+            Quaternion placeRotation = Quaternion.LookRotation(FlatForward(zStaticRefrences.CameraTransform));
+            Pose sentryPose = new Pose(placePosition, placeRotation);
+            if (!CanPlaceTurret(ref sentryPose))
+                return false;
+            zBotActions.SendBotToPlaceSentry(BestBot, sentryPose, zStaticRefrences.LocalPlayer);
+            PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PUTASENTRYGUNHERE);
+            zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Put a sentry here.", 1);
+            ZiMain.BotBarkBack(BestBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
+            return true;
         }
         public bool CanPlaceTurret(ref Pose pose)
         {
@@ -95,13 +87,18 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
                 return Vector3.forward;
             return dir.normalized;
         }
-
         public bool IsActionValid(Component candidate)
         {
             // candidate is null
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
+            if (!PlayerBotActionDeploySentryGun.Descriptor.Evaluate(BestBot, out bool IsDeployed)) return false;
+            if (!IsSentryValid(BestBot)) return false;
+            return true;
+        }
+        private bool IsSentryValid(PlayerAIBot BestBot)
+        {
             Vector3 origin = zStaticRefrences.CameraTransform.position;
             Vector3 direction = zStaticRefrences.CameraTransform.forward;
             if (!Physics.Raycast(origin, direction, out RaycastHit hit, 100f, LayerManager.MASK_SENTRYGUN_CAMERARAY_MOVERHELPER))

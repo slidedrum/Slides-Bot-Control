@@ -25,6 +25,7 @@ namespace BotControl.SmartSelect.PressActions
             PressType.RegisterAction(this);
         }
         public abstract bool Invoke(Component BestComponenet); // Perform this action right now!  Assume that IsActionValid has already been run and is true. Do not re-run the check.
+        // TODO in IsActionValid for all implemenations, make more use of the Evaluate method.  It should return if the action can be run with the game's implemeantion instead re-building it.
         public abstract bool IsActionValid(Component candidate); // Can this action be performed right now on this component?  Used for determining which action to select, and also for checking if the current action is still valid in the update loop.
     }
 }

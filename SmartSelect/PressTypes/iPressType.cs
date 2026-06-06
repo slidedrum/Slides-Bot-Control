@@ -32,7 +32,7 @@ namespace BotControl.SmartSelect.PressTypes
         public enum fallbackType // Defines what to do if no selectable type is found
         {
             Default,     // Do nothing.
-            Nothing,     // Literally select the nothing
+            //Nothing,     // Literally select the nothing
             PlayerAgent, // Select a player agent through walls if we can't find anything else.
             PlayerAiBot, // Select a player ai bot through walls if we can't find anything else.
         }
@@ -102,24 +102,33 @@ namespace BotControl.SmartSelect.PressTypes
                     }
                 }
             }
+            foreach (IPressAction action in NullTypeActions)
+            {
+                if (action.IsActionValid(null))
+                {
+                    CurrentAction = action;
+                    CurrentComponent = null;
+                    return true;
+                }
+            }
             PrioritySet<IPressAction> set = new(); // if we didn't find anything we need to check the fallback type.
             switch (FallbackType)
             {
                 case fallbackType.Default: // defaults to no fallback.
                     return false;
-                case fallbackType.Nothing: // fallback type nothing is for when we intentionally want to check if actions are valid when looking at nothing.
-                    if (NullTypeActions == null)
-                        return false;
-                    foreach (IPressAction action in NullTypeActions)
-                    {
-                        if (action.IsActionValid(null))
-                        {
-                            CurrentAction = action;
-                            CurrentComponent = null;
-                            return true;
-                        }
-                    }
-                    break;
+                //case fallbackType.Nothing: // fallback type nothing is for when we intentionally want to check if actions are valid when looking at nothing.
+                //    if (NullTypeActions == null)
+                //        return false;
+                //    foreach (IPressAction action in NullTypeActions)
+                //    {
+                //        if (action.IsActionValid(null))
+                //        {
+                //            CurrentAction = action;
+                //            CurrentComponent = null;
+                //            return true;
+                //        }
+                //    }
+                //    break;
                 case fallbackType.PlayerAgent: // fallback type player agent is for when we want to look at player agents through walls.
                     if (!TypeActionMap.TryGetValue(Il2CppType.Of<PlayerAgent>(), out set) || set == null || set.Count == 0)
                         return false;

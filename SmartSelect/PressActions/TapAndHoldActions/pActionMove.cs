@@ -21,6 +21,7 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
         {
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
+            if (!BestBot.Agent.Alive) return false;
             var destinationPosition = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos;
             if (!zHelpers.PositionIsValidForAgent(BestBot.Agent, ref destinationPosition)) return false;
             if (!zHelpers.CanBotReach(BestBot, destinationPosition)) return false;

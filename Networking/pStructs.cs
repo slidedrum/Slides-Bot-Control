@@ -81,7 +81,7 @@ namespace BotControl.Networking
             public pPlayerAgent aiBot;
             public pPlayerAgent commander;
         }
-        internal struct pPlaceSentryInfo
+        internal struct pPlaceToolInfo
         {
             public pPlayerAgent playerAgent;
             public pPlayerAgent commander;
@@ -103,6 +103,25 @@ namespace BotControl.Networking
             public pPlayerAgent sender;
             public pPlayerAgent receiver;
             public pPlayerAgent commander;
+        }
+        internal struct pReviveAgentInfo
+        {
+            public pPlayerAgent Revier;
+            public pPlayerAgent Downed;
+            public pPlayerAgent commander;
+        }
+        internal struct pUseCfoamInfo
+        {
+            public pPlayerAgent Agent;
+            public pPlayerAgent Commander;
+            public Vector3 position;
+        }
+        internal struct pPlaceMineInfo
+        {
+            public pPlayerAgent Agent;
+            public pPlayerAgent Commander;
+            public Pose pose;
+            public InventorySlot slot;
         }
         internal struct pBoolOverideTreeInfo
         {

@@ -1,4 +1,5 @@
-﻿using Il2CppInterop.Runtime;
+﻿using Agents;
+using Il2CppInterop.Runtime;
 using Player;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,6 +38,13 @@ namespace BotControl
         {
             return GetAgentBackpackItem(agent, slot)?.ItemID ?? 0;
         }
+        public static bool TryGetAgentBackpackItem(PlayerAgent agent, InventorySlot slot, out BackpackItem backpackItem)
+        {
+            PlayerBackpack backpack = PlayerBackpackManager.GetBackpack(agent.Owner);
+            if (backpack.TryGetBackpackItem(slot, out backpackItem))
+                return true;
+            return false;
+        }
         public static BackpackItem GetAgentBackpackItem(PlayerAgent agent, InventorySlot slot)
         {
             PlayerBackpack backpack = PlayerBackpackManager.GetBackpack(agent.Owner);
@@ -57,7 +65,7 @@ namespace BotControl
                 return false;
             return true;
         }
-        public static bool CanBotReach(PlayerAIBot bot, Vector3 location)
+        public static bool CanBotReach(PlayerAIBot bot, Vector3 location, float maxDistance = 6f)
         {
             if (!NavMesh.SamplePosition(location, out NavMeshHit hit, 3f, 17))
                 return false;
@@ -69,7 +77,7 @@ namespace BotControl
             if (path.status == NavMeshPathStatus.PathInvalid)
                 return false;
             Vector3 lastCorner = path.corners[path.corners.Length - 1];
-            return Vector3.Distance(lastCorner + Vector3.up * 1.5f, location) < 6f;
+            return Vector3.Distance(lastCorner + Vector3.up * 1.5f, location) < maxDistance;
         }
     }
     public class ComponentInstanceIdComparer : IEqualityComparer<Component>

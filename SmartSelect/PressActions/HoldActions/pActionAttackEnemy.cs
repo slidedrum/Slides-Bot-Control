@@ -28,7 +28,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             if (!BestBot.Agent.Alive) return false;
             if (!Enemy.Alive) return false;
             if (!zHelpers.CanBotReach(BestBot, Enemy.transform.position)) return false;
-            return true;
+            return false;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace BotControl.SmartSelect.PressTypes
         // ── Identity / Configuration ──────────────────────────────────────────────
         public string FriendlyName => "Double Tap";
         public string FriendlyNameShort => "D-Tap";
-        public fallbackType FallbackType => fallbackType.Nothing;
+        //public fallbackType FallbackType => fallbackType.Nothing;
         public sSequenceDefinition PressSequence
         {
             get
