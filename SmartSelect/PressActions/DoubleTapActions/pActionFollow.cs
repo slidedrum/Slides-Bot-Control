@@ -35,7 +35,11 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         }
         public bool Invoke(Component BestComponent)
         {
-            PlayerAgent Agent = BestComponent.TryCast<PlayerAgent>();
+            PlayerAgent Agent;
+            if (BestComponent != null)
+                Agent = BestComponent.TryCast<PlayerAgent>();
+            else
+                Agent = zSmartSelect.GetPlayerAgentLookingAt();
             if (Agent == null) return false;
             zUpdater.Instance.StartCoroutine(CallAgentToFollow(Agent));
             return true;

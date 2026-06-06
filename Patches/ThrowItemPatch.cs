@@ -94,7 +94,8 @@ namespace BotControl.Patches
             else if (desc.GetIl2CppType().FullName == travel)
             {
                 var traveldesc = desc.Cast<PlayerBotActionTravel.Descriptor>();
-                if (traveldesc.ParentActionBase.GetIl2CppType().FullName == "Player.PlayerBotActionThrowItem")
+                string? TypeName = traveldesc?.ParentActionBase?.GetIl2CppType()?.FullName;
+                if (TypeName != null && TypeName == "Player.PlayerBotActionThrowItem")
                 {
                     traveldesc.DestinationPos = GetMovePosition(traveldesc.ParentActionBase.Cast<PlayerBotActionThrowItem>());
                 }

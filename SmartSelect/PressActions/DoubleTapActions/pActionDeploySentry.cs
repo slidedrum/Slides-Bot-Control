@@ -1,5 +1,6 @@
 ﻿using Player;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
@@ -99,6 +100,10 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         }
         private bool IsSentryValid(PlayerAIBot BestBot)
         {
+            ItemEquippable[] deployedItems = BestBot.GetDeployedItems().ToArray();
+            if (deployedItems.Length != 0) return false;
+            if (!zHelpers.TryGetAgentBackpackItem(BestBot.Agent, InventorySlot.GearClass, out BackpackItem item)) return false;
+            if (item.Instance.ArchetypeName != "Sentry Gun") return false;
             Vector3 origin = zStaticRefrences.CameraTransform.position;
             Vector3 direction = zStaticRefrences.CameraTransform.forward;
             if (!Physics.Raycast(origin, direction, out RaycastHit hit, 100f, LayerManager.MASK_SENTRYGUN_CAMERARAY_MOVERHELPER))

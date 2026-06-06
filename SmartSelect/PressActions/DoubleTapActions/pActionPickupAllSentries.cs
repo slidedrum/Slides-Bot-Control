@@ -21,19 +21,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         public bool Invoke(Component BestComponent)
         {
             var Botlist = ZiMain.GetBotList();
-            List<PlayerAIBot> BotsWithTurretsOut = new();
-            foreach (var Bot in Botlist)
-            {
-                ItemEquippable[] deployedItems = Bot.GetDeployedItems().ToArray();
-                if (deployedItems.Length > 0)
-                    BotsWithTurretsOut.Add(Bot);
-            }
-            List<PlayerAIBot> AliveBotsWithTurretsOut = new();
-            foreach (var Bot in BotsWithTurretsOut)
-            {
-                if (Bot.Agent.Alive)
-                    AliveBotsWithTurretsOut.Add(Bot);
-            }
+            List<PlayerAIBot> AliveBotsWithTurretsOut = GetBotsWithTurretsOut();
             if (AliveBotsWithTurretsOut.Count == 0) return false;
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PICKUPYOURDEPLOYABLES);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Pick up your deployables.", 1);
@@ -51,33 +39,41 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 
         public bool IsActionValid(Component candidate)
         {
+            List<PlayerAIBot> AliveBotsWithTurretsOut = GetBotsWithTurretsOut();
+            if (AliveBotsWithTurretsOut.Count <= 1) return false;
+
+            cycleOffset++;
+            int groupIndex = (cycleOffset - 1) / 1;
+            AliveBotsWithTurretsOut.Sort((a, b) =>
+                a.GetInstanceID().CompareTo(b.GetInstanceID()));
+            int index = groupIndex % AliveBotsWithTurretsOut.Count;
+            Color = AliveBotsWithTurretsOut[index].Agent.Owner.PlayerColor;
+            return true;
+        }
+        public List<PlayerAIBot> GetBotsWithTurretsOut()
+        {
+            List<PlayerAIBot> AliveBotsWithTurretsOut = new();
             var Botlist = ZiMain.GetBotList();
             List<PlayerAIBot> BotsWithTurretsOut = new();
-            foreach (var Bot in Botlist)
+            foreach (PlayerAIBot Bot in Botlist)
             {
                 ItemEquippable[] deployedItems = Bot.GetDeployedItems().ToArray();
-                if (deployedItems.Length > 0)
-                    BotsWithTurretsOut.Add(Bot);
+                if (deployedItems.Length == 0)
+                    continue;
+                if (zHelpers.TryGetAgentBackpackItem(Bot.Agent, InventorySlot.GearClass, out BackpackItem item))
+                {
+                    if (item.Instance.ArchetypeName == "Sentry Gun")
+                        BotsWithTurretsOut.Add(Bot);
+                }
+
             }
-            if (BotsWithTurretsOut.Count == 0) return false;
-            List<PlayerAIBot> AliveBotsWithTurretsOut = new();
+            if (BotsWithTurretsOut.Count == 0) return AliveBotsWithTurretsOut;
             foreach (var Bot in BotsWithTurretsOut)
             {
                 if (Bot.Agent.Alive)
                     AliveBotsWithTurretsOut.Add(Bot);
             }
-            if (AliveBotsWithTurretsOut.Count <= 1) return false;
-            cycleOffset++;
-
-            int groupIndex = (cycleOffset - 1) / 1;
-
-            AliveBotsWithTurretsOut.Sort((a, b) =>
-                a.GetInstanceID().CompareTo(b.GetInstanceID()));
-
-            int index = groupIndex % AliveBotsWithTurretsOut.Count;
-
-            Color = AliveBotsWithTurretsOut[index].Agent.Owner.PlayerColor;
-            return true;
+            return AliveBotsWithTurretsOut;
         }
     }
 }

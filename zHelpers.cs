@@ -55,7 +55,7 @@ namespace BotControl
         public static bool PositionIsValidForAgent(PlayerAgent Agent, ref Vector3 Position)
         {
             NavMeshHit navMeshHit;
-            if (!NavMesh.SamplePosition(Position, out navMeshHit, 0.2f, -1))
+            if (!NavMesh.SamplePosition(Position, out navMeshHit, 0.5f, -1))
                 return false;
             Position = navMeshHit.position;
             NavMeshPath navMeshPath = new NavMeshPath();

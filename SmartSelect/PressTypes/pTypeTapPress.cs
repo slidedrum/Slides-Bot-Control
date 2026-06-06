@@ -24,10 +24,11 @@ namespace BotControl.SmartSelect.PressTypes
             {
                 if (_SelectableTypes == null)
                 {
-                    _SelectableTypes = new HashSet<Il2CppSystem.Type>();
+                    _SelectableTypes = new HashSet<Il2CppSystem.Type>(new Il2CppTypePtrComparer());
                     _SelectableTypes.Add(Il2CppType.Of<PlayerAIBot>());
                     _SelectableTypes.Add(Il2CppType.Of<SentryGunInstance>());
                     _SelectableTypes.Add(Il2CppType.Of<LG_WeakDoor>());
+                    _SelectableTypes.Add(Il2CppType.Of<MineDeployerInstance>());
                 }
                 return _SelectableTypes;
             }

@@ -75,6 +75,11 @@ namespace BotControl.Networking
             public int actionID;
             public bool allowed;
         }
+        public struct pPickupMineInfo
+        {
+            public pItemData Mine;
+            public pPlayerAgent Commander;
+        }
         public struct pAttackEnemyInfo
         {
             public pEnemyAgent enemy;
@@ -122,6 +127,12 @@ namespace BotControl.Networking
             public pPlayerAgent Commander;
             public Pose pose;
             public InventorySlot slot;
+        }
+        internal struct pMoveToLocationInfo
+        {
+            public Vector3 position;
+            public pPlayerAgent BotAgent;
+            public pPlayerAgent Commander;
         }
         internal struct pBoolOverideTreeInfo
         {

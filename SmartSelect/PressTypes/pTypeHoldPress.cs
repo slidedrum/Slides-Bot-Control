@@ -36,14 +36,16 @@ namespace BotControl.SmartSelect.PressTypes
             {
                 if (_SelectableTypes == null)
                 {
-                    _SelectableTypes = new HashSet<Il2CppSystem.Type>();
+                    _SelectableTypes = new HashSet<Il2CppSystem.Type>(new Il2CppTypePtrComparer());
                     _SelectableTypes.Add(Il2CppType.Of<PlayerAgent>());
+                    _SelectableTypes.Add(Il2CppType.Of<MineDeployerInstance>()); // I think this is conflicting with iteminlevel
                     _SelectableTypes.Add(Il2CppType.Of<ItemInLevel>());
                     _SelectableTypes.Add(Il2CppType.Of<SentryGunInstance>());
                     _SelectableTypes.Add(Il2CppType.Of<LG_WeakResourceContainer>());
                     _SelectableTypes.Add(Il2CppType.Of<LG_WeakDoor>());
                     _SelectableTypes.Add(Il2CppType.Of<EnemyAgent>());
                     _SelectableTypes.Add(Il2CppType.Of<LG_PowerGenerator_Core>());
+
                 }
                 return _SelectableTypes;
             }
@@ -64,18 +66,6 @@ namespace BotControl.SmartSelect.PressTypes
         private PrioritySet<IPressAction> _NullTypeActions = new();
         private Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> _TypeActionMap = new(new Il2CppTypePtrComparer());
         private HashSet<Il2CppSystem.Type> _SelectableTypes = null;
-
-        public pTypeHoldPress()
-        {
-            _SelectableTypes = new HashSet<Il2CppSystem.Type>();
-            _SelectableTypes.Add(Il2CppType.Of<PlayerAgent>());
-            _SelectableTypes.Add(Il2CppType.Of<ItemInLevel>());
-            _SelectableTypes.Add(Il2CppType.Of<SentryGunInstance>());
-            _SelectableTypes.Add(Il2CppType.Of<LG_WeakResourceContainer>());
-            _SelectableTypes.Add(Il2CppType.Of<LG_WeakDoor>());
-            _SelectableTypes.Add(Il2CppType.Of<EnemyAgent>());
-            _SelectableTypes.Add(Il2CppType.Of<LG_PowerGenerator_Core>());
-        }
         //public bool SeCurrentComponent()
         //{
         //    if (!zSmartSelect.MainSelection.Selected<PlayerAIBot>())

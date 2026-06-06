@@ -1,4 +1,5 @@
-﻿using BotControl.Menus;
+﻿using Agents;
+using BotControl.Menus;
 using BotControl.Patches;
 using Enemies;
 using LevelGeneration;
@@ -60,6 +61,60 @@ namespace BotControl.Networking
                 value = info.value;
             OverrideTree<float?> tree = OverrideTree<float?>.GetTreeFromID(info.treeID);
             tree.SetValue(keyId, value, netSender);
+        }
+        internal static void ReciveRequestToMoveToLocation(ulong netsender,  pStructs.pMoveToLocationInfo info)
+        {
+            ZiMain.log.LogInfo("Recived request to move!");
+            if (!SNet.IsMaster)
+                return;
+            PlayerAgent bot = pStructs.Get_RefFrom_pStruct(info.BotAgent);
+            PlayerAgent commander = pStructs.Get_RefFrom_pStruct(info.Commander);
+            Vector3 position = info.position;
+            if (bot == null)
+            {
+                ZiMain.log.LogError("Invalid request to move: bot agent is null.");
+                return;
+            }
+            if (commander == null)
+            {
+                ZiMain.log.LogError("Invalid request to move: Commander is null.");
+                return;
+            }
+            ZiMain.log.LogInfo($"{commander.PlayerName} wants to tell {bot.PlayerName} to move to {position}");
+            if (!bot.Owner.IsBot)
+            {
+                ZiMain.log.LogWarning("Invalid request to pickup item, You can't tell a player what to do.");
+                return;
+            }
+            PlayerAIBot aiBot = bot.GetComponent<PlayerAIBot>();
+            if (aiBot == null) return;
+            zBotActions.SendbotToMoveToLocation(aiBot, position, commander, netsender);
+        }
+        internal static void ReciveRequestToPickupMine(ulong sender, pStructs.pPickupMineInfo info)
+        {
+            ZiMain.log.LogInfo("Recived request to pickup mine!");
+            if (!SNet.IsMaster)
+                return;
+            GameObject mineGobject = pStructs.Get_RefFrom_pStruct(info.Mine);
+            MineDeployerInstance Mine = mineGobject.GetComponent<MineDeployerInstance>();
+            if (Mine == null) return;
+            PlayerAgent commander = pStructs.Get_RefFrom_pStruct(info.Commander);
+            PlayerAgent agent = Mine.Owner;
+            if (mineGobject != null)
+                ZiMain.log.LogInfo($"Gobject name: {mineGobject.name}");
+
+            if (Mine == null || agent == null || commander == null)
+            {
+                ZiMain.log.LogError("Invalid request to pickup mine: agent, item or commander is null.");
+                return;
+            }
+            ZiMain.log.LogInfo($"{commander.PlayerName} wants to tell {agent.PlayerName} to pickup their mine at {mineGobject.transform.position}");
+            if (!agent.Owner.IsBot)
+            {
+                ZiMain.log.LogWarning("Invalid request to pickup mine, You can't tell a player what to do.");
+                return;
+            }
+            zBotActions.SendBotToPickUpMine(agent.GetComponent<PlayerAIBot>(), Mine, commander, sender);
         }
         internal static void ReciveRequestToPickupItem(ulong sender, pStructs.pPickupItemInfo info)
         {

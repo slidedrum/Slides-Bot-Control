@@ -21,10 +21,55 @@ namespace BotControl
             zActions.manualActions.Add(descriptor);
             Bot.StartAction(descriptor);
         }
+        public static void SendbotToMoveToLocation(PlayerAIBot Bot,Vector3 TargetLocation, PlayerAgent Commander = null, ulong netsender = 0)
+        {
+            if (Bot == null) return;
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                //request host
+                pMoveToLocationInfo info = new pMoveToLocationInfo();                                                                      
+                info.Commander = pStructs.Get_pStructFromRefrence(Commander);
+                NetworkAPI.InvokeEvent<pMoveToLocationInfo>("RequestToMoveToLocation", info);
+                return;
+            }
+            PlayerBotActionTravel.Descriptor Desc = new PlayerBotActionTravel.Descriptor(Bot)
+            {
+                Prio = 15,
+                Haste = 1,
+                DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.Position,
+                DestinationPos = TargetLocation,
+                Persistent = false,
+                Bulletproof = PlayerBotActionTravel.Descriptor.BulletproofEnum.None,
+            };
+            PlayerVoiceManager.WantToSay(Commander.CharacterID, AK.EVENTS.PLAY_CL_HURRY);
+            StartAction(Bot, Desc);
+            Bot.SyncValues.Leader = Bot.Agent;
+        }
+        public static void SendBotToPickUpMine(PlayerAIBot Bot, MineDeployerInstance Mine, PlayerAgent commander = null, ulong netsender = 0)
+        {
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                pPickupMineInfo info = new pPickupMineInfo();                                                                             
+                info.Commander = pStructs.Get_pStructFromRefrence(commander); 
+                info.Mine = pStructs.Get_pStructFromRefrence(Mine);
+                NetworkAPI.InvokeEvent<pPickupMineInfo>("RequestToPickupMine", info);
+                return;
+            }
+            if (Mine?.Owner != null && !Mine.Owner.Owner.IsBot) return;
+            ZiMain.BotBarkBack(Bot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
+            PlayerBotActionGatherDeployables.Descriptor desc = new(Bot)
+            {
+                Prio = 15f,
+                TargetItem = Mine,
+            };
+            StartAction(Bot, desc);
+        }
         public static void SendBotToPickUpSentry(PlayerAIBot aiBot, PlayerAgent commander = null, ulong netsender = 0)
         {
-
-            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
             if (!SNet.IsMaster) //Are we a client?
             {
                 if (netsender != 0) //Is this request coming from a different client?
@@ -35,6 +80,8 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pPickupSentryInfo>("RequestToPickupSentry", info);
                 return;
             }
+
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
             // todo check if the sentry is even deployed first.
             // Though it should never get called if it's not deployed already.
             PlayerBotActionDeploySentryGun.Descriptor desc = new(aiBot) 
