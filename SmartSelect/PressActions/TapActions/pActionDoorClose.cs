@@ -25,12 +25,12 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             LG_WeakDoor Door = candidate.TryCast<LG_WeakDoor>();
             if (!Door.InteractionAllowed)
                 return false;
-            if (Door.Gate.IsTraversable)
-                return true;
+            if (!Door.Gate.IsTraversable)
+                return false;
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (!BestBot.Agent.Alive) return false;
             if (!zHelpers.CanBotReach(BestBot, Door.transform.position)) return false;
-            return true;
+            return false;
         }
     }
 }

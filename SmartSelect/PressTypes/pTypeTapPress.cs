@@ -29,6 +29,7 @@ namespace BotControl.SmartSelect.PressTypes
                     _SelectableTypes.Add(Il2CppType.Of<SentryGunInstance>());
                     _SelectableTypes.Add(Il2CppType.Of<LG_WeakDoor>());
                     _SelectableTypes.Add(Il2CppType.Of<MineDeployerInstance>());
+                    _SelectableTypes.Add(Il2CppType.Of<LG_WeakLock>());
                 }
                 return _SelectableTypes;
             }

@@ -5,7 +5,7 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
 {
     public class pActionMove : IPressAction
     {
-        public static int collisionLayer = LayerManager.MASK_SENTRYGUN_CAMERARAY_MOVERHELPER;
+        public static int collisionLayer = LayerManager.MASK_ENEMY_PROJECTILE_COLLIDERS;
         public string FriendlyName => "Move To";
         public string FriendlyNameShort => "Move";
         public Il2CppSystem.Type Type => null;
@@ -24,9 +24,9 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
-            if (!Physics.SphereCast(zStaticRefrences.LocalPlayer.Position, 0.5f ,zStaticRefrences.CameraTransform.forward, out RaycastHit hit, 100f, collisionLayer))
-                return false;
-            var destinationPosition = hit.point;
+            //if (!Physics.Raycast(zStaticRefrences.LocalPlayer.Position, zStaticRefrences.CameraTransform.forward, out RaycastHit hit, 10000f, collisionLayer))
+            //    return false;
+            var destinationPosition = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos;
             if (!zHelpers.PositionIsValidForAgent(BestBot.Agent, ref destinationPosition)) return false;
             if (!zHelpers.CanBotReach(BestBot, destinationPosition)) return false;
             return true;

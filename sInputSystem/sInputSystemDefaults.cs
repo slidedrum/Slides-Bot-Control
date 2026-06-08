@@ -230,5 +230,18 @@
                 return sequence;
             }
         }
+        public static sSequenceDefinition OnTrippleTap
+        {
+            get
+            {
+                sKeyPressDefinition[] Presses = [ShortPress, ShortPress, ShortPress];
+                sSequenceDefinition sequence = new(
+                    Presses: Presses,
+                    Callback: null,
+                    Identifier: "OnTrippleTap"
+                    );
+                return sequence;
+            }
+        }
     }
 }

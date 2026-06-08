@@ -29,6 +29,21 @@ namespace BotControl
                 return hash;
             }
         }
+        public static bool IsObstructed(Vector3 from, GameObject target, int layerMask = ~0)
+        {
+            if (target == null) return true;
+
+            Vector3 to = target.transform.position;
+            Vector3 dir = to - from;
+            float dist = dir.magnitude;
+
+            if (dist <= 0.0001f)
+                return false;
+
+            dir /= dist;
+
+            return Physics.Raycast(from, dir, dist, layerMask);
+        }
         public static bool IsOfType<T>(Il2CppSystem.Type type)
         {
             Il2CppSystem.Type target = Il2CppType.Of<T>();
@@ -55,7 +70,7 @@ namespace BotControl
         public static bool PositionIsValidForAgent(PlayerAgent Agent, ref Vector3 Position)
         {
             NavMeshHit navMeshHit;
-            if (!NavMesh.SamplePosition(Position, out navMeshHit, 0.5f, -1))
+            if (!NavMesh.SamplePosition(Position, out navMeshHit, 1f, -1))
                 return false;
             Position = navMeshHit.position;
             NavMeshPath navMeshPath = new NavMeshPath();

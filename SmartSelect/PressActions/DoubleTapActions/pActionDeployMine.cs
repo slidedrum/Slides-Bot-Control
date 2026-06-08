@@ -16,6 +16,9 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             if (BestBot == null) return false;
             Pose minePose = new Pose(zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, Quaternion.LookRotation(-zStaticRefrences.LocalPlayer.FPSCamera.CameraRayNormal));
             zBotActions.SendBotToPlaceMine(BestBot, minePose, InventorySlot.GearClass, zStaticRefrences.LocalPlayer, 0);
+            PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PUTATRIPMINEHERE);
+            zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Put a mine here.", 1);
+            ZiMain.BotBarkBack(BestBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
             return true;
         }
         
@@ -62,7 +65,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
                 return false;
             }
             // 3) Bot must be able to path to the install point.
-            if (!zHelpers.CanBotReach(BestBot, hit.point))
+            if (!zHelpers.CanBotReach(BestBot, hit.point, 3))
                 return false;
             return true;
         }

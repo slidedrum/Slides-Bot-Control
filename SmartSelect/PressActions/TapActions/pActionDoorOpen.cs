@@ -26,10 +26,14 @@ namespace BotControl.SmartSelect.PressActions.TapActions
                 return false;
             if (Door.Gate.IsTraversable)
                 return false;
+            if (Door?.WeakLocks != null && Door.WeakLocks.Count != 0) 
+                return false;
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
-            if (!BestBot.Agent.Alive) return false;
-            if (!zHelpers.CanBotReach(BestBot, Door.transform.position)) return false;
-            return true;
+            if (!BestBot.Agent.Alive) 
+                return false;
+            if (!zHelpers.CanBotReach(BestBot, Door.transform.position)) 
+                return false;
+            return false;
         }
     }
 }

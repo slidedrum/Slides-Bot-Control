@@ -11,14 +11,14 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         public string pressTypeIdentifier => "Double Tap";
         public bool Invoke(Component BestComponent)
         { 
-
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
-            if (PlayerBotActionUseGlueGun.Descriptor.Evaluate(BestBot))
-            {
-                zBotActions.SendBotToUseCfoamGun(BestBot, zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, zStaticRefrences.LocalPlayer, 0);
-            }
-            return false;
+            if (!PlayerBotActionUseGlueGun.Descriptor.Evaluate(BestBot)) return false;
+            zBotActions.SendBotToUseCfoamGun(BestBot, zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, zStaticRefrences.LocalPlayer, 0);
+            PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CFOAMHERE);
+            zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Put a mine here.", 1);
+            ZiMain.BotBarkBack(BestBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
+            return true;
         }
         
         public bool IsActionValid(Component candidate)

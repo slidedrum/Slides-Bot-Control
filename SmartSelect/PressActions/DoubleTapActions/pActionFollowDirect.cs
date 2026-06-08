@@ -9,30 +9,16 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
-    public class pActionFollow : IPressAction
+    public class pActionFollowDirect : IPressAction
     {
         public string FriendlyName => "Follow me";
         private string _FriendlyNameShort = "Follow";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
-        public Il2CppSystem.Type Type => null;
-        private List<Il2CppSystem.Type> Types = new() { null, Il2CppType.Of<PlayerAgent>() };
+        public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
+        //public int? Priority => 0;
         public string pressTypeIdentifier => "Double Tap";
-
-        public void Register() 
-        { 
-            IPressType PressType = PressTypeManager.GetPressType(pressTypeIdentifier);
-            if (PressType == null)
-                throw new Exception($"PressAction {FriendlyName} tried to register to non existant press type {pressTypeIdentifier}");
-            foreach (Il2CppSystem.Type Type in Types)
-            {
-                if (Type == null)
-                    PressType.RegisterAction(this, Type);
-                else
-                    PressType.RegisterAction(this, Type, priority: -10);
-            }
-        }
         public bool Invoke(Component BestComponent)
         {
             PlayerAgent Agent;
@@ -69,11 +55,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 
         public bool IsActionValid(Component candidate)
         {
-            PlayerAgent Agent;
-            if (candidate != null)
-                Agent = candidate.TryCast<PlayerAgent>();
-            else
-                Agent = zSmartSelect.GetPlayerAgentLookingAt();
+            PlayerAgent Agent = candidate.TryCast<PlayerAgent>();
             if (Agent == null) return false;
             if (!Agent.Alive) return false;
             if (Agent == zStaticRefrences.LocalPlayer) return false;

@@ -63,9 +63,14 @@ namespace BotControl.SmartSelect.PressTypes
         } // For adding an action to this press type
         public virtual bool Invoke() // Triggerd when the PressSequence triggers.
         {
+            bool ret = false;
             if (CurrentAction != null && CurrentAction.IsActionValid(CurrentComponent))
-                return CurrentAction.Invoke(CurrentComponent);
-            return false;
+                ret = CurrentAction.Invoke(CurrentComponent);
+            if (ret)
+                ZiMain.PlayUiSound(zSmartSelect.CorrectSound);
+            else
+                ZiMain.PlayUiSound(zSmartSelect.InvalidSound);
+            return ret;
         }
         public virtual bool Update() // Triggered on slow update, responsible for updating the current action and component based on where the player is looking and what actions are valid.
         {

@@ -11,6 +11,7 @@ namespace BotControl.SmartSelect.PressActions
         public abstract Il2CppSystem.Type Type { get; } // The type of component this action is meant to be used on.  Must be a UnityEngine.Componenet.  Or null if the pressType has a fallback type of "nothing"
         public virtual string? pressTypeIdentifier => null; // Could be null if this action handles it's own registration.  Might want to do that if you're regestering to multiple types, or something else funky.
         public virtual bool ActionImplementationComplete => true;
+        public virtual int? Priority => null;
         public virtual void Register() // Used to register this action to its press type.  Will be called automatically if pressTypeIdentifier is null, the implementing class MUST overide this mehtod.
         {
             if (pressTypeIdentifier.ToLower().Contains("example"))
@@ -22,7 +23,7 @@ namespace BotControl.SmartSelect.PressActions
             var PressType = PressTypeManager.GetPressType(pressTypeIdentifier);
             if (PressType == null)
                 throw new Exception($"PressAction {FriendlyName} tried to register to non existant press type {pressTypeIdentifier}");
-            PressType.RegisterAction(this);
+            PressType.RegisterAction(this, Priority);
         }
         public abstract bool Invoke(Component BestComponenet); // Perform this action right now!  Assume that IsActionValid has already been run and is true. Do not re-run the check.
         // TODO in IsActionValid for all implemenations, make more use of the Evaluate method.  It should return if the action can be run with the game's implemeantion instead re-building it.

@@ -1,14 +1,17 @@
-﻿using BotControl.Networking;
+﻿using BetterBots.Utils;
+using BotControl.Networking;
 using BotControl.Patches;
 using BotControl.zRootBotPlayerAction;
 using Enemies;
 using GTFO.API;
-using Il2CppSystem.Security.Cryptography;
 using LevelGeneration;
 using Player;
 using SlideMenu;
 using SNetwork;
 using System;
+using System.Collections.Generic;
+using Il2CppInterop.Runtime;
+using System.Linq;
 using UnityEngine;
 using static BotControl.Networking.pStructs;
 
@@ -16,10 +19,30 @@ namespace BotControl
 {
     public static class zBotActions
     {
+        public static PlayerBotActionBase.Descriptor LastAction = null;
+        public static float defaultPrio = 14f;
         public static void StartAction(PlayerAIBot Bot, PlayerBotActionBase.Descriptor descriptor)
         {
             zActions.manualActions.Add(descriptor);
+            LastAction = descriptor;
             Bot.StartAction(descriptor);
+        }
+        public static PlayerBotActionBase.Descriptor TryGetDescriptor<Type>(PlayerAIBot Bot) where Type : PlayerBotActionBase.Descriptor
+        {
+            if (Bot == null) return null;
+            foreach (PlayerBotActionBase action in Bot.Actions)
+            {
+                var desc = action.DescBase;
+                if (desc == null)
+                    continue;
+                if (!zHelpers.IsOfType<Type>(desc.GetIl2CppType()))
+                    continue;
+                if (desc.IsTerminated())
+                    continue;
+                return desc;
+            }
+            
+            return null;
         }
         public static void SendbotToMoveToLocation(PlayerAIBot Bot,Vector3 TargetLocation, PlayerAgent Commander = null, ulong netsender = 0)
         {
@@ -36,7 +59,7 @@ namespace BotControl
             }
             PlayerBotActionTravel.Descriptor Desc = new PlayerBotActionTravel.Descriptor(Bot)
             {
-                Prio = 15,
+                Prio = defaultPrio,
                 Haste = 1,
                 DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.Position,
                 DestinationPos = TargetLocation,
@@ -46,6 +69,10 @@ namespace BotControl
             PlayerVoiceManager.WantToSay(Commander.CharacterID, AK.EVENTS.PLAY_CL_HURRY);
             StartAction(Bot, Desc);
             Bot.SyncValues.Leader = Bot.Agent;
+            //var desc = zBotActions.TryGetDescriptor<PlayerBotActionCarryExpeditionItem.Descriptor>(Bot);
+            //if (desc == null)
+            //    return;
+            //desc.ActionBase.Cast<PlayerBotActionCarryExpeditionItem>().m_leaderProximityEnterTime = float.MaxValue; 
         }
         public static void SendBotToPickUpMine(PlayerAIBot Bot, MineDeployerInstance Mine, PlayerAgent commander = null, ulong netsender = 0)
         {
@@ -63,7 +90,7 @@ namespace BotControl
             ZiMain.BotBarkBack(Bot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
             PlayerBotActionGatherDeployables.Descriptor desc = new(Bot)
             {
-                Prio = 15f,
+                Prio = defaultPrio,
                 TargetItem = Mine,
             };
             StartAction(Bot, desc);
@@ -86,7 +113,7 @@ namespace BotControl
             // Though it should never get called if it's not deployed already.
             PlayerBotActionDeploySentryGun.Descriptor desc = new(aiBot) 
             {
-                Prio = 15f,
+                Prio = defaultPrio,
             };
             StartAction(aiBot, desc);
         }
@@ -107,7 +134,7 @@ namespace BotControl
             // Though it should never get called if it's not deployed already.
             PlayerBotActionDeploySentryGun.Descriptor desc = new(aiBot)
             {
-                Prio = 15f,
+                Prio = defaultPrio,
                 InstallationPose = sentryPose
             };
             StartAction(aiBot, desc);
@@ -130,7 +157,7 @@ namespace BotControl
             // Though it should never get called if it's not deployed already.
             PlayerBotActionDeployTripMine.Descriptor desc = new(aiBot)
             {
-                Prio = 15f,
+                Prio = defaultPrio,
                 InstallationPose = minePose,
                 BackpackItem = zHelpers.GetAgentBackpackItem(aiBot.Agent, slot)
             };
@@ -185,7 +212,7 @@ namespace BotControl
                 return;
             }
             ZiMain.log.LogInfo($"{commander.PlayerName} is sending {aiBot.Agent.PlayerName} to pick up {item.PublicName}");
-            float prio = 15f;
+            float prio = defaultPrio;
             float haste = 1f;
             PlayerBotActionCollectItem.Descriptor desc = new(aiBot)
             {
@@ -235,7 +262,6 @@ namespace BotControl
         }
         public static void SendBotToCarryItem(PlayerAIBot aiBot, CarryItemPickup_Core item, PlayerAgent commander = null, ulong netsender = 0)
         {
-            //todo add to manual action list for refrence later.
             //TODO split this up into it's own netaction instead of piggybacking on sendbottopickupitem.
             if (!SNet.IsMaster) //Are we a client?
             {
@@ -251,7 +277,7 @@ namespace BotControl
                 return;
             }
             ZiMain.log.LogInfo($"{commander.PlayerName} is sending {aiBot.Agent.PlayerName} to carry {item._PublicName_k__BackingField} with the new method");
-            float prio = 14f;
+            float prio = 11;
             PlayerBotActionCarryExpeditionItem.Descriptor desc = new(aiBot)
             {
                 TargetItem = item,
@@ -259,7 +285,7 @@ namespace BotControl
             };
             if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify confirm action"))
                 ZiMain.sendChatMessage($"Carrying {item._PublicName_k__BackingField}", aiBot.Agent, commander);
-            PlayerVoiceManager.WantToSay(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO); //will do
+            PlayerVoiceManager.WantToSay(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO);
             StartAction(aiBot, desc);
         }
         public static void SendBotToShareResourcePack(PlayerAIBot aiBot, PlayerAgent receiver, PlayerAgent commander = null, ulong netsender = 0)
@@ -277,7 +303,7 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pStructs.pShareResourceInfo>("RequestToShareResourcePack", info);
                 return;
             }
-            float prio = 15f;
+            float prio = defaultPrio;
             float haste = 1f;
             BackpackItem backpackItem = null;
             ZiMain.log.LogInfo($"{aiBot.Agent.PlayerName} was told by {commander?.PlayerName ?? "someone"} with netid {netsender} to try to share resource pack to {receiver.PlayerName}");
@@ -376,7 +402,7 @@ namespace BotControl
 
             PlayerBotActionThrowItem.Descriptor desc = new(aiBot)
             {
-                Prio = 15f,
+                Prio = defaultPrio,
                 Haste = 0.8f,
                 TargetPosition = TargetPosition,
                 TargetObject = Commander.transform,
@@ -391,8 +417,8 @@ namespace BotControl
         {
             //TODO REFACTOR
 
-            float attackPrio = 5f;
-            float attackHaste = 0.5f;
+            float attackPrio = defaultPrio;
+            float attackHaste = 1f;
             if (!SNet.IsMaster) //Are we a client?
             {
                 if (netsender != 0) //Is this request coming from a different client?

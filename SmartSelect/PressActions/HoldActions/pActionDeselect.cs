@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BotControl.SmartSelect.PressActions.TapActions
+namespace BotControl.SmartSelect.PressActions.HoldActions
 {
     public class pActionDeselect : IPressAction
     {
         public string FriendlyName => "Deselect All Bots";
         public string FriendlyNameShort => "Deselect";
         public Il2CppSystem.Type Type => null;
-        public string pressTypeIdentifier => "Tap";
+        public string pressTypeIdentifier => "Hold";
         public bool Invoke(Component BestComponent)
         {
             if (!zSmartSelect.MainSelection.Selected<PlayerAIBot>())
