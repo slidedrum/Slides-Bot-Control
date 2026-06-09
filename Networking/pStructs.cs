@@ -1,5 +1,6 @@
 ﻿using Agents;
 using Enemies;
+using LevelGeneration;
 using Player;
 using SNetwork;
 using UnityEngine;
@@ -46,6 +47,22 @@ namespace BotControl.Networking
             pStruct.SetPlayer(refrence.Owner);
             return pStruct;
         }
+        public static pStateReplicatorProvider Get_pStructFromRef<S, I>(iSNet_StateReplicatorProvider original) where S : struct where I : struct
+        {
+            iSNet_StateReplicator stateReplicator = original.GetStateReplicator();
+            SNet_StateReplicator<S, I> Replicator = stateReplicator.TryCast<SNet_StateReplicator<S,I>>();
+            if (Replicator == null)
+                return default;
+            return Replicator.GetProviderSyncStruct();
+        }
+        public static pStateReplicatorProvider Get_pStructFromRef<S>(iSNet_StateReplicatorProvider original) where S : struct
+        {
+            iSNet_StateReplicator stateReplicator = original.GetStateReplicator();
+            SNet_StateReplicator<S> Replicator = stateReplicator.TryCast<SNet_StateReplicator<S>>();
+            if (Replicator == null)
+                return default;
+            return Replicator.GetProviderSyncStruct();
+        }
         public static pAgent Get_pStructFromRefrence(Agent refrence)
         {
             pAgent pStruct = new();
@@ -85,6 +102,12 @@ namespace BotControl.Networking
             public pEnemyAgent enemy;
             public pPlayerAgent aiBot;
             public pPlayerAgent commander;
+        }
+        public struct pBreakLockInfo
+        {
+            public pStateReplicatorProvider Lock;
+            public pPlayerAgent BotAgent;
+            public pPlayerAgent Commander;
         }
         internal struct pPlaceToolInfo
         {

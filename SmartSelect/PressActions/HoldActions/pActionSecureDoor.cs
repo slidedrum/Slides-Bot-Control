@@ -35,6 +35,8 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 MovePosition = hit.position;
             else
                 MovePosition = candidate;
+            PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CFOAMHERE);
+            zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Throw C-Foam here.",1f);
             zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, Networking.pStructs.pThrowType.cFoam, MovePosition, Door.transform.position, 0);
             return false;
         }

@@ -1,12 +1,11 @@
-﻿using Gear;
+﻿using BotControl.zRootBotPlayerAction;
+using Gear;
 using HarmonyLib;
 using Player;
+using SlideMenu;
 using System.Collections.Generic;
 using UnityEngine;
-using BotControl.zRootBotPlayerAction;
-using BotControl;
 using static BotControl.ZiMain;
-using SlideMenu;
 
 namespace BotControl.Patches;
 
@@ -309,49 +308,49 @@ public class ZombifiedPatches
 
 
 
-    [HarmonyPatch(typeof(PlaceNavMarkerOnGO), nameof(PlaceNavMarkerOnGO.UpdateExtraInfo))]
-    [HarmonyPostfix]
-    public static void UpdateExtraInfoPatch(PlaceNavMarkerOnGO __instance)
-    {
-        string original = __instance.m_extraInfo;
-        PlayerAgent agent = __instance.m_player;
-        if (agent == null || agent.Owner == null || !agent.Owner.IsBot)
-            return;
-        int playerID = agent.Owner.PlayerSlotIndex();//todo cache the ID somewhere
-        bool allowedPickup = (bool)zSlideComputer.ActionPermissions.ValueAt("Pickup");
-        bool allowedShare = (bool)zSlideComputer.ActionPermissions.ValueAt("Share");
-        bool allowedMove = (bool)zSlideComputer.ActionPermissions.ValueAt("Move");
-        if (original.Contains("Pickup:"))
-        {
-            bool dirty = false;
-            List<string> lines = new List<string>(original.Split('\n'));
-            foreach (string line in lines)
-            {
-                if (line.Contains("Pickup:") && line.Contains("True") != allowedPickup) 
-                {
-                    dirty = true;
-                    break;
-                }
-                if (line.Contains("Share:") && line.Contains("True") != allowedShare) 
-                {
-                    dirty = true;
-                    break;
-                }
-                if (line.Contains("Sentry:") && line.Contains("True") == allowedMove)
-                {
-                    dirty = true;
-                    break;
-                }
-            }
-            if (!dirty) return;
-            //remove our custom info so it can be re added
-            original = original.Substring(0, original.IndexOf("Pickup:")).TrimEnd(); //TODO detect actual end of our string instead of assuming this is the last thing for better compat.
-        }
-        string pickups = $"Pickup: <color=#FFA50066>{allowedPickup}</color>";
-        string share = $"Share: <color=#FFA50066>{allowedShare}</color>";
-        string move = $"Sentry: <color=#FFA50066>{!allowedMove}</color>";
-        __instance.m_extraInfo = original + "<color=#CCCCCC66><size=70%>\n" + pickups + "\n" + share + "\n" + move + "</size></color>";
-    }
+    //[HarmonyPatch(typeof(PlaceNavMarkerOnGO), nameof(PlaceNavMarkerOnGO.UpdateExtraInfo))]
+    //[HarmonyPostfix]
+    //public static void UpdateExtraInfoPatch(PlaceNavMarkerOnGO __instance)
+    //{
+    //    string original = __instance.m_extraInfo;
+    //    PlayerAgent agent = __instance.m_player;
+    //    if (agent == null || agent.Owner == null || !agent.Owner.IsBot)
+    //        return;
+    //    int playerID = agent.Owner.PlayerSlotIndex();//todo cache the ID somewhere
+    //    bool allowedPickup = (bool)zSlideComputer.ActionPermissions.ValueAt("Pickup");
+    //    bool allowedShare = (bool)zSlideComputer.ActionPermissions.ValueAt("Share");
+    //    bool allowedMove = (bool)zSlideComputer.ActionPermissions.ValueAt("Move");
+    //    if (original.Contains("Pickup:"))
+    //    {
+    //        bool dirty = false;
+    //        List<string> lines = new List<string>(original.Split('\n'));
+    //        foreach (string line in lines)
+    //        {
+    //            if (line.Contains("Pickup:") && line.Contains("True") != allowedPickup) 
+    //            {
+    //                dirty = true;
+    //                break;
+    //            }
+    //            if (line.Contains("Share:") && line.Contains("True") != allowedShare) 
+    //            {
+    //                dirty = true;
+    //                break;
+    //            }
+    //            if (line.Contains("Sentry:") && line.Contains("True") == allowedMove)
+    //            {
+    //                dirty = true;
+    //                break;
+    //            }
+    //        }
+    //        if (!dirty) return;
+    //        //remove our custom info so it can be re added
+    //        original = original.Substring(0, original.IndexOf("Pickup:")).TrimEnd(); //TODO detect actual end of our string instead of assuming this is the last thing for better compat.
+    //    }
+    //    string pickups = $"Pickup: <color=#FFA50066>{allowedPickup}</color>";
+    //    string share = $"Share: <color=#FFA50066>{allowedShare}</color>";
+    //    string move = $"Sentry: <color=#FFA50066>{!allowedMove}</color>";
+    //    __instance.m_extraInfo = original + "<color=#CCCCCC66><size=70%>\n" + pickups + "\n" + share + "\n" + move + "</size></color>";
+    //}
 
     [HarmonyPatch(typeof(PlayerBotActionBase), nameof(PlayerBotActionBase.CheckCollision))]
     [HarmonyPostfix]

@@ -18,9 +18,12 @@ namespace BotControl.SmartSelect.PressActions
             if (!BestBot.Agent.Alive) return false;
             BackpackItem item = zHelpers.GetAgentBackpackItem(BestBot.Agent, InventorySlot.InLevelCarry);
             if (item == null) return false;
-            PlayerBackpackManager.WantToDropItem(BestBot.Agent.Owner, item.Instance.Get_pItemData(), BestBot.Agent.Position, BestBot.Agent.Rotation, true);
-            var Desc = zBotActions.TryGetDescriptor<PlayerBotActionCarryExpeditionItem.Descriptor>(BestBot);
-            BestBot.StopAction(Desc);
+            //PlayerBackpackManager.WantToDropItem(BestBot.Agent.Owner, item.Instance.Get_pItemData(), BestBot.Agent.Position, BestBot.Agent.Rotation, true);
+            //var Desc = zBotActions.TryGetDescriptor<PlayerBotActionCarryExpeditionItem.Descriptor>(BestBot);
+            //BestBot.StopAction(Desc);
+            PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CANCELTHAT);
+            zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Cancel that.", 1f);
+            zStaticRefrences.CommsMenu.OnButtonPressedDrop(null, BestBot.Agent);
             return true;
         }
         public bool IsActionValid(Component candidate)

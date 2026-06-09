@@ -9,6 +9,7 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
         public string FriendlyName => "Move To";
         public string FriendlyNameShort => "Move";
         public Il2CppSystem.Type Type => null;
+        public int? Priority => -10;
         public string pressTypeIdentifier => "Tap and Hold";
         public bool Invoke(Component BestComponent)
         {
@@ -17,6 +18,8 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
             if (BestBot == null) return false;
             Vector3 TaregetLocation = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos;
             zBotActions.SendbotToMoveToLocation(BestBot, TaregetLocation, zStaticRefrences.LocalPlayer);
+            PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_HURRY);
+            zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Hurry.", 1f);
             return true;
         }
         public bool IsActionValid(Component candidate)

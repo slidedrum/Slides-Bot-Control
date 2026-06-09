@@ -1,4 +1,5 @@
-﻿using BepInEx.Unity.IL2CPP.Utils;
+﻿using Agents;
+using BepInEx.Unity.IL2CPP.Utils;
 using BotControl.SmartSelect.PressTypes;
 using Il2CppInterop.Runtime;
 using Player;
@@ -30,18 +31,33 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             zUpdater.Instance.StartCoroutine(CallAgentToFollow(Agent));
             return true;
         }
-        public static IEnumerator CallAgentToFollow(PlayerAgent Agent)
+        public static void StaticCallAgentToFollow(PlayerAgent Follower, PlayerAgent Followee = null, bool voicelines = true)
         {
-            uint voidID = zSmartSelect.GetVoiceId(Agent);
-            if (Agent.Owner.IsBot)
+            zUpdater.Instance.StartCoroutine(CallAgentToFollow(Follower, Followee));
+        }
+        public static IEnumerator CallAgentToFollow(PlayerAgent Follower, PlayerAgent Followee = null, bool voicelines = true)
+        {
+            if (Followee == null)
+                Followee = zStaticRefrences.LocalPlayer;
+            uint voidID = zSmartSelect.GetVoiceId(Follower);
+            if (Follower.Owner.IsBot)
             {
-                PlayerAIBot Bot = Agent?.GetComponent<PlayerAIBot>();
+                PlayerAIBot Bot = Follower?.GetComponent<PlayerAIBot>();
                 string botname = Bot.Agent.PlayerName;
-                zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Hey {botname}, Follow me!", 2);
-                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, voidID);
-                yield return new WaitForSeconds(1f);
-                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_FOLLOWME);
-                zStaticRefrences.CommsMenu.OnButtonPressedCall(null, Bot.Agent);
+                string followName = Followee.PlayerName;
+                if (Followee == zStaticRefrences.LocalPlayer)
+                    followName = "me";
+                if (voicelines)
+                {
+                    zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Hey {botname}, Follow {followName}!", 2);
+                    PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, voidID);
+                    yield return new WaitForSeconds(1f);
+                    PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_FOLLOWME);
+                }
+                //zStaticRefrences.CommsMenu.OnButtonPressedCall(null, Bot.Agent);
+                Bot.SyncValues.Leader = Followee;
+                Bot.Agent.NavMarker.UpdateExtraInfo();
+                ZiMain.BotBarkBack(Bot.Agent.CharacterID, AK.EVENTS.PLAY_CL_ILLFOLLOWYOURLEAD, "I will follow your lead.", 2f);
                 ZiMain.sendChatMessage($"On the way.", Bot.Agent, zStaticRefrences.LocalPlayer);
             }
             else
@@ -50,7 +66,6 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
                 yield return new WaitForSeconds(1f);
                 PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_FOLLOWME);
             }
-
         }
 
         public bool IsActionValid(Component candidate)

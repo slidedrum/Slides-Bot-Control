@@ -1,6 +1,4 @@
-﻿using BepInEx.Unity.IL2CPP.Utils;
-using Player;
-using System.Collections;
+﻿using Player;
 using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
@@ -20,32 +18,10 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
-            zUpdater.Instance.StartCoroutine(CallAgentToFollow(BestBot.Agent));
+            PressActionManager.GetAction("Follow me").Invoke(BestBot.Agent);
+            //zUpdater.Instance.StartCoroutine(CallAgentToFollow(BestBot.Agent));
             return true;
         }
-        public static IEnumerator CallAgentToFollow(PlayerAgent Agent)
-        {
-            uint voidID = zSmartSelect.GetVoiceId(Agent);
-            if (Agent.Owner.IsBot)
-            {
-                PlayerAIBot Bot = Agent?.GetComponent<PlayerAIBot>();
-                string botname = Bot.Agent.PlayerName;
-                zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Hey {botname}, Follow me!", 2);
-                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, voidID);
-                yield return new WaitForSeconds(1f);
-                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_FOLLOWME);
-                zStaticRefrences.CommsMenu.OnButtonPressedCall(null, Bot.Agent);
-                ZiMain.sendChatMessage($"On the way.", Bot.Agent, zStaticRefrences.LocalPlayer);
-            }
-            else
-            {
-                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, voidID);
-                yield return new WaitForSeconds(1f);
-                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_FOLLOWME);
-            }
-
-        }
-
         public bool IsActionValid(Component candidate)
         {
             if (!zSmartSelect.MainSelection.AnySelectedBotsAlive())

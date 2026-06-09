@@ -20,6 +20,8 @@ namespace BotControl.SmartSelect.PressActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>().FirstOrDefault();
             if (BestBot == null)
                 return false;
+            PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_GRABTHEITEM);
+            zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Grab the item.", 1);
             zBotActions.SendBotToPickupItem(BestBot, Item, zStaticRefrences.LocalPlayer);
             return true;
         }

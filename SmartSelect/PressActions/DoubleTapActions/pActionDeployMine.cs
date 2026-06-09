@@ -1,5 +1,7 @@
 ﻿using Player;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
@@ -64,9 +66,15 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             {
                 return false;
             }
-            // 3) Bot must be able to path to the install point.
-            if (!zHelpers.CanBotReach(BestBot, hit.point, 3))
+            if (!NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, 3f, 17))
                 return false;
+            NavMeshPath path = new NavMeshPath();
+            if (!NavMesh.CalculatePath(BestBot.Agent.GoodPosition, navHit.position, 17, path)) return false;
+            if (path.status == NavMeshPathStatus.PathInvalid)
+                return false;
+            Vector3 lastCorner = path.corners[path.corners.Length - 1];
+            bool positionValid = (lastCorner - navHit.position).sqrMagnitude < PlayerBotActionDeployTripMine.s_ApproachRadius * PlayerBotActionDeployTripMine.s_ApproachRadius * PlayerBotActionDeployTripMine.s_VerifyRadiusMul * PlayerBotActionDeployTripMine.s_VerifyRadiusMul;
+            if (!positionValid) return false;
             return true;
         }
     }

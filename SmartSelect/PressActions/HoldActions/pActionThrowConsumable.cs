@@ -23,11 +23,23 @@ namespace BotControl.SmartSelect.PressActions
             if (!ThrowableArchatipes.Contains(Archatype)) return false;
             Networking.pStructs.pThrowType ThrowType = Networking.pStructs.pThrowType.cFoam;
             if (Archatype == "Glow Stick")
+            {
                 ThrowType = Networking.pStructs.pThrowType.Glowstick;
+                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_THROWSOMEGLOWSTICKSHERE);
+                zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Throw a glowstick here.", 1f);
+            }
             if (Archatype == "C-Foam Grenade")
+            {
                 ThrowType = Networking.pStructs.pThrowType.cFoam;
+                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CFOAMHERE);
+                zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Throw C-Foam here.", 1f);
+            }
             if (Archatype == "Fog Repeller")
+            {
                 ThrowType = Networking.pStructs.pThrowType.FogRepeller;
+                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PUTAFOGREPELLERHERE);
+                zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Put a fog reppeler here.", 1f);
+            }
             zBotActions.SendBotToThrowItem(LocalPlayer, BestBot.Agent, ThrowType, LocalPlayer.transform.position, LocalPlayer.FPSCamera.CameraRayPos);
             return true;
         }

@@ -10,6 +10,7 @@ namespace BotControl.SmartSelect.PressActions
         public string FriendlyNameShort => "Revive";
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
         public string pressTypeIdentifier => "Hold";
+        public int? Priority => 100;
         public bool Invoke(Component BestComponent)
         {
             PlayerAgent Agent = BestComponent.TryCast<PlayerAgent>();

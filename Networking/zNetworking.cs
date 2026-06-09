@@ -83,7 +83,7 @@ namespace BotControl.Networking
             ZiMain.log.LogInfo($"{commander.PlayerName} wants to tell {bot.PlayerName} to move to {position}");
             if (!bot.Owner.IsBot)
             {
-                ZiMain.log.LogWarning("Invalid request to pickup item, You can't tell a player what to do.");
+                ZiMain.log.LogWarning("Invalid request to move, You can't tell a player what to do.");
                 return;
             }
             PlayerAIBot aiBot = bot.GetComponent<PlayerAIBot>();
@@ -187,7 +187,7 @@ namespace BotControl.Networking
             ZiMain.log.LogInfo($"{commander.PlayerName} wants to tell {sender.PlayerName} to share resoruces with {receiver.PlayerName}");
             if (!sender.Owner.IsBot)
             {
-                ZiMain.log.LogWarning("Invalid request to pickup item, You can't tell a player what to do.");
+                ZiMain.log.LogWarning("Invalid request to share resource, You can't tell a player what to do.");
                 return;
             }
             PlayerAIBot aiBot = sender.gameObject.GetComponent<PlayerAIBot>();
@@ -210,7 +210,7 @@ namespace BotControl.Networking
             ZiMain.log.LogInfo($"{commander.PlayerName} wants to tell {aiBotAgent.PlayerName} to kill an enemy.");
             if (!aiBotAgent.Owner.IsBot)
             {
-                ZiMain.log.LogWarning("Invalid request to pickup item, You can't tell a player what to do.");
+                ZiMain.log.LogWarning("Invalid request to kill enemy, You can't tell a player what to do.");
                 return;
             }
             PlayerAIBot aiBot = aiBotAgent.gameObject.GetComponent<PlayerAIBot>();
@@ -295,7 +295,7 @@ namespace BotControl.Networking
             ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to use their cfoam gun from {MovePostion} to {TargetPosition}");
             if (!BotAgent.Owner.IsBot)
             {
-                ZiMain.log.LogWarning("Invalid request to throw item, You can't tell a player what to do.");
+                ZiMain.log.LogWarning("Invalid request to use cfoam launcher, You can't tell a player what to do.");
                 return;
             }
             zBotActions.SendBotToUseCfoamGun(BotAgent.GetComponent<PlayerAIBot>(), TargetPosition, Commander, netSender);
@@ -312,10 +312,29 @@ namespace BotControl.Networking
             ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to use place their mine from {slot} to {info.pose}");
             if (!BotAgent.Owner.IsBot)
             {
-                ZiMain.log.LogWarning("Invalid request to throw item, You can't tell a player what to do.");
+                ZiMain.log.LogWarning("Invalid request to place mines, You can't tell a player what to do.");
                 return;
             }
             zBotActions.SendBotToPlaceMine(BotAgent.GetComponent<PlayerAIBot>(), pose, slot, Commander, netSender);
+        }
+
+        internal static void ReciveRequestToBreakLock(ulong netSender, pStructs.pBreakLockInfo info)
+        {
+            ZiMain.log.LogInfo("Recived request to break lock!");
+            if (!SNet.IsMaster)
+                return;
+            PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.Commander);
+            PlayerAgent BotAgent = pStructs.Get_RefFrom_pStruct(info.BotAgent);
+            info.Lock.pRep.TryGetID(out IReplicator rep);
+            GameObject LockGO = rep.ReplicatorSupplier.gameObject;
+            LG_WeakLock Lock = LockGO.GetComponent<LG_WeakLock>();
+            ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to use break the lock at {LockGO.transform.position}");
+            if (!BotAgent.Owner.IsBot)
+            {
+                ZiMain.log.LogWarning("Invalid request to break lock, You can't tell a player what to do.");
+                return;
+            }
+            zBotActions.SendbotToBreakLock(BotAgent.GetComponent<PlayerAIBot>(), Lock, Commander, netSender);
         }
     }
 }

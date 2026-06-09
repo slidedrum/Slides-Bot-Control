@@ -19,6 +19,7 @@ namespace BotControl.SmartSelect.PressActions
             BackpackItem item = zHelpers.GetAgentBackpackItem(BestBot.Agent, InventorySlot.InLevelCarry);
             if (item == null) return false;
             PlayerBackpackManager.WantToDropItem(BestBot.Agent.Owner, item.Instance.Get_pItemData(), zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, BestBot.Agent.Rotation, true);
+            PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CANCELTHAT);
             return true;
         }
         public bool IsActionValid(Component candidate)

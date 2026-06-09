@@ -13,6 +13,7 @@ namespace BotControl.SmartSelect.PressActions
         // TODO revert to closest bot if none selected.
         public string FriendlyName => "Revive Self";
         public string FriendlyNameShort => "Revive";
+        public int? Priority => 100;
         public Il2CppSystem.Type Type => null;
         private List<Il2CppSystem.Type> Types = new() { null, Il2CppType.Of<PlayerAIBot>() };
         //public string pressTypeIdentifier => null;

@@ -27,32 +27,9 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             else
                 Agent = zSmartSelect.GetPlayerAgentLookingAt();
             if (Agent == null) return false;
-            zUpdater.Instance.StartCoroutine(CallAgentToFollow(Agent));
+            PressActionManager.GetAction("Follow me").Invoke(Agent);
             return true;
         }
-        public static IEnumerator CallAgentToFollow(PlayerAgent Agent)
-        {
-            uint voidID = zSmartSelect.GetVoiceId(Agent);
-            if (Agent.Owner.IsBot)
-            {
-                PlayerAIBot Bot = Agent?.GetComponent<PlayerAIBot>();
-                string botname = Bot.Agent.PlayerName;
-                zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Hey {botname}, Follow me!", 2);
-                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, voidID);
-                yield return new WaitForSeconds(1f);
-                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_FOLLOWME);
-                zStaticRefrences.CommsMenu.OnButtonPressedCall(null, Bot.Agent);
-                ZiMain.sendChatMessage($"On the way.", Bot.Agent, zStaticRefrences.LocalPlayer);
-            }
-            else
-            {
-                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, voidID);
-                yield return new WaitForSeconds(1f);
-                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_FOLLOWME);
-            }
-
-        }
-
         public bool IsActionValid(Component candidate)
         {
             PlayerAgent Agent = zSmartSelect.GetPlayerAgentLookingAt();

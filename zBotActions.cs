@@ -1,5 +1,4 @@
-﻿using BetterBots.Utils;
-using BotControl.Networking;
+﻿using BotControl.Networking;
 using BotControl.Patches;
 using BotControl.zRootBotPlayerAction;
 using Enemies;
@@ -9,9 +8,6 @@ using Player;
 using SlideMenu;
 using SNetwork;
 using System;
-using System.Collections.Generic;
-using Il2CppInterop.Runtime;
-using System.Linq;
 using UnityEngine;
 using static BotControl.Networking.pStructs;
 
@@ -66,9 +62,10 @@ namespace BotControl
                 Persistent = false,
                 Bulletproof = PlayerBotActionTravel.Descriptor.BulletproofEnum.None,
             };
-            PlayerVoiceManager.WantToSay(Commander.CharacterID, AK.EVENTS.PLAY_CL_HURRY);
+            ZiMain.BotBarkBack(Bot.Agent.CharacterID, AK.EVENTS.PLAY_CL_IWILLDOIT, "I will do it.", 2f);
             StartAction(Bot, Desc);
             Bot.SyncValues.Leader = Bot.Agent;
+            Bot.Agent.NavMarker.UpdateExtraInfo();
             //var desc = zBotActions.TryGetDescriptor<PlayerBotActionCarryExpeditionItem.Descriptor>(Bot);
             //if (desc == null)
             //    return;
@@ -87,7 +84,7 @@ namespace BotControl
                 return;
             }
             if (Mine?.Owner != null && !Mine.Owner.Owner.IsBot) return;
-            ZiMain.BotBarkBack(Bot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
+            ZiMain.BotBarkBack(Bot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             PlayerBotActionGatherDeployables.Descriptor desc = new(Bot)
             {
                 Prio = defaultPrio,
@@ -108,7 +105,7 @@ namespace BotControl
                 return;
             }
 
-            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             // todo check if the sentry is even deployed first.
             // Though it should never get called if it's not deployed already.
             PlayerBotActionDeploySentryGun.Descriptor desc = new(aiBot) 
@@ -137,6 +134,7 @@ namespace BotControl
                 Prio = defaultPrio,
                 InstallationPose = sentryPose
             };
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             StartAction(aiBot, desc);
         }
         public static void SendBotToPlaceMine(PlayerAIBot aiBot, Pose minePose, InventorySlot slot, PlayerAgent commander = null, ulong netsender = 0)
@@ -161,6 +159,7 @@ namespace BotControl
                 InstallationPose = minePose,
                 BackpackItem = zHelpers.GetAgentBackpackItem(aiBot.Agent, slot)
             };
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             StartAction(aiBot, desc);
         }
         public static void SendBotToUseCfoamGun(PlayerAIBot aiBot, Vector3 targetPosition, PlayerAgent commander = null, ulong netsender = 0)
@@ -186,6 +185,7 @@ namespace BotControl
                 TargetPosition = targetPosition,
                 Haste = 1f,
             };
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             StartAction(aiBot, desc);
         }
 
@@ -222,10 +222,8 @@ namespace BotControl
                 Prio = prio,
                 Haste = haste,
             };
-            PlayerVoiceManager.WantToSay(commander.CharacterID, AK.EVENTS.PLAY_CL_GRABTHEITEM);
-            zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Grab the item.", 1);
-            FlexibleMethodDefinition barkback = new FlexibleMethodDefinition(PlayerVoiceManager.WantToSay, [aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO]);
-            zUpdater.InvokeStatic(barkback, 1f);
+
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
             if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify confirm action"))
                 ZiMain.sendChatMessage($"Picking up {item.PublicName}", aiBot.Agent, commander);
             StartAction(aiBot, desc);
@@ -251,6 +249,7 @@ namespace BotControl
                 Prio = 15,
             };
             StartAction(Reviver, desc);
+            ZiMain.BotBarkBack(Reviver.Agent.CharacterID, AK.EVENTS.PLAY_CL_IWILLDOIT, "I will do it.", 1f);
             //ZiMain.sendChatMessage($"I would have revived {downedAgent.PlayerName}, but I'm stupid.", aiBot.Agent, commander);
             //todo
         }
@@ -285,7 +284,7 @@ namespace BotControl
             };
             if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify confirm action"))
                 ZiMain.sendChatMessage($"Carrying {item._PublicName_k__BackingField}", aiBot.Agent, commander);
-            PlayerVoiceManager.WantToSay(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO);
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             StartAction(aiBot, desc);
         }
         public static void SendBotToShareResourcePack(PlayerAIBot aiBot, PlayerAgent receiver, PlayerAgent commander = null, ulong netsender = 0)
@@ -323,7 +322,7 @@ namespace BotControl
             };
             float ammoLeft = aiBot.Backpack.AmmoStorage.GetAmmoInPack(AmmoType.ResourcePackRel);
             ZiMain.sendChatMessage($"Sharing my {resourcePack.PublicName} ({ammoLeft}%) with {receiver.PlayerName}.", aiBot.Agent, commander);
-            PlayerVoiceManager.WantToSay(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO);
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             StartAction(aiBot, desc);
         }
         [Obsolete]
@@ -411,14 +410,13 @@ namespace BotControl
                 MovementAllowed = true
             };
             aiBot.StartAction(desc);
+            ZiMain.BotBarkBack(botAgent.CharacterID, AK.EVENTS.PLAY_CL_IWILLDOIT, "I will do it.", 1f);
             return false;
         }
         public static PlayerBotActionAttack.Descriptor SendBotToKillEnemy(PlayerAIBot aiBot, EnemyAgent enemy, PlayerAgent commander = null, ulong netsender = 0, PlayerBotActionAttack.StanceEnum stance = PlayerBotActionAttack.StanceEnum.All, PlayerBotActionAttack.AttackMeansEnum means = PlayerBotActionAttack.AttackMeansEnum.Melee, PlayerBotActionWalk.Descriptor.PostureEnum posture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch)
         {
             //TODO REFACTOR
 
-            float attackPrio = defaultPrio;
-            float attackHaste = 1f;
             if (!SNet.IsMaster) //Are we a client?
             {
                 if (netsender != 0) //Is this request coming from a different client?
@@ -428,10 +426,12 @@ namespace BotControl
                 info.enemy = pStructs.Get_pStructFromRefrence(enemy);
                 info.aiBot = pStructs.Get_pStructFromRefrence(aiBot.Agent);
                 info.commander = pStructs.Get_pStructFromRefrence(commander); //This might be a problem in commander is null?  Not sure. TODO look into it.
-                if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify confirm action"))
-                    NetworkAPI.InvokeEvent<pAttackEnemyInfo>("RequestToKillEnemy", info);
+                NetworkAPI.InvokeEvent<pAttackEnemyInfo>("RequestToKillEnemy", info);
                 return null;
             }
+
+            float attackPrio = defaultPrio;
+            float attackHaste = 1f;
             var descriptor = new PlayerBotActionAttack.Descriptor(aiBot)
             {
                 Stance = stance,
@@ -445,10 +445,58 @@ namespace BotControl
             zActions.manualActions.Add(descriptor);
             ZiMain.sendChatMessage($"Killing the {enemy.EnemyData.name}.", aiBot.Agent, commander);
             //TODO figure out how to make them crouch instead of stand.
-            PlayerVoiceManager.WantToSay(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO);
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             aiBot.StartAction(descriptor);
             return descriptor;
         }
-        
+
+        internal static void SendbotToBreakLock(PlayerAIBot Bot, LG_WeakLock Lock, PlayerAgent commander = null, ulong netsender = 0)
+        {
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                //request host
+
+                pBreakLockInfo info = new pBreakLockInfo();
+                iSNet_StateReplicator stateReplicator = Lock.GetStateReplicator();
+                SNet_StateReplicator<pWeakLockState, pWeakLockInteraction> Replicator = stateReplicator.TryCast<SNet_StateReplicator<pWeakLockState, pWeakLockInteraction>>();
+                info.Lock = Replicator.GetProviderSyncStruct();
+                info.Commander = pStructs.Get_pStructFromRefrence(commander);
+                info.BotAgent = pStructs.Get_pStructFromRefrence(Bot.Agent);
+                NetworkAPI.InvokeEvent<pBreakLockInfo>("RequestToBreakLock", info);
+            }
+            float Prop = defaultPrio;
+            iLG_WeakLockHolder holder = Lock.m_holder;
+            LG_DoorButton Button = holder.TryCast<LG_DoorButton>();
+            LG_WeakResourceContainer container = holder.TryCast<LG_WeakResourceContainer>();
+            PlayerBotActionUnlock.Descriptor.TargetTypeEnum targetType;
+            GameObject targetObject;
+            if (Button != null)
+            {
+                LG_WeakDoor door = Button.m_door.TryCast<LG_WeakDoor>();
+                targetObject = door.gameObject;
+                targetType = PlayerBotActionUnlock.Descriptor.TargetTypeEnum.Door;
+            }
+            else if (container != null)
+            {
+                targetObject = container.gameObject;
+                targetType = PlayerBotActionUnlock.Descriptor.TargetTypeEnum.Container;
+            }
+            else
+                return;
+
+            PlayerBotActionUnlock.Descriptor Desc = new(Bot)
+            {
+                TargetType = targetType,
+                TargetGO = targetObject,
+                Prio = 13,
+                TargetPosition = targetObject.transform.position,
+                Method = PlayerBotActionUnlock.Descriptor.MethodEnum.Any,
+                Lock = Lock,
+            };
+            StartAction(Bot, Desc);
+            ZiMain.BotBarkBack(Bot.Agent.CharacterID, AK.EVENTS.PLAY_CL_IMONMYWAY, "On my way.", 1f);
+        }
     }
 }
