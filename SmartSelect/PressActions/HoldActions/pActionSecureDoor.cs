@@ -40,6 +40,13 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, Networking.pStructs.pThrowType.cFoam, MovePosition, Door.transform.position, 0);
             return false;
         }
+        public bool Evaluate(PlayerAgent agent, uint itemID)
+        {
+            BackpackItem bpItem;
+            PlayerBackpack backpack = PlayerBackpackManager.GetBackpack(agent.Owner);
+            bpItem = backpack.Slots[5];
+            return bpItem != null && bpItem.ItemID == itemID;
+        }
         public bool IsActionValid(Component candidate)
         {
             LG_WeakDoor Door = candidate.TryCast<LG_WeakDoor>();
@@ -47,7 +54,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             PlayerAIBot BestBot = GetBestBot(Door);
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
-            if (!PlayerBotActionThrowItem.Descriptor.Evaluate(BestBot, 115u, out var bpItem)) return false;
+            if (!Evaluate(BestBot.Agent, 115u)) return false;
             if (PlayerBackpackManager.GetBackpack(BestBot.Agent.Owner).AmmoStorage.ConsumableAmmo.BulletsInPack <= 0) return false;
             if (Door.LastStatus == eDoorStatus.Destroyed)  return false; 
             if (Door.LastStatus == eDoorStatus.GluedMax)  return false; 
@@ -66,7 +73,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             {
                 if (!bot.Agent.Alive)
                     continue;
-                if (!PlayerBotActionThrowItem.Descriptor.Evaluate(bot, 115u, out var bpItem))
+                if (!Evaluate(bot.Agent, 115u))
                     continue;
                 if (PlayerBackpackManager.GetBackpack(bot.Agent.Owner).AmmoStorage.ConsumableAmmo.BulletsInPack <= 0) 
                     continue;

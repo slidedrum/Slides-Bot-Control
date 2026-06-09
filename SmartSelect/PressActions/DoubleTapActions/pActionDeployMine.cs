@@ -30,9 +30,37 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
-            if (!PlayerBotActionDeployTripMine.Descriptor.Evaluate(BestBot, out BackpackItem _)) return false;
+            if (!Evaluate(BestBot)) return false;
             if (!IsMineValid(BestBot)) return false;
             return true;
+        }
+        private bool Evaluate(PlayerAIBot bot)
+        {
+            BackpackItem foundBackpackItem = null;
+            PlayerBackpack backpack = PlayerBackpackManager.GetBackpack(bot.Agent.Owner);
+            if (backpack == null)
+            {
+                return false;
+            }
+            if (backpack.AmmoStorage.ConsumableAmmo.BulletsInPack > 0)
+            {
+                BackpackItem backpackItem = backpack.Slots[5];
+                if (backpackItem != null && backpackItem.Instance != null && backpackItem.ItemID == 139U && backpackItem.Instance as ItemEquippable != null)
+                {
+                    foundBackpackItem = backpackItem;
+                    return true;
+                }
+            }
+            if (backpack.AmmoStorage.ClassAmmo.BulletsInPack > 0)
+            {
+                BackpackItem backpackItem2 = backpack.Slots[3];
+                if (backpackItem2 != null && backpackItem2.Instance != null && backpackItem2.ItemID == 37U && zHelpers.IsOfType<ItemEquippable>(backpackItem2.Instance))
+                {
+                    foundBackpackItem = backpackItem2;
+                    return true;
+                }
+            }
+            return false;
         }
         private bool IsMineValid(PlayerAIBot BestBot)
         {

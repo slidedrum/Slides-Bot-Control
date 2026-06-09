@@ -8,7 +8,7 @@ namespace BotControl.zRootBotPlayerAction
         //public OrderedSet<CustomActionBase.Descriptor> customActions = new();
         public PlayerBotActionBase.Descriptor bestAction = null;
         //public bool consideringActions = false;
-        public PlayerAgent actualLeader = null;
+        //public PlayerAgent actualLeader = null;
         public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase> m_actions { get; set; } = new();
         public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor> m_queuedActions { get; set; } = new();
     }

@@ -186,6 +186,7 @@ public class ZiMain : BasePlugin
         NetworkAPI.RegisterEvent<pBoolOverideTreeInfo>      ("SetBoolOverideTree",                zNetworking.ReciveSetBoolOverideTree);
         NetworkAPI.RegisterEvent<pIntOverideTreeInfo>       ("SetIntOverideTree",                 zNetworking.ReciveSetIntOverideTree);
         NetworkAPI.RegisterEvent<pFloatOverideTreeInfo>     ("SetFloatOverideTree",               zNetworking.ReciveSetFloatOverideTree);
+        NetworkAPI.RegisterEvent<pLeaderInfo>               ("RequestToSetLeader",                zNetworking.ReciveRequestToSetLeader);
 
         //EventAPI.OnExpeditionStarted += ZombieController.Initialize;
         log = Log;

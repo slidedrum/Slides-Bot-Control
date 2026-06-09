@@ -94,7 +94,8 @@ namespace BotControl.Networking
         }
         public struct pPickupMineInfo
         {
-            public pItemData Mine;
+            //public Vector3 MineCords;
+            public ushort MineReplicatorKey;
             public pPlayerAgent Commander;
         }
         public struct pAttackEnemyInfo
@@ -102,6 +103,12 @@ namespace BotControl.Networking
             public pEnemyAgent enemy;
             public pPlayerAgent aiBot;
             public pPlayerAgent commander;
+        }
+        public struct pLeaderInfo
+        {
+            public pPlayerAgent leader;
+            public pPlayerAgent follower;
+            public pPlayerAgent Commander;
         }
         public struct pBreakLockInfo
         {

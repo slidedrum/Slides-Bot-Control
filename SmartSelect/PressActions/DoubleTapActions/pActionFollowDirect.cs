@@ -35,17 +35,17 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         {
             zUpdater.Instance.StartCoroutine(CallAgentToFollow(Follower, Followee, voicelines));
         }
-        public static IEnumerator CallAgentToFollow(PlayerAgent Follower, PlayerAgent Followee = null, bool voicelines = true)
+        public static IEnumerator CallAgentToFollow(PlayerAgent Follower, PlayerAgent Leader = null, bool voicelines = true)
         {
-            if (Followee == null)
-                Followee = zStaticRefrences.LocalPlayer;
+            if (Leader == null)
+                Leader = zStaticRefrences.LocalPlayer;
             uint voidID = zSmartSelect.GetVoiceId(Follower);
             if (Follower.Owner.IsBot)
             {
                 PlayerAIBot Bot = Follower?.GetComponent<PlayerAIBot>();
                 string botname = Bot.Agent.PlayerName;
-                string followName = Followee.PlayerName;
-                if (Followee == zStaticRefrences.LocalPlayer)
+                string followName = Leader.PlayerName;
+                if (Leader == zStaticRefrences.LocalPlayer)
                     followName = "me";
                 if (voicelines)
                 {
@@ -55,7 +55,8 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
                     PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_FOLLOWME);
                 }
                 //zStaticRefrences.CommsMenu.OnButtonPressedCall(null, Bot.Agent);
-                Bot.SyncValues.Leader = Followee;
+                //Bot.SyncValues.Leader = Leader;
+                zBotActions.SetLeader(Follower, Leader, zStaticRefrences.LocalPlayer, 0);
                 Bot.Agent.NavMarker.UpdateExtraInfo();
                 ZiMain.BotBarkBack(Bot.Agent.CharacterID, AK.EVENTS.PLAY_CL_ILLFOLLOWYOURLEAD, "I will follow your lead.", 2f);
                 ZiMain.sendChatMessage($"On the way.", Bot.Agent, zStaticRefrences.LocalPlayer);

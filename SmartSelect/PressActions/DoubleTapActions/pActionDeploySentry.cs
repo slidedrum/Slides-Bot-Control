@@ -94,9 +94,27 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
-            if (!PlayerBotActionDeploySentryGun.Descriptor.Evaluate(BestBot, out bool IsDeployed)) return false;
+            if (!Evaluate(BestBot.Agent)) return false;
             if (!IsSentryValid(BestBot)) return false;
             return true;
+        }
+        public bool Evaluate(PlayerAgent ownerAgent)
+        {
+            bool isDeployed = false;
+            PlayerBackpack backpack = PlayerBackpackManager.GetBackpack(ownerAgent.Owner);
+            if (backpack != null)
+            {
+                BackpackItem backpackItem = backpack.Slots[3];
+                if (backpackItem != null && backpackItem.Instance != null && backpackItem.ItemID == 97U)
+                {
+                    if (backpackItem.Status == eInventoryItemStatus.Deployed)
+                    {
+                        isDeployed = true;
+                    }
+                    return true;
+                }
+            }
+            return false;
         }
         private bool IsSentryValid(PlayerAIBot BestBot)
         {

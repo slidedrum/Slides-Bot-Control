@@ -1,6 +1,7 @@
 ﻿using BotControl.Networking;
 using BotControl.Patches;
 using BotControl.zRootBotPlayerAction;
+using Dissonance.Networking.Client;
 using Enemies;
 using GTFO.API;
 using LevelGeneration;
@@ -40,6 +41,29 @@ namespace BotControl
             
             return null;
         }
+        public static void SetLeader(PlayerAgent Follower, PlayerAgent Leader, PlayerAgent Commander = null, ulong netsender = 0)
+        {
+            if (!Follower.Owner.IsBot)
+                return;
+            PlayerAIBot Bot = Follower.GetComponent<PlayerAIBot>();
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                {
+                    Bot.Agent.NavMarker.UpdateExtraInfo();
+                    return;
+                }
+                //request host
+                pLeaderInfo info = new pLeaderInfo();
+                info.leader = pStructs.Get_pStructFromRefrence(Leader);
+                info.follower = pStructs.Get_pStructFromRefrence(Follower);
+                info.Commander = pStructs.Get_pStructFromRefrence(Commander);
+                NetworkAPI.InvokeEvent<pLeaderInfo>("RequestToSetLeader", info);
+                return;
+            }
+            Bot.SyncValues.Leader = Leader;
+            Bot.Agent.NavMarker.UpdateExtraInfo();
+        }
         public static void SendbotToMoveToLocation(PlayerAIBot Bot,Vector3 TargetLocation, PlayerAgent Commander = null, ulong netsender = 0)
         {
             if (Bot == null) return;
@@ -50,6 +74,8 @@ namespace BotControl
                 //request host
                 pMoveToLocationInfo info = new pMoveToLocationInfo();                                                                      
                 info.Commander = pStructs.Get_pStructFromRefrence(Commander);
+                info.position = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos;
+                info.BotAgent = pStructs.Get_pStructFromRefrence(Bot.Agent);
                 NetworkAPI.InvokeEvent<pMoveToLocationInfo>("RequestToMoveToLocation", info);
                 return;
             }
@@ -64,7 +90,8 @@ namespace BotControl
             };
             ZiMain.BotBarkBack(Bot.Agent.CharacterID, AK.EVENTS.PLAY_CL_IWILLDOIT, "I will do it.", 2f);
             StartAction(Bot, Desc);
-            Bot.SyncValues.Leader = Bot.Agent;
+            zBotActions.SetLeader(Bot.Agent, Bot.Agent, zStaticRefrences.LocalPlayer, 0);
+            //Bot.SyncValues.Leader = Bot.Agent;
             Bot.Agent.NavMarker.UpdateExtraInfo();
             //var desc = zBotActions.TryGetDescriptor<PlayerBotActionCarryExpeditionItem.Descriptor>(Bot);
             //if (desc == null)
@@ -78,8 +105,8 @@ namespace BotControl
                 if (netsender != 0) //Is this request coming from a different client?
                     return;
                 pPickupMineInfo info = new pPickupMineInfo();                                                                             
-                info.Commander = pStructs.Get_pStructFromRefrence(commander); 
-                info.Mine = pStructs.Get_pStructFromRefrence(Mine);
+                info.Commander = pStructs.Get_pStructFromRefrence(commander);
+                info.MineReplicatorKey = Mine.Replicator.Key;
                 NetworkAPI.InvokeEvent<pPickupMineInfo>("RequestToPickupMine", info);
                 return;
             }
@@ -188,7 +215,6 @@ namespace BotControl
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             StartAction(aiBot, desc);
         }
-
         public static void SendBotToPickupItem(PlayerAIBot aiBot, ItemInLevel item, PlayerAgent commander = null, ulong netsender = 0)
         {
             if (!SNet.IsMaster) //Are we a client?
@@ -449,7 +475,6 @@ namespace BotControl
             aiBot.StartAction(descriptor);
             return descriptor;
         }
-
         internal static void SendbotToBreakLock(PlayerAIBot Bot, LG_WeakLock Lock, PlayerAgent commander = null, ulong netsender = 0)
         {
             if (!SNet.IsMaster) //Are we a client?

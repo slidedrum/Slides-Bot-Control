@@ -1,5 +1,6 @@
 ﻿using Agents;
 using Il2CppInterop.Runtime;
+using Il2CppInterop.Runtime.InteropTypes;
 using Player;
 using System.Collections.Generic;
 using UnityEngine;
@@ -102,6 +103,16 @@ namespace BotControl
             }
 
             return false;
+        }
+        public static bool IsOfType<T>(Il2CppObjectBase instance)
+        {
+            if (instance == null)
+                return false;
+
+            var type = IL2CPP.il2cpp_object_get_class(instance.Pointer);
+            var target = Il2CppClassPointerStore<T>.NativeClassPtr;
+
+            return type == target || IL2CPP.il2cpp_class_is_assignable_from(target, type);
         }
         public static bool IsOfType<T>(Il2CppSystem.Type type)
         {

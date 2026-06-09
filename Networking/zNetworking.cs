@@ -2,6 +2,8 @@
 using BotControl.Menus;
 using BotControl.Patches;
 using Enemies;
+using Il2CppInterop.Runtime;
+using InControl;
 using LevelGeneration;
 using Player;
 using SlideMenu;
@@ -95,20 +97,25 @@ namespace BotControl.Networking
             ZiMain.log.LogInfo("Recived request to pickup mine!");
             if (!SNet.IsMaster)
                 return;
-            GameObject mineGobject = pStructs.Get_RefFrom_pStruct(info.Mine);
-            MineDeployerInstance Mine = mineGobject.GetComponent<MineDeployerInstance>();
+            //Component Comp = zSearch.FindNearest(info.MineCords, Il2CppType.Of<MineDeployerInstance>(), 0.1f);
+            //if (Comp == null) return;
+            //MineDeployerInstance Mine = Comp.GetComponent<MineDeployerInstance>();
+            SNet_Replication.TryGetReplicator(info.MineReplicatorKey, out var replicator);
+            var Supplier = replicator.ReplicatorSupplier;
+            GameObject Gobject = Supplier.gameObject;
+            MineDeployerInstance Mine = Gobject.GetComponent<MineDeployerInstance>();
             if (Mine == null) return;
             PlayerAgent commander = pStructs.Get_RefFrom_pStruct(info.Commander);
             PlayerAgent agent = Mine.Owner;
-            if (mineGobject != null)
-                ZiMain.log.LogInfo($"Gobject name: {mineGobject.name}");
+            //if (mineGobject != null)
+            //    ZiMain.log.LogInfo($"Gobject name: {mineGobject.name}");
 
             if (Mine == null || agent == null || commander == null)
             {
                 ZiMain.log.LogError("Invalid request to pickup mine: agent, item or commander is null.");
                 return;
             }
-            ZiMain.log.LogInfo($"{commander.PlayerName} wants to tell {agent.PlayerName} to pickup their mine at {mineGobject.transform.position}");
+            ZiMain.log.LogInfo($"{commander.PlayerName} wants to tell {agent.PlayerName} to pickup their mine at {Gobject.transform.position}");
             if (!agent.Owner.IsBot)
             {
                 ZiMain.log.LogWarning("Invalid request to pickup mine, You can't tell a player what to do.");
@@ -335,6 +342,17 @@ namespace BotControl.Networking
                 return;
             }
             zBotActions.SendbotToBreakLock(BotAgent.GetComponent<PlayerAIBot>(), Lock, Commander, netSender);
+        }
+        internal static void ReciveRequestToSetLeader(ulong netSender, pStructs.pLeaderInfo info)
+        {
+            ZiMain.log.LogInfo("Recived request to set leader!");
+            if (!SNet.IsMaster)
+                return;
+            PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.Commander);
+            PlayerAgent Follower = pStructs.Get_RefFrom_pStruct(info.follower);
+            PlayerAgent Leader = pStructs.Get_RefFrom_pStruct(info.leader);
+            ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {Follower.PlayerName} to follow {Leader.PlayerName}");
+            zBotActions.SetLeader(Follower, Leader, Commander, netSender);
         }
     }
 }
