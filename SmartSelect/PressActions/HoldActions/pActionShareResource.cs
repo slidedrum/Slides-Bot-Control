@@ -8,9 +8,12 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
     public class pActionShareResource : IPressAction
     {
         public string FriendlyName => "Share Resource";
-        public string FriendlyNameShort => "Share";
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
         public string pressTypeIdentifier => "Hold";
+        private string _FriendlyNameShort = "Share";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public bool Invoke(Component BestComponent)
         {
             bool sucsess = false;
@@ -78,6 +81,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                     continue;
                 if (!zHelpers.CanBotReach(selectedBot, Agent.Position))
                     continue;
+                Color = Agent.Owner.PlayerColor;
                 return true;
             }
             return false;

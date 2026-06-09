@@ -4,6 +4,7 @@ using Player;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace BotControl.SmartSelect
 {
@@ -28,6 +29,7 @@ namespace BotControl.SmartSelect
         {
             if (isSetup)
                 return;
+            float scaleFactor = 2160f / Screen.height; // 2160 = your 4K reference height
             GameObject Donor = GameObject.Find("GUI/CellUI_Camera(Clone)/PlayerLayer/MovementRoot/PUI_LocalPlayerStatus_CellUI(Clone)/ShieldBar/");
             GameObject Clone = GameObject.Instantiate(Donor, Donor.transform.parent);
             Clone.transform.Find("ShieldFill Right").Destroy();
@@ -38,18 +40,27 @@ namespace BotControl.SmartSelect
             TopTextGobject.transform.parent = Donor.transform.parent;
             oldParrent.Destroy();
             TopTextGobject.transform.position = new Vector3(0, -1040f, 1870f);
-            TopTextGobject.GetComponent<RectTransform>().sizeDelta = new Vector2(515f, 25f);
+            //TopTextGobject.GetComponent<RectTransform>().scaleSt = new Vector2(515f, 25f);
+            RectTransform rt = TopTextGobject.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(-1f, 0.5f);
+            rt.anchorMax = new Vector2(2f, 0.5f);
+            rt.sizeDelta = Vector2.zero;
             TopText = TopTextGobject.GetComponent<TextMeshPro>();
             TopText.color = defaultColor;
+
             BottomTextGobject = GameObject.Instantiate(TopTextGobject, TopText.transform.parent);
             BottomTextGobject.transform.position = new(-27f, -1068f, 1870f);
             BottomText = BottomTextGobject.GetComponent<TextMeshPro>();
-            BottomText.fontSize = lowerFontSize;
-            TopText.fontSize = upperStaticSize;
+            BottomText.fontSize = lowerFontSize * scaleFactor;
+            TopText.fontSize = upperStaticSize * scaleFactor;
             Tap = PressTypeManager.GetPressType("Tap");
             Hold = PressTypeManager.GetPressType("Hold");
             DoubleTap = PressTypeManager.GetPressType("Double Tap");
             TapAndHold = PressTypeManager.GetPressType("Tap and Hold");
+            Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(
+                TopTextGobject.GetComponent<RectTransform>()
+            );
         }
 
         public static void Update()
