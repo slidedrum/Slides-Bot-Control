@@ -39,6 +39,7 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
             PlayerAgent Folowee = zSmartSelect.GetPlayerAgentLookingAt();
             if (Folowee == null) return false;
             if (Folowee == zStaticRefrences.LocalPlayer) return false;
+            if (!zHelpers.IsObstructed(zStaticRefrences.CameraTransform.position, Folowee.gameObject, zStaticRefrences.LocalPlayer.gameObject)) return false;
             PlayerAgent leader = Follower.SyncValues?.Leader;
             if (leader != null && leader == Folowee) return false; // Are they already following this agent?
             if (Follower.Agent == Folowee) return false;

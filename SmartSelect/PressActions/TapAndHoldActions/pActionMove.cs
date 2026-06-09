@@ -9,7 +9,7 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
         public string FriendlyName => "Move To";
         public string FriendlyNameShort => "Move";
         public Il2CppSystem.Type Type => null;
-        public int? Priority => -10;
+        public int? Priority => 10;
         public string pressTypeIdentifier => "Tap and Hold";
         public bool Invoke(Component BestComponent)
         {

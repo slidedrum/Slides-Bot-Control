@@ -14,18 +14,14 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
-        public int? Priority => 5;
+        public int? Priority => 15;
         public string pressTypeIdentifier => "Tap and Hold";
         public bool Invoke(Component BestComponent)
         {
             PlayerAIBot Follower = zSmartSelect.MainSelection.GetBestBot();
             if (Follower == null) return false;
             if (!Follower.Agent.Alive) return false;
-            PlayerAgent Followeee;
-            if (BestComponent != null)
-                Followeee = BestComponent.TryCast<PlayerAgent>();
-            else
-                Followeee = zSmartSelect.GetPlayerAgentLookingAt();
+            PlayerAgent Followeee = BestComponent.TryCast<PlayerAgent>();
             if (Followeee == null) return false;
             if (Followeee == Follower.Agent) return false;
             pActionFollowDirect.StaticCallAgentToFollow(Follower.Agent, Followeee);

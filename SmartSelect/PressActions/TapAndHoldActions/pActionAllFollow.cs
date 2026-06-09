@@ -19,7 +19,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         private static List<PlayerAIBot> NonFollowingBots = new();
         private int cycleOffset;
         public Il2CppSystem.Type Type => null;
-        public int? Priority => 1;
+        public int? Priority => 20;
         public string pressTypeIdentifier => "Tap and Hold";
         public bool Invoke(Component BestComponent)
         {
@@ -40,7 +40,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             foreach (var bot in Botlist)
             {
                 pActionFollowDirect.StaticCallAgentToFollow(bot.Agent, zStaticRefrences.LocalPlayer, false);
-                yield return new WaitForSeconds(0.25f);
+                yield return new WaitForSeconds(1f);
             }
         }
         public bool IsActionValid(Component candidate)

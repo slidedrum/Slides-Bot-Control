@@ -1,4 +1,5 @@
 ﻿using BotControl.SmartSelect.PressActions;
+using Il2CppInterop.Runtime;
 using Il2CppSystem;
 using Player;
 using PrioritySet;
@@ -34,7 +35,7 @@ namespace BotControl.SmartSelect.PressTypes
                 if (_SelectableTypes == null)
                 {
                     _SelectableTypes = new HashSet<Il2CppSystem.Type>(new Il2CppTypePtrComparer());
-                    //_SelectableTypes.Add(Il2CppType.Of<PlayerAIBot>());
+                    _SelectableTypes.Add(Il2CppType.Of<PlayerAgent>());
                     //_SelectableTypes.Add(Il2CppType.Of<SentryGunInstance>());
                     //_SelectableTypes.Add(Il2CppType.Of<LG_WeakDoor>());
                 }

@@ -29,9 +29,26 @@ namespace BotControl
                 return hash;
             }
         }
-        public static bool IsObstructed(Vector3 from, GameObject target, int layerMask = ~0)
+        public static bool IsObstructed(
+            Vector3 from,
+            GameObject target,
+            GameObject excludedObject,
+            int layerMask = ~0)
         {
-            if (target == null) return true;
+            return IsObstructed(
+                from,
+                target,
+                layerMask,
+                new[] { excludedObject });
+        }
+        public static bool IsObstructed(
+            Vector3 from,
+            GameObject target,
+            int layerMask = ~0,
+            IEnumerable<GameObject>? excludedObjects = null)
+        {
+            if (target == null)
+                return true;
 
             Vector3 to = target.transform.position;
             Vector3 dir = to - from;
@@ -42,7 +59,49 @@ namespace BotControl
 
             dir /= dist;
 
-            return Physics.Raycast(from, dir, dist, layerMask);
+            RaycastHit[] hits = Physics.RaycastAll(from, dir, dist, layerMask);
+
+            foreach (var hit in hits)
+            {
+                Transform hitTransform = hit.transform;
+
+                // Ignore target and its children
+                if (hitTransform == target.transform ||
+                    hitTransform.IsChildOf(target.transform))
+                {
+                    continue;
+                }
+
+                // Ignore additional excluded objects and their children
+                if (excludedObjects != null)
+                {
+                    bool excluded = false;
+
+                    foreach (GameObject obj in excludedObjects)
+                    {
+                        if (obj == null)
+                            continue;
+
+                        if (hitTransform == obj.transform ||
+                            hitTransform.IsChildOf(obj.transform))
+                        {
+                            excluded = true;
+                            break;
+                        }
+                    }
+
+                    if (excluded)
+                        continue;
+                }
+
+                //Debug.Log(
+                //    $"Obstructed by '{hit.collider.gameObject.name}' " +
+                //    $"at distance {hit.distance:F2}");
+
+                return true;
+            }
+
+            return false;
         }
         public static bool IsOfType<T>(Il2CppSystem.Type type)
         {

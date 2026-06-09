@@ -33,7 +33,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         }
         public static void StaticCallAgentToFollow(PlayerAgent Follower, PlayerAgent Followee = null, bool voicelines = true)
         {
-            zUpdater.Instance.StartCoroutine(CallAgentToFollow(Follower, Followee));
+            zUpdater.Instance.StartCoroutine(CallAgentToFollow(Follower, Followee, voicelines));
         }
         public static IEnumerator CallAgentToFollow(PlayerAgent Follower, PlayerAgent Followee = null, bool voicelines = true)
         {
