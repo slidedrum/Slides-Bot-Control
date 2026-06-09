@@ -1,16 +1,7 @@
-﻿using Agents;
-using BotControl.Menus;
-using BotControl.Patches;
-using Enemies;
-using Il2CppInterop.Runtime;
-using InControl;
+﻿using Enemies;
 using LevelGeneration;
 using Player;
-using SlideMenu;
 using SNetwork;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace BotControl.Networking
