@@ -96,6 +96,7 @@ namespace BotControl.Networking
         {
             //public Vector3 MineCords;
             public ushort MineReplicatorKey;
+            public pPlayerAgent BotAgent;
             public pPlayerAgent Commander;
         }
         public struct pAttackEnemyInfo

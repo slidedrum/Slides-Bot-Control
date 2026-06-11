@@ -10,6 +10,7 @@ namespace BotControl.SmartSelect
 {
     internal static class zSmartSelectHud
     {
+        // TODO known bug, hud messes up if you change resolutions.
         public static GameObject TopTextGobject = null;
         public static TextMeshPro TopText = null;
         public static GameObject BottomTextGobject = null;

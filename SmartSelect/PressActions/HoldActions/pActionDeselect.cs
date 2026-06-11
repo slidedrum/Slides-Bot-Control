@@ -17,13 +17,10 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 return false;
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CANCELTHAT);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Cancel that.", 1);
-            if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify smart selected"))
+            HashSet<PlayerAIBot> selectedBots = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>();
+            foreach (PlayerAIBot selectedBot in selectedBots)
             {
-                HashSet<PlayerAIBot> selectedBots = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>();
-                foreach (PlayerAIBot selectedBot in selectedBots)
-                {
-                    zChatHandler.sendChatMessage("Nevermind.", FriendlyNameShort + "TalkInChatNotifyActionAcknowlage", selectedBot.Agent, zStaticRefrences.LocalPlayer);
-                }
+                zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", selectedBot.Agent, zStaticRefrences.LocalPlayer);
             }
             zSmartSelect.MainSelection.Deselect<PlayerAIBot>();
             return true;

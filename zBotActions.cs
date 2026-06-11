@@ -106,7 +106,8 @@ namespace BotControl
                     return;
                 pPickupMineInfo info = new pPickupMineInfo();                                                                             
                 info.Commander = pStructs.Get_pStructFromRefrence(commander);
-                info.MineReplicatorKey = Mine.Replicator.Key;
+                info.BotAgent = pStructs.Get_pStructFromRefrence(Bot.Agent);
+                info.MineReplicatorKey = Mine?.Replicator?.Key ?? 0;
                 NetworkAPI.InvokeEvent<pPickupMineInfo>("RequestToPickupMine", info);
                 return;
             }
@@ -472,6 +473,7 @@ namespace BotControl
             aiBot.StartAction(descriptor);
             return descriptor;
         }
+        private static PlayerBotActionUnlock.Descriptor.MethodEnum method = PlayerBotActionUnlock.Descriptor.MethodEnum.Any;
         internal static void SendbotToBreakLock(PlayerAIBot Bot, LG_WeakLock Lock, PlayerAgent commander = null, ulong netsender = 0)
         {
             if (!SNet.IsMaster) //Are we a client?
@@ -514,7 +516,7 @@ namespace BotControl
                 TargetGO = targetObject,
                 Prio = 13,
                 TargetPosition = targetObject.transform.position,
-                Method = PlayerBotActionUnlock.Descriptor.MethodEnum.Any,
+                Method = method,
                 Lock = Lock,
             };
             StartAction(Bot, Desc);

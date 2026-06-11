@@ -92,22 +92,34 @@ namespace BotControl.Networking
             //Component Comp = zSearch.FindNearest(info.MineCords, Il2CppType.Of<MineDeployerInstance>(), 0.1f);
             //if (Comp == null) return;
             //MineDeployerInstance Mine = Comp.GetComponent<MineDeployerInstance>();
-            SNet_Replication.TryGetReplicator(info.MineReplicatorKey, out var replicator);
-            var Supplier = replicator.ReplicatorSupplier;
-            GameObject Gobject = Supplier.gameObject;
-            MineDeployerInstance Mine = Gobject.GetComponent<MineDeployerInstance>();
-            if (Mine == null) return;
+            PlayerAgent agent;
             PlayerAgent commander = pStructs.Get_RefFrom_pStruct(info.Commander);
-            PlayerAgent agent = Mine.Owner;
+            MineDeployerInstance Mine = null;
+            if (info.MineReplicatorKey != 0)
+            {
+                SNet_Replication.TryGetReplicator(info.MineReplicatorKey, out var replicator);
+                var Supplier = replicator.ReplicatorSupplier;
+                GameObject Gobject = Supplier.gameObject;
+                Mine = Gobject.GetComponent<MineDeployerInstance>();
+                agent = Mine.Owner;
+            }
+            else
+            {
+                agent = pStructs.Get_RefFrom_pStruct(info.BotAgent);
+            }
+
             //if (mineGobject != null)
             //    ZiMain.log.LogInfo($"Gobject name: {mineGobject.name}");
 
-            if (Mine == null || agent == null || commander == null)
+            if (agent == null || commander == null)
             {
                 ZiMain.log.LogError("Invalid request to pickup mine: agent, item or commander is null.");
                 return;
             }
-            ZiMain.log.LogInfo($"{commander.PlayerName} wants to tell {agent.PlayerName} to pickup their mine at {Gobject.transform.position}");
+            if (Mine != null)
+                ZiMain.log.LogInfo($"{commander.PlayerName} wants to tell {agent.PlayerName} to pickup their mine at {Mine.transform.position}");
+            else
+                ZiMain.log.LogInfo($"{commander.PlayerName} wants to tell {agent.PlayerName} to pickup all their mines");
             if (!agent.Owner.IsBot)
             {
                 ZiMain.log.LogWarning("Invalid request to pickup mine, You can't tell a player what to do.");

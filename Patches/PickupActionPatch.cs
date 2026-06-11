@@ -567,6 +567,10 @@ namespace BotControl.Patches
                                 { // are we allowed to drop the item we already have?
                                     continue;
                                 }
+                                if (false) // TODO Was this a manual pickup item?
+                                {
+                                    continue; // How do we mark it as droppable again?
+                                }
                                 // If the existing backpack item has equal-or-better priority, skip this item
                                 float existingPrio = __instance.GetItemPrio(dataBlock.inventorySlot, existing.ItemID);
                                 if (itemPrio <= existingPrio)
