@@ -12,6 +12,12 @@ namespace BotControl.zRootBotPlayerAction
         public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase> m_actions { get; set; } = new();
         public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor> m_queuedActions { get; set; } = new();
     }
+    public struct ManualAction
+    {
+        public PlayerBotActionBase.Descriptor ActionDescriptor;
+        public PlayerAgent Commander;
+        public PlayerAIBot Bot;
+    }
     public static class zActions
     {
         public static List<PlayerBotActionBase.Descriptor> manualActions = new();

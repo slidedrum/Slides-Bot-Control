@@ -186,17 +186,17 @@ namespace BotControl.Networking
             public float value;
             public bool isNull;
         }
-        public enum pThrowType : uint
-        {
-            FogRepeller,
-            Glowstick,
-            cFoam,
-        }
+        //public enum pThrowType : uint
+        //{
+        //    FogRepeller,
+        //    Glowstick,
+        //    cFoam,
+        //}
         public struct pThrowDataInfo
         {
             public pPlayerAgent Commander;
             public pPlayerAgent Agent;
-            public pThrowType ThrowType;
+            //public pThrowType ThrowType;
             public Vector3 MovePosition;
             public Vector3 TargetPosition;
         }

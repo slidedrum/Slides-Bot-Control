@@ -492,7 +492,7 @@ namespace BotControl
 
             return node;
         }
-
+        [Obsolete]
         internal static void SendBotToExplore(PlayerAIBot bot, PlayerBotActionTravel.Descriptor desc = null)
         {
             if (desc != null && desc.Status != PlayerBotActionBase.Descriptor.StatusType.Successful)

@@ -24,12 +24,12 @@ namespace BotControl.Patches
         // and hook into FindPositionWithView to set the position the bot moves to.
         // UpdateStateTravel also seems to start the throw as soon as at has sight of the target, we'll need to change that.
         public static Dictionary<int, PlayerBotActionThrowItem.Descriptor> throwDescriptions = new();
-        public static readonly Dictionary<pStructs.pThrowType, string> ThrowMappings = new()
-        {
-            { pStructs.pThrowType.FogRepeller, "Fog Repeller" },
-            { pStructs.pThrowType.cFoam, "C-Foam Grenade" },
-            { pStructs.pThrowType.Glowstick, "Glow Stick" }
-        };
+        //public static readonly Dictionary<pStructs.pThrowType, string> ThrowMappings = new()
+        //{
+        //    { pStructs.pThrowType.FogRepeller, "Fog Repeller" },
+        //    { pStructs.pThrowType.cFoam, "C-Foam Grenade" },
+        //    { pStructs.pThrowType.Glowstick, "Glow Stick" }
+        //};
 
         public static Vector3 GetMovePosition(PlayerBotActionThrowItem __instance)
         {
@@ -106,18 +106,20 @@ namespace BotControl.Patches
             }
             return true;
         }
-        private static void OnButtonThrowItem(pThrowType throwType, PlayerAgent targetAgent)
+        //private static void OnButtonThrowItem(pThrowType throwType, PlayerAgent targetAgent)
+        private static void OnButtonThrowItem(PlayerAgent targetAgent)
         {
             Vector3 targetPosition = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos;
             if (SNet.IsMaster)
             {
-                zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, targetAgent, throwType, zStaticRefrences.LocalPlayer.transform.position, targetPosition, 0);
+                //zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, targetAgent, throwType, zStaticRefrences.LocalPlayer.transform.position, targetPosition, 0);
+                zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, targetAgent, zStaticRefrences.LocalPlayer.transform.position, targetPosition, 0);
             }
             pStructs.pThrowDataInfo info = new()
             {
                 Commander = pStructs.Get_pStructFromRefrence(zStaticRefrences.LocalPlayer),
                 Agent = pStructs.Get_pStructFromRefrence(targetAgent),
-                ThrowType = throwType,
+                //ThrowType = throwType,
                 MovePosition = zStaticRefrences.LocalPlayer.transform.position,
                 TargetPosition = targetPosition,
             };
@@ -127,27 +129,30 @@ namespace BotControl.Patches
         [HarmonyPrefix]
         public static bool PreOnButtonPressedUseFogRepeller(PUI_CommunicationMenu __instance, PUI_CommunicationButton button, PlayerAgent targetAgent, ref bool __result)
         {
-            OnButtonThrowItem(pThrowType.FogRepeller, targetAgent);
+            OnButtonThrowItem(targetAgent);
+            //OnButtonThrowItem(pThrowType.FogRepeller, targetAgent);
             return false;
         }
         [HarmonyPatch(typeof(PUI_CommunicationMenu), nameof(PUI_CommunicationMenu.OnButtonPressedUseGlue))]
         [HarmonyPrefix]
         public static bool PreOnButtonPressedUseGlue(PUI_CommunicationMenu __instance, PUI_CommunicationButton button, PlayerAgent targetAgent, ref bool __result)
         {
-            OnButtonThrowItem(pThrowType.cFoam, targetAgent);
+            OnButtonThrowItem(targetAgent);
+            //OnButtonThrowItem(pThrowType.cFoam, targetAgent);
             return false;
         }
         [HarmonyPatch(typeof(PUI_CommunicationMenu), nameof(PUI_CommunicationMenu.OnButtonPressedThrowGlowStick))]
         [HarmonyPrefix]
         public static bool PreOnButtonPressedThrowGlowStick(PUI_CommunicationMenu __instance, PUI_CommunicationButton button, PlayerAgent targetAgent, ref bool __result)
         {
-            OnButtonThrowItem(pThrowType.Glowstick, targetAgent);
+            OnButtonThrowItem(targetAgent);
+            //OnButtonThrowItem(pThrowType.Glowstick, targetAgent);
             return false;
         }
         private static void DebugSimulateNetworkThrow()
         {
             var botlist = ZiMain.GetBotList();
-            pThrowType throwType = 0;
+            //pThrowType throwType = 0;
             PlayerAgent targetAgent = null;
             Vector3 targetPosition;
             foreach (var bot in botlist)
@@ -156,19 +161,19 @@ namespace BotControl.Patches
                 zHelpers.TryGetAgentBackpackItem(bot.Agent, InventorySlot.Consumable, out BackpackItem item);
                 if (item == null)
                     continue;
-                if (ThrowMappings.ContainsValue(item.Name))
-                {
-                    foreach (var type in ThrowMappings.Keys)
-                    {
-                        if (ThrowMappings[type] == item.Name)
-                        {
-                            throwType = type;
-                            break;
-                        }
-                    }
-                    targetAgent = bot.Agent;
-                    break;
-                }
+                //if (ThrowMappings.ContainsValue(item.Name))
+                //{
+                //    foreach (var type in ThrowMappings.Keys)
+                //    {
+                //        if (ThrowMappings[type] == item.Name)
+                //        {
+                //            throwType = type;
+                //            break;
+                //        }
+                //    }
+                //    targetAgent = bot.Agent;
+                //    break;
+                //}
             }
             if (targetAgent == null)
                 return;
@@ -177,7 +182,7 @@ namespace BotControl.Patches
             {
                 Commander = pStructs.Get_pStructFromRefrence(zStaticRefrences.LocalPlayer),
                 Agent = pStructs.Get_pStructFromRefrence(targetAgent),
-                ThrowType = throwType,
+                //ThrowType = throwType,
                 MovePosition = zStaticRefrences.LocalPlayer.transform.position,
                 TargetPosition = targetPosition,
             };

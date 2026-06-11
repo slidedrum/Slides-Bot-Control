@@ -38,7 +38,8 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 MovePosition = candidate;
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CFOAMHERE);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Throw C-Foam here.",1f);
-            zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, Networking.pStructs.pThrowType.cFoam, MovePosition, Door.transform.position, 0);
+            zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, MovePosition, Door.transform.position, 0);
+            //zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, Networking.pStructs.pThrowType.cFoam, MovePosition, Door.transform.position, 0);
             zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return false;
         }

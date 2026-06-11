@@ -20,7 +20,7 @@ namespace BotControl
         public static float defaultPrio = 14f;
         public static void StartAction(PlayerAIBot Bot, PlayerBotActionBase.Descriptor descriptor)
         {
-            zActions.manualActions.Add(descriptor);
+            zActions.manualActions.Add(descriptor); // TODO keep track of the commander for the action.  and send the commander the status of their command once it's finished.
             LastAction = descriptor;
             Bot.StartAction(descriptor);
         }
@@ -401,27 +401,37 @@ namespace BotControl
             FlexibleMethodDefinition callback = new(SendBotToClearCurrentRoom, [aiBot, commander, netsender]);
             zActionSub.addOnTerminated(descriptor, callback);
         }
-        public static bool SendBotToThrowItem(PlayerAgent Commander, PlayerAgent botAgent, pStructs.pThrowType ThrowType, Vector3 MovePosition, Vector3 TargetPosition, ulong netSender = 0)
+        public static bool SendBotToThrowItem(PlayerAgent Commander, PlayerAgent botAgent, Vector3 MovePosition, Vector3 TargetPosition, ulong netSender = 0)
         {
             // TODO Alow you to supply a target object, or target position.
             // If you supply a target poisition, then move position will be set to commanders location.
             // TODO low priority add option to revert back to old system where they throw as soon as they can see the target.
 
-            if (!SNet.Master)
+            if (!SNet.IsMaster)
+            {
+                if (netSender != 0) //Is this request coming from a different client?
+                    return false;
+                pThrowDataInfo info = new pThrowDataInfo();
+                //info.ThrowType = pThrowType.cFoam;
+                info.Agent = pStructs.Get_pStructFromRefrence(botAgent);
+                info.Commander = pStructs.Get_pStructFromRefrence(Commander);
+                info.TargetPosition = TargetPosition;
+                info.MovePosition = MovePosition;
+                NetworkAPI.InvokeEvent<pThrowDataInfo>("RequestToThrowItem", info);
                 return false;
-
+            }
             PlayerAIBot aiBot = botAgent.GetComponent<PlayerAIBot>();
             zHelpers.TryGetAgentBackpackItem(aiBot.Agent, InventorySlot.Consumable, out var item);
             if (item == null)
             {
-                ZiMain.log.LogWarning($"Wanted to throw {ThrowType} but found nothing.");
+                ZiMain.log.LogWarning($"Wanted to throw an item but found nothing.");
                 return false;
             }
-            if (item.Name != ThrowItemPatch.ThrowMappings[ThrowType])
-            {
-                ZiMain.log.LogWarning($"Invalid throw item to throw.  Wanted to throw {ThrowType} but found {item.Name}");
-                return false;
-            }
+            //if (item.Name != ThrowItemPatch.ThrowMappings[ThrowType])
+            //{
+            //    ZiMain.log.LogWarning($"Invalid throw item to throw.  Wanted to throw {ThrowType} but found {item.Name}");
+            //    return false;
+            //}
 
             PlayerBotActionThrowItem.Descriptor desc = new(aiBot)
             {
@@ -433,10 +443,11 @@ namespace BotControl
                 Item = item.Instance.Cast<ItemEquippable>(),
                 MovementAllowed = true
             };
-            aiBot.StartAction(desc);
+            StartAction(aiBot, desc);
             ZiMain.BotBarkBack(botAgent.CharacterID, AK.EVENTS.PLAY_CL_IWILLDOIT, "I will do it.", 1f);
             return false;
         }
+        [Obsolete]
         public static PlayerBotActionAttack.Descriptor SendBotToKillEnemy(PlayerAIBot aiBot, EnemyAgent enemy, PlayerAgent commander = null, ulong netsender = 0, PlayerBotActionAttack.StanceEnum stance = PlayerBotActionAttack.StanceEnum.All, PlayerBotActionAttack.AttackMeansEnum means = PlayerBotActionAttack.AttackMeansEnum.Melee, PlayerBotActionWalk.Descriptor.PostureEnum posture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch)
         {
             //TODO REFACTOR
@@ -466,7 +477,6 @@ namespace BotControl
                 Haste = attackHaste,
             };
             aiBot.Actions[0].Cast<RootPlayerBotAction>().m_followLeaderAction.Prio = attackPrio - 1;
-            zActions.manualActions.Add(descriptor);
             zChatHandler.sendChatMessage($"Killing the {enemy.EnemyData.name}.", "Kill Enemy" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, commander);
             //TODO figure out how to make them crouch instead of stand.
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);

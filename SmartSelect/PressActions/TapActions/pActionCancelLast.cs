@@ -1,5 +1,6 @@
 ﻿using BotControl.zRootBotPlayerAction;
 using Player;
+using SNetwork;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,7 +13,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         public string FriendlyIdentifier => "Cancel Action";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Tap";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent) // Todo handle this on clients.  // TODO keep track of WHO gave the command and only cancel your actions.
         {
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CANCELTHAT);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Cancel that.", 1);

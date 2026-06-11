@@ -9,26 +9,27 @@ namespace BotControl.SmartSelect
 {
     public static class zSmartSelect
     {
-        // This class handles everything with the smart select button (V)
-        // Tapping and holding the button will tell the bot to move there.
-        // You can also do a bunch of other actions:
-        //
-//            (   TAP        /     HOLD      /   DOUBLE TAP  /  TAP & HOLD   )
-//            ( ------------------------------------------------------------ )
-// Player/Bot ( ---Select--- / ----Share---- / ---Follow---- / ---Send To--- ) PlayerAgent
+// This class handles everything with the smart select button (V)
+//
+//            (      TAP     /     HOLD      /   DOUBLE TAP  /  TAP & HOLD   ) 
+//            ( ------------------------------------------------------------ ) 
+// Player/Bot ( ---Select--- / ----Share---- / Follow/Cancel / ---Send To--- ) PlayerAgent
 //       Item ( ------------ / ---Pickup---- / ------------- / ------------- ) ItemInLevel
 //  Equipment ( ---Pickup--- / --*Refill*--- / -Pickup All-- / ------------- ) SentryGunInstance
-//  Container ( ------------ / ---*Open*---- / --*Place?*--- / ------------- ) LG_WeakResourceContainer
+//  Container ( ---*Open*--- / ------------- / --*Place?*--- / ------------- ) LG_WeakResourceContainer
 // Floor/Wall ( ------------ / -Consumable-- / --Equipment-- / ----Move----- ) Raycast normal
 //    Holding ( ------------ / -*Drop Here*- / --Drop Now--- / ------------- ) Raycast normal
-//       Door ( ----Open---- / -Throw cFoam- / --*Break?*--- / ------------- ) LG_WeakDoor
+//       Door ( *Open/Close* / -Throw cFoam- / --*Break?*--- / ------------- ) LG_WeakDoor
 //       Lock ( ---Unlock--- / -Lock Melter- / ------------- / ------------- ) LG_WeakLock
 //      Enemy ( ------------ / --*Attack*--- / -*Countdown*- / ------------- ) EnemyAgent //use voiceline PLAY_CL_THREETWOONEGO
 //  Generator ( ------------ / *Place Cell*- / ------------- / ------------- ) LG_PowerGenerator_Core 
-//    Look Up ( ---Cancel--- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
-//  Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- )
+//    Look Up ( Cancel Last- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
+//  Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- ) 
 
         //TODO lock melter
+        // TODO cancel bot's last
+        // TODO cancel client last
+        // TODO cancel client all
 
         public static Selection MainSelection = new();
         private static bool IsSetUp = false;

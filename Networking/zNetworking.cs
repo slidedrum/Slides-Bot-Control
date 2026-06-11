@@ -283,16 +283,17 @@ namespace BotControl.Networking
                 return;
             PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.Commander);
             PlayerAgent BotAgent = pStructs.Get_RefFrom_pStruct(info.Agent);
-            pStructs.pThrowType ThrowType = info.ThrowType;
+            //pStructs.pThrowType ThrowType = info.ThrowType;
             Vector3 MovePostion = info.MovePosition;
             Vector3 TargetPosition = info.TargetPosition;
-            ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to throw a {ThrowType} from {MovePostion} to {TargetPosition}");
+            ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to throw their consumable from {MovePostion} to {TargetPosition}");
             if (!BotAgent.Owner.IsBot)
             {
                 ZiMain.log.LogWarning("Invalid request to throw item, You can't tell a player what to do.");
                 return;
             }
-            zBotActions.SendBotToThrowItem(Commander, BotAgent, ThrowType, MovePostion, TargetPosition, netSender);
+            zBotActions.SendBotToThrowItem(Commander, BotAgent, MovePostion, TargetPosition, netSender);
+            //zBotActions.SendBotToThrowItem(Commander, BotAgent, ThrowType, MovePostion, TargetPosition, netSender);
         }
         internal static void ReciveRequestToUseCfoam(ulong netSender, pStructs.pUseCfoamInfo info)
         {
