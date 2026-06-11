@@ -7,22 +7,23 @@ using Player;
 using SlideMenu;
 using SNetwork;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 using static BotControl.Networking.pStructs;
 
 namespace BotControl
 {
     public static class zBotActions
     {
-        public static Dictionary<int,PlayerBotActionBase.Descriptor> LastAction = new();
+        //public static Dictionary<int,PlayerBotActionBase.Descriptor> LastAction = new();
         public static float defaultPrio = 14f;
         public static void StartAction(ManualAction manualAction)
         {
-            zActions.manualActions.Add(manualAction); // TODO keep track of the commander for the action.  and send the commander the status of their command once it's finished.
-            LastAction[manualAction.Commander.CharacterID] = manualAction.ActionDescriptor;
-            manualAction.Bot.StartAction(manualAction.ActionDescriptor);
+            if (!zActions.manualActions.ContainsKey(manualAction.Commander.CharacterID))
+                zActions.manualActions[manualAction.Commander.CharacterID] = new();
+            zActions.manualActions[manualAction.Commander.CharacterID].Add(manualAction); // TODO keep track of the commander for the action.  and send the commander the status of their command once it's finished.
+            //LastAction[manualAction.Commander.CharacterID] = manualAction.ActionDescriptor;
+            if (SNet.IsMaster)
+                manualAction.Bot.StartAction(manualAction.ActionDescriptor);
         }
         public static void StartAction(PlayerAIBot aiBot, PlayerBotActionBase.Descriptor Desc, PlayerAgent Commander, uint ID)
         {
@@ -75,6 +76,16 @@ namespace BotControl
             if (aiBot == null) return;
             if (actionID == 0 && !SNet.IsMaster)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            PlayerBotActionTravel.Descriptor Desc = new PlayerBotActionTravel.Descriptor(aiBot)
+            {
+                Prio = defaultPrio,
+                Haste = 1,
+                DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.Position,
+                DestinationPos = TargetLocation,
+                Persistent = false,
+                Bulletproof = PlayerBotActionTravel.Descriptor.BulletproofEnum.None,
+            };
+            StartAction(aiBot, Desc, Commander, actionID);
             if (!SNet.IsMaster) //Are we a client?
             {
                 if (netsender != 0) //Is this request coming from a different client?
@@ -88,17 +99,7 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pMoveToLocationInfo>("RequestToMoveToLocation", info);
                 return;
             }
-            PlayerBotActionTravel.Descriptor Desc = new PlayerBotActionTravel.Descriptor(aiBot)
-            {
-                Prio = defaultPrio,
-                Haste = 1,
-                DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.Position,
-                DestinationPos = TargetLocation,
-                Persistent = false,
-                Bulletproof = PlayerBotActionTravel.Descriptor.BulletproofEnum.None,
-            };
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_IWILLDOIT, "I will do it.", 2f);
-            StartAction(aiBot, Desc, Commander, actionID);
             zBotActions.SetLeader(aiBot.Agent, aiBot.Agent, zStaticRefrences.LocalPlayer, 0);
             //Bot.SyncValues.Leader = Bot.Agent;
             aiBot.Agent.NavMarker.UpdateExtraInfo();
@@ -111,6 +112,12 @@ namespace BotControl
         {
             if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            PlayerBotActionGatherDeployables.Descriptor desc = new(aiBot)
+            {
+                Prio = defaultPrio,
+                TargetItem = Mine,
+            };
+            StartAction(aiBot, desc, Commander, actionID);
             if (!SNet.IsMaster) //Are we a client?
             {
                 if (netsender != 0) //Is this request coming from a different client?
@@ -125,17 +132,17 @@ namespace BotControl
             }
             if (Mine?.Owner != null && !Mine.Owner.Owner.IsBot) return;
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
-            PlayerBotActionGatherDeployables.Descriptor desc = new(aiBot)
-            {
-                Prio = defaultPrio,
-                TargetItem = Mine,
-            };
-            StartAction(aiBot, desc, Commander, actionID);
+
         }
         public static void SendBotToPickUpSentry(PlayerAIBot aiBot, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0 && !SNet.IsMaster)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            PlayerBotActionDeploySentryGun.Descriptor desc = new(aiBot)
+            {
+                Prio = defaultPrio,
+            };
+            StartAction(aiBot, desc, Commander, actionID);
             if (!SNet.IsMaster) //Are we a client?
             {
                 if (netsender != 0) //Is this request coming from a different client?
@@ -151,16 +158,18 @@ namespace BotControl
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             // todo check if the sentry is even deployed first.
             // Though it should never get called if it's not deployed already.
-            PlayerBotActionDeploySentryGun.Descriptor desc = new(aiBot) 
-            {
-                Prio = defaultPrio,
-            };
-            StartAction(aiBot, desc, Commander, actionID);
+
         }
         public static void SendBotToPlaceSentry(PlayerAIBot aiBot, Pose sentryPose, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0 && !SNet.IsMaster)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            PlayerBotActionDeploySentryGun.Descriptor desc = new(aiBot)
+            {
+                Prio = defaultPrio,
+                InstallationPose = sentryPose
+            };
+            StartAction(aiBot, desc, Commander, actionID);
             if (!SNet.IsMaster) //Are we a client?
             {
                 if (netsender != 0) //Is this request coming from a different client?
@@ -175,18 +184,21 @@ namespace BotControl
             }
             // todo check if the sentry is deployed first.
             // Though it should never get called if it's not deployed already.
-            PlayerBotActionDeploySentryGun.Descriptor desc = new(aiBot)
-            {
-                Prio = defaultPrio,
-                InstallationPose = sentryPose
-            };
+
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
-            StartAction(aiBot, desc, Commander, actionID);
+
         }
         public static void SendBotToPlaceMine(PlayerAIBot aiBot, Pose minePose, InventorySlot slot, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0 && !SNet.IsMaster)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            PlayerBotActionDeployTripMine.Descriptor desc = new(aiBot)
+            {
+                Prio = defaultPrio,
+                InstallationPose = minePose,
+                BackpackItem = zHelpers.GetAgentBackpackItem(aiBot.Agent, slot)
+            };
+            StartAction(aiBot, desc, Commander, actionID);
             if (!SNet.IsMaster) //Are we a client?
             {
                 if (netsender != 0) //Is this request coming from a different client?
@@ -202,19 +214,23 @@ namespace BotControl
             }
             // todo check if the sentry is deployed first.
             // Though it should never get called if it's not deployed already.
-            PlayerBotActionDeployTripMine.Descriptor desc = new(aiBot)
-            {
-                Prio = defaultPrio,
-                InstallationPose = minePose,
-                BackpackItem = zHelpers.GetAgentBackpackItem(aiBot.Agent, slot)
-            };
+
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
-            StartAction(aiBot, desc, Commander, actionID);
+
         }
         public static void SendBotToUseCfoamGun(PlayerAIBot aiBot, Vector3 targetPosition, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0 && !SNet.IsMaster)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            PlayerBotActionUseGlueGun.Descriptor desc = new(aiBot)
+            {
+                Prio = 15f,
+                TargetType = PlayerBotActionUseGlueGun.TargetTypeEnum.Position,
+                TargetObject = Commander.transform,
+                TargetPosition = targetPosition,
+                Haste = 1f,
+            };
+            StartAction(aiBot, desc, Commander, actionID);
             if (!SNet.IsMaster) //Are we a client?
             {
                 if (netsender != 0) //Is this request coming from a different client?
@@ -229,21 +245,25 @@ namespace BotControl
             }
             // todo check if the sentry is deployed first.
             // Though it should never get called if it's not deployed already.
-            PlayerBotActionUseGlueGun.Descriptor desc = new(aiBot)
-            {
-                Prio = 15f,
-                TargetType = PlayerBotActionUseGlueGun.TargetTypeEnum.Position,
-                TargetObject = Commander.transform,
-                TargetPosition = targetPosition,
-                Haste = 1f,
-            };
+
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
-            StartAction(aiBot, desc, Commander, actionID);
+            
         }
         public static void SendBotToPickupItem(PlayerAIBot aiBot, ItemInLevel item, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0 && !SNet.IsMaster)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            float prio = defaultPrio;
+            float haste = 1f;
+            PlayerBotActionCollectItem.Descriptor desc = new(aiBot)
+            {
+                TargetItem = item,
+                TargetContainer = item.container,
+                TargetPosition = item.transform.position,
+                Prio = prio,
+                Haste = haste,
+            };
+            StartAction(aiBot, desc, Commander, actionID);
             if (!SNet.IsMaster) //Are we a client?
             {
                 if (netsender != 0) //Is this request coming from a different client?
@@ -265,25 +285,21 @@ namespace BotControl
                 return;
             }
             ZiMain.log.LogInfo($"{Commander.PlayerName} is sending {aiBot.Agent.PlayerName} to pick up {item.PublicName}");
-            float prio = defaultPrio;
-            float haste = 1f;
-            PlayerBotActionCollectItem.Descriptor desc = new(aiBot)
-            {
-                TargetItem = item,
-                TargetContainer = item.container,
-                TargetPosition = item.transform.position,
-                Prio = prio,
-                Haste = haste,
-            };
 
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
             zChatHandler.sendChatMessage($"Picking up {item.PublicName}", "Pickup Item" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, Commander);
-            StartAction(aiBot, desc, Commander, actionID);
+
         }
         public static void SendBotToReviveAgent(PlayerAIBot Reviver, PlayerAgent Downed, PlayerAgent Commander = null, ulong netsender  = 0, uint actionID = 0)
         {
             if (actionID == 0 && !SNet.IsMaster)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{Reviver.Agent.PlayerName}{Time.time}");
+            PlayerBotActionRevive.Descriptor desc = new(Reviver)
+            {
+                Client = Downed,
+                Prio = 15,
+            };
+            StartAction(Reviver, desc, Commander, actionID);
             if (!SNet.IsMaster)
             {
                 if (netsender != 0) //Is this request coming from a different client?
@@ -297,12 +313,7 @@ namespace BotControl
                 return;
             }
             zChatHandler.sendChatMessage($"Reving {Downed.PlayerName}", "Revive" + "TalkInChatNotifyActionAcknowlage", Reviver.Agent, Commander);
-            PlayerBotActionRevive.Descriptor desc = new(Reviver)
-            {
-                Client = Downed,
-                Prio = 15,
-            };
-            StartAction(Reviver, desc, Commander, actionID);
+
             ZiMain.BotBarkBack(Reviver.Agent.CharacterID, AK.EVENTS.PLAY_CL_IWILLDOIT, "I will do it.", 1f);
             //ZiMain.sendChatMessage($"I would have revived {downedAgent.PlayerName}, but I'm stupid.", aiBot.Agent, commander);
             //todo
@@ -317,6 +328,13 @@ namespace BotControl
         {
             if (actionID == 0 && !SNet.IsMaster)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            float prio = 11;
+            PlayerBotActionCarryExpeditionItem.Descriptor desc = new(aiBot)
+            {
+                TargetItem = item,
+                Prio = prio,
+            };
+            StartAction(aiBot, desc, Commander, actionID);
             //TODO split this up into it's own netaction instead of piggybacking on sendbottopickupitem.
             if (!SNet.IsMaster) //Are we a client?
             {
@@ -332,21 +350,35 @@ namespace BotControl
                 return;
             }
             ZiMain.log.LogInfo($"{Commander.PlayerName} is sending {aiBot.Agent.PlayerName} to carry {item._PublicName_k__BackingField} with the new method");
-            float prio = 11;
-            PlayerBotActionCarryExpeditionItem.Descriptor desc = new(aiBot)
-            {
-                TargetItem = item,
-                Prio = prio,
-            };
+
             zChatHandler.sendChatMessage($"Carrying {item._PublicName_k__BackingField}", "Pickup Item" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, Commander);
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
-            StartAction(aiBot, desc, Commander, actionID);
+
         }
         public static void SendBotToShareResourcePack(PlayerAIBot aiBot, PlayerAgent receiver, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0 && !SNet.IsMaster)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             //todo add to manual action list for refrence later.
+            float prio = defaultPrio;
+            float haste = 1f;
+            BackpackItem backpackItem = null;
+            ZiMain.log.LogInfo($"{aiBot.Agent.PlayerName} was told by {Commander?.PlayerName ?? "someone"} with netid {netsender} to try to share resource pack to {receiver.PlayerName}");
+            //var gotBackpackItem = aiBot.Backpack.HasBackpackItem(InventorySlot.ResourcePack) &&
+            //                      aiBot.Backpack.TryGetBackpackItem(InventorySlot.ResourcePack, out backpackItem);
+            bool gotBackpackItem = zHelpers.TryGetAgentBackpackItem(aiBot.Agent, InventorySlot.ResourcePack, out backpackItem);
+            if (!gotBackpackItem)
+                return;
+            ItemEquippable resourcePack = backpackItem.Instance.Cast<ItemEquippable>();
+
+            PlayerBotActionShareResourcePack.Descriptor desc = new(aiBot)
+            {
+                Receiver = receiver,
+                Item = resourcePack,
+                Prio = prio,
+                Haste = haste,
+            };
+            StartAction(aiBot, desc, Commander, actionID);
             if (!SNet.IsMaster)//Are we a client?
             {
                 if (netsender != 0)//Is this request coming from a different client?
@@ -360,28 +392,11 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pStructs.pShareResourceInfo>("RequestToShareResourcePack", info);
                 return;
             }
-            float prio = defaultPrio;
-            float haste = 1f;
-            BackpackItem backpackItem = null;
-            ZiMain.log.LogInfo($"{aiBot.Agent.PlayerName} was told by {Commander?.PlayerName ?? "someone"} with netid {netsender} to try to share resource pack to {receiver.PlayerName}");
-            //var gotBackpackItem = aiBot.Backpack.HasBackpackItem(InventorySlot.ResourcePack) &&
-            //                      aiBot.Backpack.TryGetBackpackItem(InventorySlot.ResourcePack, out backpackItem);
-            bool gotBackpackItem = zHelpers.TryGetAgentBackpackItem(aiBot.Agent, InventorySlot.ResourcePack, out backpackItem);
-            if (!gotBackpackItem)
-                return;
-            ItemEquippable resourcePack = backpackItem.Instance.Cast<ItemEquippable>();
             aiBot.Inventory.DoEquipItem(resourcePack);//is this needed?  Does the action not handle this?
-            PlayerBotActionShareResourcePack.Descriptor desc = new(aiBot)
-            {
-                Receiver = receiver,
-                Item = resourcePack,
-                Prio = prio,
-                Haste = haste,
-            };
             float ammoLeft = aiBot.Backpack.AmmoStorage.GetAmmoInPack(AmmoType.ResourcePackRel);
             zChatHandler.sendChatMessage($"Sharing my {resourcePack.PublicName} ({ammoLeft}%) with {receiver.PlayerName}.", "Share Resources" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, Commander);
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
-            StartAction(aiBot, desc, Commander, actionID);
+
         }
         [Obsolete]
         public static void SendBotToClearCurrentRoom(PlayerAIBot aiBot = null, PlayerAgent commander = null, ulong netsender = 0, PlayerBotActionBase.Descriptor arg_descriptor = null)
@@ -442,6 +457,24 @@ namespace BotControl
             // TODO low priority add option to revert back to old system where they throw as soon as they can see the target.
             if (actionID == 0 && !SNet.IsMaster)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{botAgent.PlayerName}{Time.time}");
+            PlayerAIBot aiBot = botAgent.GetComponent<PlayerAIBot>();
+            zHelpers.TryGetAgentBackpackItem(aiBot.Agent, InventorySlot.Consumable, out var item);
+            if (item == null)
+            {
+                ZiMain.log.LogWarning($"Wanted to throw an item but found nothing.");
+                return false;
+            }
+            PlayerBotActionThrowItem.Descriptor desc = new(aiBot)
+            {
+                Prio = defaultPrio,
+                Haste = 0.8f,
+                TargetPosition = TargetPosition,
+                TargetObject = Commander.transform,
+                TargetType = PlayerBotActionThrowItem.TargetTypeEnum.Position,
+                Item = item.Instance.Cast<ItemEquippable>(),
+                MovementAllowed = true
+            };
+            StartAction(aiBot, desc, Commander, actionID);
             if (!SNet.IsMaster)
             {
                 if (netSender != 0) //Is this request coming from a different client?
@@ -456,30 +489,15 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pThrowDataInfo>("RequestToThrowItem", info);
                 return false;
             }
-            PlayerAIBot aiBot = botAgent.GetComponent<PlayerAIBot>();
-            zHelpers.TryGetAgentBackpackItem(aiBot.Agent, InventorySlot.Consumable, out var item);
-            if (item == null)
-            {
-                ZiMain.log.LogWarning($"Wanted to throw an item but found nothing.");
-                return false;
-            }
+
+
             //if (item.Name != ThrowItemPatch.ThrowMappings[ThrowType])
             //{
             //    ZiMain.log.LogWarning($"Invalid throw item to throw.  Wanted to throw {ThrowType} but found {item.Name}");
             //    return false;
             //}
 
-            PlayerBotActionThrowItem.Descriptor desc = new(aiBot)
-            {
-                Prio = defaultPrio,
-                Haste = 0.8f,
-                TargetPosition = TargetPosition,
-                TargetObject = Commander.transform,
-                TargetType = PlayerBotActionThrowItem.TargetTypeEnum.Position,
-                Item = item.Instance.Cast<ItemEquippable>(),
-                MovementAllowed = true
-            };
-            StartAction(aiBot, desc, Commander, actionID);
+
             ZiMain.BotBarkBack(botAgent.CharacterID, AK.EVENTS.PLAY_CL_IWILLDOIT, "I will do it.", 1f);
             return false;
         }
@@ -524,21 +542,6 @@ namespace BotControl
         {
             if (actionID == 0 && !SNet.IsMaster)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
-            if (!SNet.IsMaster) //Are we a client?
-            {
-                if (netsender != 0) //Is this request coming from a different client?
-                    return;
-                //request host
-
-                pBreakLockInfo info = new pBreakLockInfo();
-                iSNet_StateReplicator stateReplicator = Lock.GetStateReplicator();
-                SNet_StateReplicator<pWeakLockState, pWeakLockInteraction> Replicator = stateReplicator.TryCast<SNet_StateReplicator<pWeakLockState, pWeakLockInteraction>>();
-                info.Lock = Replicator.GetProviderSyncStruct();
-                info.Commander = pStructs.Get_pStructFromRefrence(Commander);
-                info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
-                info.ID = actionID;
-                NetworkAPI.InvokeEvent<pBreakLockInfo>("RequestToBreakLock", info);
-            }
             float Prop = defaultPrio;
             iLG_WeakLockHolder holder = Lock.m_holder;
             LG_DoorButton Button = holder.TryCast<LG_DoorButton>();
@@ -558,7 +561,6 @@ namespace BotControl
             }
             else
                 return;
-
             PlayerBotActionUnlock.Descriptor Desc = new(aiBot)
             {
                 TargetType = targetType,
@@ -569,7 +571,53 @@ namespace BotControl
                 Lock = Lock,
             };
             StartAction(aiBot, Desc, Commander, actionID);
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                //request host
+
+                pBreakLockInfo info = new pBreakLockInfo();
+                iSNet_StateReplicator stateReplicator = Lock.GetStateReplicator();
+                SNet_StateReplicator<pWeakLockState, pWeakLockInteraction> Replicator = stateReplicator.TryCast<SNet_StateReplicator<pWeakLockState, pWeakLockInteraction>>();
+                info.Lock = Replicator.GetProviderSyncStruct();
+                info.Commander = pStructs.Get_pStructFromRefrence(Commander);
+                info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
+                info.ID = actionID;
+                NetworkAPI.InvokeEvent<pBreakLockInfo>("RequestToBreakLock", info);
+            }
+
+
+
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_IMONMYWAY, "On my way.", 1f);
+        }
+        internal static void CancelBotAction(uint actionID, ulong netsender = 0)
+        {
+            if (!SNet.IsMaster)
+            {
+                if (netsender != 0) return;
+                pActionTerminatedInfo info = new()
+                {
+                    ID = actionID,
+                };
+                NetworkAPI.InvokeEvent<pActionTerminatedInfo>("RequestActionCancel", info);
+                return;
+            }
+            bool found = false;
+            foreach (var key in zActions.manualActions.Keys)
+            {
+                foreach (ManualAction mAction in zActions.manualActions[key])
+                {
+                    if (actionID == mAction.ID)
+                    {
+                        mAction.Bot.StopAction(mAction.ActionDescriptor);
+                        found = true;
+                        break;
+                    }
+                }
+                if (found)
+                    break;
+            }
         }
     }
 }

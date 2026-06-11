@@ -187,10 +187,12 @@ public class ZiMain : BasePlugin
         NetworkAPI.RegisterEvent<pIntOverideTreeInfo>       ("SetIntOverideTree",                 zNetworking.ReciveSetIntOverideTree);
         NetworkAPI.RegisterEvent<pFloatOverideTreeInfo>     ("SetFloatOverideTree",               zNetworking.ReciveSetFloatOverideTree);
         NetworkAPI.RegisterEvent<pLeaderInfo>               ("RequestToSetLeader",                zNetworking.ReciveRequestToSetLeader);
+        NetworkAPI.RegisterEvent<pActionTerminatedInfo>     ("NotifyActionTerminated",            zNetworking.ReciveActionTerminated);
+        NetworkAPI.RegisterEvent<pActionTerminatedInfo>     ("RequestActionCancel",               zNetworking.ReciveRequestActionCancel);
 
         //EventAPI.OnExpeditionStarted += ZombieController.Initialize;
         log = Log;
-        zActionSub.addOnRemoved((Action<PlayerAIBot, PlayerBotActionBase>)onActionRemoved);
+        zActionSub.addOnRemoved((Action<PlayerAIBot, PlayerBotActionBase>)onActionTerminated);
         zActionSub.addOnAdded((Action<PlayerAIBot, PlayerBotActionBase>)onActionAdded);
         EventAPI.OnManagersSetup += () =>
         {
@@ -230,24 +232,34 @@ public class ZiMain : BasePlugin
 
 
 
-    public static void onActionRemoved(PlayerAIBot bot , PlayerBotActionBase action)
+    public static void onActionTerminated(PlayerAIBot bot , PlayerBotActionBase action)
     { //TODO - Use a string builder
         string typeName = action.GetIl2CppType().Name;
         bool manualAction = zActions.isManualAction(action.DescBase);
         if (manualAction)
         {
-            ManualAction actionToRemove = null;
-            foreach (ManualAction Action in zActions.manualActions)
+            bool found = false;
+            foreach (var key in zActions.manualActions.Keys)
             {
-                var desc = Action.ActionDescriptor;
-                if (desc.Pointer == action.DescBase.Pointer)
+                foreach (ManualAction mAction in zActions.manualActions[key])
                 {
-                    actionToRemove = Action;
-                    break;
+                    var desc = mAction.ActionDescriptor;
+                    if (desc.Pointer == action.DescBase.Pointer)
+                    {
+                        zActions.manualActions[key].Remove(mAction);
+                        pActionTerminatedInfo info = new()
+                        {
+                            ID = mAction.ID,
+                            status = action.DescBase.Status,
+                        };
+                        NetworkAPI.InvokeEvent<pActionTerminatedInfo>("NotifyActionTerminated", info);
+                        found = true;
+                        break;
+                    }
                 }
+                if (found)
+                    break;
             }
-            if (actionToRemove != null)
-                zActions.manualActions.Remove(actionToRemove);
         }
         if (typeName == "PlayerBotActionCarryExpeditionItem")
         {

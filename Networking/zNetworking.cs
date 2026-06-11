@@ -1,4 +1,6 @@
-﻿using Enemies;
+﻿using BotControl.zRootBotPlayerAction;
+using Enemies;
+using InControl;
 using LevelGeneration;
 using Player;
 using SlideDrum;
@@ -358,6 +360,35 @@ namespace BotControl.Networking
             PlayerAgent Leader = pStructs.Get_RefFrom_pStruct(info.leader);
             ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {Follower.PlayerName} to follow {Leader.PlayerName}");
             zBotActions.SetLeader(Follower, Leader, Commander, netSender);
+        }
+        internal static void ReciveActionTerminated(ulong netsender, pStructs.pActionTerminatedInfo info)
+        {
+            if (SNet.IsMaster)
+                return;
+            foreach (ManualAction action in zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID])
+            {
+                if (action.ID == info.ID)
+                {
+                    zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Remove(action);
+                    break;
+                }
+            }
+        }
+        internal static void ReciveRequestActionCancel(ulong netsender, pStructs.pActionTerminatedInfo info)
+        {
+            if (!SNet.IsMaster)
+                return;
+            foreach (var key in zActions.manualActions.Keys)
+            {
+                foreach (var action in zActions.manualActions[key]) 
+                { 
+                    if (action.ID == info.ID)
+                    {
+                        zBotActions.CancelBotAction(info.ID, netsender);
+                        return;
+                    }
+                }
+            }
         }
     }
 }

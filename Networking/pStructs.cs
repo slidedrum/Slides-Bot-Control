@@ -50,7 +50,7 @@ namespace BotControl.Networking
         public static pStateReplicatorProvider Get_pStructFromRef<S, I>(iSNet_StateReplicatorProvider original) where S : struct where I : struct
         {
             iSNet_StateReplicator stateReplicator = original.GetStateReplicator();
-            SNet_StateReplicator<S, I> Replicator = stateReplicator.TryCast<SNet_StateReplicator<S,I>>();
+            SNet_StateReplicator<S, I> Replicator = stateReplicator.TryCast<SNet_StateReplicator<S, I>>();
             if (Replicator == null)
                 return default;
             return Replicator.GetProviderSyncStruct();
@@ -99,6 +99,11 @@ namespace BotControl.Networking
             public pPlayerAgent BotAgent;
             public pPlayerAgent Commander;
             internal uint ID;
+        }
+        public struct pActionTerminatedInfo
+        {
+            public PlayerBotActionBase.Descriptor.StatusType status;
+            public uint ID;
         }
         public struct pAttackEnemyInfo
         {

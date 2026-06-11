@@ -30,7 +30,7 @@ namespace BotControl.zRootBotPlayerAction
     }
     public static class zActions
     {
-        public static List<ManualAction> manualActions = new();
+        public static Dictionary<int, List<ManualAction>> manualActions = new();
         internal static readonly Dictionary<int, dataStore> ActionDataStore = new();
         internal static dataStore GetOrCreateData(PlayerBotActionBase.Descriptor desc)
         {
@@ -59,26 +59,26 @@ namespace BotControl.zRootBotPlayerAction
             }
             return data;
         }
-        public static bool isManualAction(PlayerBotActionBase.Descriptor descriptor)
+        public static PlayerAgent isManualAction(PlayerBotActionBase.Descriptor descriptor)
         {
-            if (descriptor == null) return false;
-            if (manualActions == null) return false;
+            if (descriptor == null) return null;
+            if (manualActions == null) return null;
+            foreach (var key in manualActions.Keys)
+                foreach (ManualAction Action in manualActions[key])
+                {
+                    var desc = Action.ActionDescriptor;
+                    if (desc == null) continue;
 
-            foreach (ManualAction Action in manualActions)
-            {
-                var desc = Action.ActionDescriptor;
-                if (desc == null) continue;
-
-                if (desc.Pointer == descriptor.Pointer)
-                    return true;
-            }
+                    if (desc.Pointer == descriptor.Pointer)
+                        return Action.Commander;
+                }
 
             if (descriptor.ParentActionBase != null)
             {
                 return isManualAction(descriptor.ParentActionBase.DescBase);
             }
 
-            return false;
+            return null;
         }
     }
 }
