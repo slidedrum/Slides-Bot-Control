@@ -2,6 +2,7 @@
 using BotControl.SmartSelect;
 using GameData;
 using Player;
+using SlideDrum;
 using SlideMenu;
 using System;
 using System.Collections.Generic;

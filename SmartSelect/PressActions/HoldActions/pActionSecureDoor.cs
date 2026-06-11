@@ -12,6 +12,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
     {
         public string FriendlyName => "Secure Door";
         public string _FriendlyNameShort => "Secure";
+        public string FriendlyIdentifier => "Throw Consumable";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
@@ -38,6 +39,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CFOAMHERE);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Throw C-Foam here.",1f);
             zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, Networking.pStructs.pThrowType.cFoam, MovePosition, Door.transform.position, 0);
+            zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return false;
         }
         public bool Evaluate(PlayerAgent agent, uint itemID)

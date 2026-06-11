@@ -1,8 +1,4 @@
 ﻿using BotControl.SmartSelect.PressActions;
-using Enemies;
-using Il2CppInterop.Runtime;
-using LevelGeneration;
-using Player;
 using PrioritySet;
 using SlideDrum.sInputSystem;
 using System.Collections.Generic;
@@ -33,14 +29,14 @@ namespace BotControl.SmartSelect.PressTypes
                 if (_SelectableTypes == null)
                 {
                     _SelectableTypes = new HashSet<Il2CppSystem.Type>(new Il2CppTypePtrComparer());
-                    _SelectableTypes.Add(Il2CppType.Of<PlayerAgent>());
-                    _SelectableTypes.Add(Il2CppType.Of<MineDeployerInstance>()); // I think this is conflicting with iteminlevel
-                    _SelectableTypes.Add(Il2CppType.Of<ItemInLevel>());
-                    _SelectableTypes.Add(Il2CppType.Of<SentryGunInstance>());
-                    _SelectableTypes.Add(Il2CppType.Of<LG_WeakResourceContainer>());
-                    _SelectableTypes.Add(Il2CppType.Of<LG_WeakDoor>());
-                    _SelectableTypes.Add(Il2CppType.Of<EnemyAgent>());
-                    _SelectableTypes.Add(Il2CppType.Of<LG_PowerGenerator_Core>());
+                    //_SelectableTypes.Add(Il2CppType.Of<PlayerAgent>());
+                    //_SelectableTypes.Add(Il2CppType.Of<MineDeployerInstance>()); // I think this is conflicting with iteminlevel
+                    //_SelectableTypes.Add(Il2CppType.Of<ItemInLevel>());
+                    //_SelectableTypes.Add(Il2CppType.Of<SentryGunInstance>());
+                    //_SelectableTypes.Add(Il2CppType.Of<LG_WeakResourceContainer>());
+                    //_SelectableTypes.Add(Il2CppType.Of<LG_WeakDoor>());
+                    //_SelectableTypes.Add(Il2CppType.Of<EnemyAgent>());
+                    //_SelectableTypes.Add(Il2CppType.Of<LG_PowerGenerator_Core>());
 
                 }
                 return _SelectableTypes;

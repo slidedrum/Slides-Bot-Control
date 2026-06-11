@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
@@ -14,6 +15,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
     {
         public string FriendlyName => "Follow me";
         private string _FriendlyNameShort = "Follow";
+        public string FriendlyIdentifier => "Follow";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
@@ -57,9 +59,9 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
                 //zStaticRefrences.CommsMenu.OnButtonPressedCall(null, Bot.Agent);
                 //Bot.SyncValues.Leader = Leader;
                 zBotActions.SetLeader(Follower, Leader, zStaticRefrences.LocalPlayer, 0);
-                Bot.Agent.NavMarker.UpdateExtraInfo();
+
                 ZiMain.BotBarkBack(Bot.Agent.CharacterID, AK.EVENTS.PLAY_CL_ILLFOLLOWYOURLEAD, "I will follow your lead.", 2f);
-                ZiMain.sendChatMessage($"On the way.", Bot.Agent, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage($"On the way.", "Follow"+ "TalkInChatNotifyActionAcknowlage", Bot.Agent, zStaticRefrences.LocalPlayer);
             }
             else
             {
@@ -67,6 +69,8 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
                 yield return new WaitForSeconds(1f);
                 PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_FOLLOWME);
             }
+            yield return new WaitForSeconds(1f);
+            Follower.NavMarker.UpdateExtraInfo();
         }
 
         public bool IsActionValid(Component candidate)

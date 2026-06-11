@@ -9,8 +9,10 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     {
         public string FriendlyName => "Close Door";
         public string FriendlyNameShort => "Close";
+        public string FriendlyIdentifier => "Interact";
         public Il2CppSystem.Type Type => Il2CppType.Of<LG_WeakDoor>();
         public string pressTypeIdentifier => "Tap";
+        public bool Enabled => false;
         public bool Invoke(Component BestComponent)
         {
             LG_WeakDoor Door = BestComponent.TryCast<LG_WeakDoor>();

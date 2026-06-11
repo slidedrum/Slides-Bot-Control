@@ -1,5 +1,6 @@
 ﻿using BotControl.zRootBotPlayerAction;
 using Player;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
@@ -8,6 +9,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     {
         public string FriendlyName => "Cancel All";
         public string FriendlyNameShort => "Cancel-A";
+        public string FriendlyIdentifier => "Cancel Action";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Double Tap";
         public bool Invoke(Component BestComponent)
@@ -15,9 +17,17 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CANCELTHAT);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Cancel that.", 1);
             //if (zActions.manualActions.Count <= 1) return false;
+            HashSet<PlayerAIBot> BotsWithManualActions = new();
             for (int i = 0; i < zActions.manualActions.Count; i++)
                 if (zActions.manualActions.Count - 1 >= i && !zActions.manualActions[i].IsTerminated())
+                {
                     zActions.manualActions[i].Bot.StopAction(zActions.manualActions[i]);
+                    BotsWithManualActions.Add(zActions.manualActions[i].Bot);
+                }
+            foreach (PlayerAIBot bot in BotsWithManualActions)
+            {
+                zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", bot.Agent, zStaticRefrences.LocalPlayer);
+            }
             return true;
         }
         public bool IsActionValid(Component candidate)

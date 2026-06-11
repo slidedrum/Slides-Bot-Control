@@ -13,6 +13,7 @@ namespace BotControl.SmartSelect.PressActions
         // TODO revert to closest bot if none selected.
         public string FriendlyName => "Revive Self";
         public string FriendlyNameShort => "Revive";
+        public string FriendlyIdentifier => "Revive";
         public int? Priority => 100;
         public Il2CppSystem.Type Type => null;
         private List<Il2CppSystem.Type> Types = new() { null, Il2CppType.Of<PlayerAIBot>() };
@@ -52,7 +53,8 @@ namespace BotControl.SmartSelect.PressActions
             }
             if (BotToUse == null)
                 return false;
-            zBotActions.SendBotToReviveAgent(BotToUse, zStaticRefrences.LocalPlayer, zStaticRefrences.LocalPlayer, 0); // as of writing not implemented yet.
+            zBotActions.SendBotToReviveAgent(BotToUse, zStaticRefrences.LocalPlayer, zStaticRefrences.LocalPlayer, 0);
+            zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BotToUse.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

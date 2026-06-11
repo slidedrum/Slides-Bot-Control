@@ -9,6 +9,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     {
         public string FriendlyName => "Pickup Sentry";
         public string _FriendlyNameShort => "Pickup";
+        public string FriendlyIdentifier => "Pickup Equipment";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
@@ -23,6 +24,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PICKUPYOURDEPLOYABLES);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Pick up your deployables.", 1);
             zBotActions.SendBotToPickUpSentry(bot, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", bot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

@@ -8,6 +8,7 @@ namespace BotControl.SmartSelect.PressActions
     {
         public string FriendlyName => "Drop Now";
         public string FriendlyNameShort => "Drop";
+        public string FriendlyIdentifier => "Drop Objective";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Double Tap";
         public int? Priority => 10;
@@ -24,6 +25,7 @@ namespace BotControl.SmartSelect.PressActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CANCELTHAT);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Cancel that.", 1f);
             zStaticRefrences.CommsMenu.OnButtonPressedDrop(null, BestBot.Agent);
+            zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

@@ -2,6 +2,7 @@
 using LevelGeneration;
 using Player;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
 {
@@ -9,6 +10,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     {
         public string FriendlyName => "Break Lock";
         public string FriendlyNameShort => "Unlock";
+        public string FriendlyIdentifier => "Interact";
         public Il2CppSystem.Type Type => Il2CppType.Of<LG_WeakLock>();
         public string pressTypeIdentifier => "Tap";
         public static bool strike = false;
@@ -23,6 +25,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PLEASE);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Please.",1f);
             zBotActions.SendbotToBreakLock(BestBot, Lock, zStaticRefrences.LocalPlayer, 0);
+            zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

@@ -1,4 +1,5 @@
 ﻿using AIGraph;
+using BotControl.Menus;
 using GameData;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
@@ -326,7 +327,7 @@ namespace BotControl.Patches
             float bestItemPrio = 0.0f;
             AIG_CourseNode activityNode = null;
             Vector3 activityEpicenter = Vector3.zero;
-            BackpackItem foundBackpackItem = null;
+            //BackpackItem foundBackpackItem = null;
 
             // If there is an active collect action and it's NOT terminated -> do nothing
             if (collectItemActionDescriptor != null)
@@ -388,14 +389,15 @@ namespace BotControl.Patches
             }
 
             // We'll search storage containers that are attached to the discovered course node
-            int containerIndex = 0;
-            int chosenContainerIndex = -1;
+            //int containerIndex = 0;
+            //int chosenContainerIndex = -1;
             LG_ResourceContainer_Storage chosenContainer = null;
             Vector3 candidateRootPos = Vector3.zero;
-            float candidateRadius = 0f;
+            //float candidateRadius = 0f;
 
             // Prepare some static values
-            float collectSearchDistance = RootPlayerBotAction.s_collectItemSearchDistance;
+            //float collectSearchDistance = RootPlayerBotAction.s_collectItemSearchDistance;
+            float collectSearchDistance = (float)PickupMenuClass.pickupDistance.ValueAt("Pickup");
             float collectStandDistance = RootPlayerBotAction.s_collectItemStandDistance;
             float collectSearchDistanceSqr = collectSearchDistance * collectSearchDistance;
 
@@ -483,7 +485,7 @@ namespace BotControl.Patches
 
                     // Snap to nav and get radius (SnapPositionToNav will write rootPos and radius)
                     Vector3 rootPos;
-                    float radius; //Unused var, used to change the reservation radius.  Why?  And what is it's value?  idk
+                    //float radius; //Unused var, used to change the reservation radius.  Why?  And what is it's value?  idk
                     if (!__instance.SnapPositionToNav(standCandidate, out rootPos))
                         continue;
 
@@ -505,7 +507,7 @@ namespace BotControl.Patches
                         continue;
 
                     float prioRef = collectItemActionDescriptor.Prio;
-                    if (__instance.m_bot.ApplyRestrictionsToRootPosition(ref rootPos, ref prioRef))
+                    if (PreApplyRestrictionsToRootPosition(__instance.m_bot, ref rootPos, ref prioRef)) // TODO this is likely what's breaking pickup distance from working.
                     {
                         // ApplyRestrictionsToRootPosition returning true in our naming means "rejected" in the decompiled control flow
                         // (decompiled returned early if it returned true), so skip this container if it returns true.
@@ -607,6 +609,61 @@ namespace BotControl.Patches
             } // end if activityNode != null
 
             // No valid pick found -> nothing to set; just return
+            return false;
+        }
+        //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.ApplyRestrictionsToRootPosition))]
+        //[HarmonyPrefix]
+        public static bool PreApplyRestrictionsToRootPosition(PlayerAIBot __instance,ref Vector3 testPosition, ref float restrictionPrio)
+        {
+            float resultPrio = restrictionPrio;
+            Vector3 resultPos = testPosition;
+            Vector3 tmpPos;
+            void func (PlayerBotActionBase.Descriptor desc, Vector3 prevPos)
+            {
+                tmpPos = prevPos;
+                if (desc.Prio > resultPrio && PreApplyPositionRestriction(desc ,ref tmpPos))
+                {
+                    resultPrio = desc.Prio;
+                    resultPos = tmpPos;
+                }
+            };
+            for (int i = 0; i < __instance.m_queuedActions.Count; i++)
+            {
+                func(__instance.m_queuedActions[i], testPosition);
+            }
+            for (int j = 0; j < __instance.m_actions.Count; j++)
+            {
+                func(__instance.m_actions[j].DescBase, testPosition);
+            }
+            if (resultPrio > restrictionPrio)
+            {
+                restrictionPrio = resultPrio;
+                testPosition = resultPos;
+                //__result = true;
+                return true;
+            }
+            //__result = false;
+            return false;
+        }
+        //[HarmonyPatch(typeof(PlayerBotActionBase.Descriptor), nameof(PlayerBotActionBase.Descriptor.ApplyPositionRestriction))]
+        //[HarmonyPrefix]
+        public static bool PreApplyPositionRestriction(PlayerBotActionBase.Descriptor __instance, ref Vector3 testPosition)
+        {
+            if (__instance.PosRestriction != null && __instance.PosRestriction.Center != null)
+            {
+                Vector3 vector = testPosition - __instance.PosRestriction.Center.position;
+                float sqrMagnitude = vector.sqrMagnitude;
+                if (sqrMagnitude > __instance.PosRestriction.Radius * __instance.PosRestriction.Radius)
+                {
+                    vector /= Mathf.Sqrt(sqrMagnitude);
+                    vector *= __instance.PosRestriction.Radius * 0.85f;
+                    vector += __instance.PosRestriction.Center.position;
+                    testPosition = vector;
+                    //__result = true;
+                    return true;
+                }
+            }
+            //__result = false;
             return false;
         }
     }

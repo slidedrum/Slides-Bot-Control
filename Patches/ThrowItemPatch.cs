@@ -73,7 +73,7 @@ namespace BotControl.Patches
             if (__instance.CheckPositionHasView(MovePosition, targetPosition, 0.7225f))
             { // Does MovePosition have view of target? 
                 resultPosition = MovePosition;
-                __result = true; // return true, it was sucsessfull.
+                __result = true; // return true, it was Successfull.
                 return false;
             }
             // move position does not have a view, fall back to original method.

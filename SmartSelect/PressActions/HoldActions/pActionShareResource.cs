@@ -11,12 +11,13 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
         public string pressTypeIdentifier => "Hold";
         private string _FriendlyNameShort = "Share";
+        public string FriendlyIdentifier => "Share Resources";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public bool Invoke(Component BestComponent)
         {
-            bool sucsess = false;
+            bool Success = false;
             PlayerAgent Agent = BestComponent.TryCast<PlayerAgent>();
             if (Agent == null) return false;
             float offset = 0;
@@ -44,14 +45,15 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                     continue;
                 if (!zHelpers.CanBotReach(selectedBot, Agent.Position))
                     continue;
-                sucsess = true;
+                Success = true;
                 zBotActions.SendBotToShareResourcePack(selectedBot, Agent, zStaticRefrences.LocalPlayer);
                 PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PLEASE);
                 zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Please", 1);
                 ZiMain.BotBarkBack(selectedBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f + offset);
+                zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", selectedBot.Agent, zStaticRefrences.LocalPlayer);
                 offset += 0.25f;
             }
-            return sucsess;
+            return Success;
         }
         public bool IsActionValid(Component candidate)
         {

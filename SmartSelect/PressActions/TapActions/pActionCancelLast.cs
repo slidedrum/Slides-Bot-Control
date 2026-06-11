@@ -1,6 +1,7 @@
 ﻿using BotControl.zRootBotPlayerAction;
 using Player;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
 {
@@ -8,6 +9,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     {
         public string FriendlyName => "Cancel Last";
         public string FriendlyNameShort => "Cancel";
+        public string FriendlyIdentifier => "Cancel Action";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Tap";
         public bool Invoke(Component BestComponent)
@@ -16,6 +18,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Cancel that.", 1);
             if (zBotActions.LastAction.IsTerminated()) return false;
             zBotActions.LastAction.Bot.StopAction(zBotActions.LastAction);
+            zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", zBotActions.LastAction.Bot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

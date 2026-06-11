@@ -8,6 +8,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
     {
         public string FriendlyName => "Deselect All Bots";
         public string FriendlyNameShort => "Deselect";
+        public string FriendlyIdentifier => "Select";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Hold";
         public bool Invoke(Component BestComponent)
@@ -21,7 +22,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 HashSet<PlayerAIBot> selectedBots = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>();
                 foreach (PlayerAIBot selectedBot in selectedBots)
                 {
-                    ZiMain.sendChatMessage("Nevermind.", selectedBot.Agent, zStaticRefrences.LocalPlayer);
+                    zChatHandler.sendChatMessage("Nevermind.", FriendlyNameShort + "TalkInChatNotifyActionAcknowlage", selectedBot.Agent, zStaticRefrences.LocalPlayer);
                 }
             }
             zSmartSelect.MainSelection.Deselect<PlayerAIBot>();

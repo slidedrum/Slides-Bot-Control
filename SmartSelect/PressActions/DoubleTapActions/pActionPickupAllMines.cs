@@ -11,6 +11,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     {
         public string FriendlyName => "Pickup All Mines";
         public string _FriendlyNameShort => "A-Pickup-A";
+        public string FriendlyIdentifier => "Pickup Equipmenet";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
@@ -30,6 +31,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         {
             foreach (var bot in Bots)
             {
+                zChatHandler.sendChatMessage("Will do.", "Pickup Equipmenet" + "TalkInChatNotifyActionAcknowlage", bot.Agent, zStaticRefrences.LocalPlayer);
                 zBotActions.SendBotToPickUpMine(bot, null, zStaticRefrences.LocalPlayer);
                 yield return new WaitForSeconds(0.25f);
             }

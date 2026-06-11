@@ -8,8 +8,10 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
     {
         public string FriendlyName => "Refill Sentry";
         public string FriendlyNameShort => "Refill";
+        public string FriendlyIdentifier => "Deploy Equipment";
         public Il2CppSystem.Type Type => Il2CppType.Of<SentryGunInstance>();
         public string pressTypeIdentifier => "Hold";
+        public bool Enabled => false;
         public bool Invoke(Component BestComponent)
         {
             SentryGunInstance Sentry = BestComponent.TryCast<SentryGunInstance>();

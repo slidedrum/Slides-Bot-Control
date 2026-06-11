@@ -13,6 +13,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
     {
         public string FriendlyName => "All Folow";
         private string _FriendlyNameShort = "A-Follow";
+        public string FriendlyIdentifier => "Follow";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
@@ -40,6 +41,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             foreach (var bot in Botlist)
             {
                 pActionFollowDirect.StaticCallAgentToFollow(bot.Agent, zStaticRefrences.LocalPlayer, false);
+                //zChatHandler.sendChatMessage("On the way.", "Follow" + "NotifyActionAcknowlage", bot.Agent, zStaticRefrences.LocalPlayer);
                 yield return new WaitForSeconds(1f);
             }
         }

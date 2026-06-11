@@ -6,12 +6,13 @@ namespace BotControl.SmartSelect.PressActions
 {
     public interface IPressAction
     {
+        public abstract string FriendlyIdentifier { get; } // Used for the settings catagory
         public abstract string FriendlyName { get; } // Used for logs and confuguration.
         public virtual string FriendlyNameShort => FriendlyName; // Used for the hud.
         public abstract Il2CppSystem.Type Type { get; } // The type of component this action is meant to be used on.  Must be a UnityEngine.Componenet.  Or null if the pressType has a fallback type of "nothing"
         public virtual string? pressTypeIdentifier => null; // Could be null if this action handles it's own registration.  Might want to do that if you're regestering to multiple types, or something else funky.
-        public virtual bool ActionImplementationComplete => true;
         public virtual int? Priority => null;
+        public virtual bool Enabled => true;
         public virtual void Register() // Used to register this action to its press type.  Will be called automatically if pressTypeIdentifier is null, the implementing class MUST overide this mehtod.
         {
             if (pressTypeIdentifier.ToLower().Contains("example"))

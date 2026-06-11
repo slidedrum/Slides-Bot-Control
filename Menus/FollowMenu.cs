@@ -1,8 +1,10 @@
-﻿using SlideMenu;
+﻿using BotControl.Patches;
+using SlideDrum;
+using SlideMenu;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using BotControl.Patches;
+using static Il2CppSystem.Linq.Expressions.Interpreter.NullableMethodCallInstruction;
 
 namespace BotControl.Menus
 {
@@ -287,7 +289,9 @@ namespace BotControl.Menus
             }
             else if (pos.x > 0) // RIGHT
             {
-                maxDistance.SetValue(text, Math.Clamp((int)maxDistance.ValueAt(text) + (int)normalizedScroll, (int)followRadius.ValueAt(text), 60));
+                var newValue = Math.Clamp((int)maxDistance.ValueAt(text) + (int)normalizedScroll, (int)followRadius.ValueAt(text), 60);
+                maxDistance.SetValue(text, newValue);
+
             }
             else // LEFT
             {
@@ -312,6 +316,11 @@ namespace BotControl.Menus
             //    followRadius,
             //    maxDistance,
             //};
+            int? newValue = maxDistance.ValueAt("Follow");
+            if (newValue < PickupMenuClass.pickupDistance.ValueAt("Pickup"))
+            {
+                PickupMenuClass.pickupDistance.SetValue("Pickup", newValue);
+            }
             if (actionKey == null)
                 actionKey = node.text;
             List<IOverrideTree> extraTrees = new()

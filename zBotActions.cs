@@ -250,8 +250,7 @@ namespace BotControl
             };
 
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
-            if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify confirm action"))
-                ZiMain.sendChatMessage($"Picking up {item.PublicName}", aiBot.Agent, commander);
+            zChatHandler.sendChatMessage($"Picking up {item.PublicName}", "Pickup Item" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, commander);
             StartAction(aiBot, desc);
         }
         public static void SendBotToReviveAgent(PlayerAIBot Reviver, PlayerAgent Downed, PlayerAgent commander = null, ulong netsender  = 0)
@@ -267,8 +266,7 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pReviveAgentInfo>("RequestToReviveAgent", info);
                 return;
             }
-            if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify confirm action"))
-                ZiMain.sendChatMessage($"Reving {Downed.PlayerName}", Reviver.Agent, commander);
+            zChatHandler.sendChatMessage($"Reving {Downed.PlayerName}", "Revive" + "TalkInChatNotifyActionAcknowlage", Reviver.Agent, commander);
             PlayerBotActionRevive.Descriptor desc = new(Reviver)
             {
                 Client = Downed,
@@ -282,7 +280,7 @@ namespace BotControl
         [Obsolete("TODO: This method is not yet implemented and should not be used yet.")]
         public static void SendBotToRefillSentry(PlayerAIBot aiBot, SentryGunInstance sentry, PlayerAgent commander = null, ulong netsender = 0)
         {
-            ZiMain.sendChatMessage($"I would have refilled the sentry, but I'm stupid.", aiBot.Agent, commander);
+            zChatHandler.sendChatMessage($"I would have refilled the sentry, but I'm stupid.", "Refill" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, commander);
             //todo
         }
         public static void SendBotToCarryItem(PlayerAIBot aiBot, CarryItemPickup_Core item, PlayerAgent commander = null, ulong netsender = 0)
@@ -308,8 +306,7 @@ namespace BotControl
                 TargetItem = item,
                 Prio = prio,
             };
-            if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify confirm action"))
-                ZiMain.sendChatMessage($"Carrying {item._PublicName_k__BackingField}", aiBot.Agent, commander);
+            zChatHandler.sendChatMessage($"Carrying {item._PublicName_k__BackingField}", "Pickup Item" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, commander);
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             StartAction(aiBot, desc);
         }
@@ -347,7 +344,7 @@ namespace BotControl
                 Haste = haste,
             };
             float ammoLeft = aiBot.Backpack.AmmoStorage.GetAmmoInPack(AmmoType.ResourcePackRel);
-            ZiMain.sendChatMessage($"Sharing my {resourcePack.PublicName} ({ammoLeft}%) with {receiver.PlayerName}.", aiBot.Agent, commander);
+            zChatHandler.sendChatMessage($"Sharing my {resourcePack.PublicName} ({ammoLeft}%) with {receiver.PlayerName}.", "Share Resources" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, commander);
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             StartAction(aiBot, desc);
         }
@@ -384,7 +381,7 @@ namespace BotControl
             }
             if (allEnemies.Count <= 0)
             {
-                ZiMain.sendChatMessage("I have killed all enemies in the room", aiBot.gameObject.GetComponent<PlayerAgent>(), commander);
+                zChatHandler.sendChatMessage("I have killed all enemies in the room", "Clear Room" + "TalkInChatNotifyActionSuccess", aiBot.gameObject.GetComponent<PlayerAgent>(), commander);
                 return;
             }
 
@@ -469,7 +466,7 @@ namespace BotControl
             };
             aiBot.Actions[0].Cast<RootPlayerBotAction>().m_followLeaderAction.Prio = attackPrio - 1;
             zActions.manualActions.Add(descriptor);
-            ZiMain.sendChatMessage($"Killing the {enemy.EnemyData.name}.", aiBot.Agent, commander);
+            zChatHandler.sendChatMessage($"Killing the {enemy.EnemyData.name}.", "Kill Enemy" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, commander);
             //TODO figure out how to make them crouch instead of stand.
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             aiBot.StartAction(descriptor);

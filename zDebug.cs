@@ -456,7 +456,7 @@ namespace BotControl
             }
             if (bot == null)
                 return;
-            ZiMain.sendChatMessage("Okay here I go exploring!", botAgent, playerAgent);
+            zChatHandler.sendChatMessage("Okay here I go exploring!", "Explore" + "TalkInChatNotifyActionAcknowlage", botAgent, playerAgent);
             SendBotToExplore(bot);
         }
 

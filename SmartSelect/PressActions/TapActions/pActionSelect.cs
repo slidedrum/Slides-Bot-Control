@@ -9,6 +9,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     {
         public string FriendlyName => "Select Bot";
         public string _FriendlyNameShort => "Select";
+        public string FriendlyIdentifier => "Select";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
@@ -28,8 +29,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, voiceID);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Hey {botName}!", 1);
             ZiMain.BotBarkBack(botId, AK.EVENTS.PLAY_CL_YES, "Yes?");
-            if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify smart selected"))
-                ZiMain.sendChatMessage("I'm ready", Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("I'm ready", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

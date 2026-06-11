@@ -1,12 +1,12 @@
-﻿using GameData;
+﻿using BotControl.Patches;
+using GameData;
 using Player;
+using SlideDrum;
 using SlideMenu;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using BotControl.Patches;
-using BotControl;
 
 namespace BotControl.Menus
 {
@@ -21,11 +21,11 @@ namespace BotControl.Menus
         public static void Setup(sMenu menu)
         {
             //prioNodesByID = new Dictionary<uint, sMenu.sMenuNode>();
-            pickupDistance = new(15, "pickupDistance");
+            pickupDistance = new(10, "pickupDistance");
             pickupMenu = menu;
             pickupMenu.radius = 125f;
             pickupNode = pickupMenu.GetNode();
-            pickupDistance.AddNode("Pickup", null, "Default").onChanged.Listen(SetSearchDistance, [pickupDistance.ValueAt("Pickup")]).Listen(UpdateNodeSettingsDisplay, [pickupNode]);
+            pickupDistance.AddNode("Pickup", null, "Default").onChanged.Listen(SetSearchDistance).Listen(UpdateNodeSettingsDisplay, [pickupNode]);
 
             sMenu.sMenuNode glowstickNode = null;
             
@@ -191,8 +191,13 @@ namespace BotControl.Menus
             AutomaticActionMenuClass.ApplyTextEffectsToNode(node, actionKey, extraTrees);
             node.SetSubtitle($"Range <color=#CC840066>[</color>{pickupDistance.ValueAt(actionKey)}<color=#CC840066>]</color>");
         }
-        private static void SetSearchDistance(float distance)
+        private static void SetSearchDistance()
         {
+            int distance = (int)pickupDistance.ValueAt("Pickup");
+            if (distance > FollowMenuClass.maxDistance.ValueAt("Follow"))
+            {
+                FollowMenuClass.maxDistance.SetValue("Follow", distance);
+            }
             RootPlayerBotAction.s_collectItemSearchDistance = distance;
         }
         internal static void Encounter(string friendlyName)

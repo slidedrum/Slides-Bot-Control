@@ -9,8 +9,10 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
     {
         public string FriendlyName => "Open Container";
         public string FriendlyNameShort => "Open";
+        public string FriendlyIdentifier => "Open";
         public Il2CppSystem.Type Type => Il2CppType.Of<LG_WeakResourceContainer>();
         public string pressTypeIdentifier => "Hold";
+        public bool Enabled => false;
         public bool Invoke(Component BestComponent)
         {
             LG_WeakResourceContainer container = BestComponent.TryCast<LG_WeakResourceContainer>();

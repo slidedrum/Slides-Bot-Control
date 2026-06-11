@@ -26,6 +26,10 @@ namespace BotControl.SmartSelect.PressTypes
                 return pressType;
             return null;
         }
+        public static HashSet<IPressType> GetAllPressTypes()
+        {
+            return TypeMap.Values.ToHashSet();
+        }
         private static void Initalize() // Find all press types using reflection and create instances of them, then call their OnRegister method
         {
             if (initalized)

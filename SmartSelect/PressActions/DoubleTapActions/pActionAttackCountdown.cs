@@ -11,6 +11,8 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         public string FriendlyNameShort => "Countdown";
         public Il2CppSystem.Type Type => Il2CppType.Of<EnemyAgent>();
         public string pressTypeIdentifier => "Double Tap";
+        public string FriendlyIdentifier => "Attack";
+        public bool Enabled => false;
         public bool Invoke(Component BestComponent)
         {
             EnemyAgent Enemy = BestComponent.TryCast<EnemyAgent>();

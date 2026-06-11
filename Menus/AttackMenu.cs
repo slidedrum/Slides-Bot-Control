@@ -3,6 +3,7 @@ using SlideMenu;
 using System.Collections.Generic;
 using UnityEngine;
 using BotControl.Patches;
+using SlideDrum;
 
 namespace BotControl.Menus
 {

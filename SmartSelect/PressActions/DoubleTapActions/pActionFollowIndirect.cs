@@ -13,6 +13,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
     {
         public string FriendlyName => "Follow me through walls";
         private string _FriendlyNameShort = "Follow";
+        public string FriendlyIdentifier => "Follow";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);

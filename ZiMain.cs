@@ -253,8 +253,7 @@ public class ZiMain : BasePlugin
             //This actually triggers when they drop the item.
             var descriptor = action.DescBase.Cast<PlayerBotActionCarryExpeditionItem.Descriptor>();
             log.LogInfo($"{bot.Agent.PlayerName} completed collect {descriptor.TargetItem._PublicName_k__BackingField} task with status: {action.DescBase.Status}  access layers {descriptor.m_accessLayers}");
-            if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify pickup"))
-                sendChatMessage($"I put down the {descriptor.TargetItem._PublicName_k__BackingField}.", bot.Agent);
+            zChatHandler.sendChatMessage($"I put down the {descriptor.TargetItem._PublicName_k__BackingField}.", "Drop Objective" + "TalkInChatNotifyActionSuccess", bot.Agent);
             //What happens when the temp drop it out of combat?  Does that trigger here?
         }
         else if (typeName == "PlayerBotActionCollectItem")
@@ -279,21 +278,20 @@ public class ZiMain : BasePlugin
                 string ammocount = "";
                 if (ammoLeft > 0)
                     ammocount = " (" + ammoLeft + typeUsesPercent + ")";
-                if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify pickup"))
-                    sendChatMessage($"I {actionName} {article} {publicName}{ammocount}.", bot.Agent);
+                zChatHandler.sendChatMessage($"I {actionName} {article} {publicName}{ammocount}.", "Pickup Item" + "TalkInChatNotifyActionSuccess", bot.Agent);
             }
-            else if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify pickup fail"))
+            else
             {
                 if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Failed)
-                    sendChatMessage($"I couldn't get {article} {publicName}.", bot.Agent);
+                    zChatHandler.sendChatMessage($"I couldn't get {article} {publicName}.", "Pickup Item" + "TalkInChatNotifyActionFail", bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Interrupted)
-                    sendChatMessage($"I can't get {article} {publicName} right now.", bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't get {article} {publicName} right now.", "Pickup Item" + "TalkInChatNotifyActionFail", bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Aborted)
-                    sendChatMessage($"I can't get {article} {publicName} right now.", bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't get {article} {publicName} right now.", "Pickup Item" + "TalkInChatNotifyActionFail", bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Stopped)
-                    sendChatMessage($"I can't get {article} {publicName} right now.", bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't get {article} {publicName} right now.", "Pickup Item" + "TalkInChatNotifyActionFail", bot.Agent);
                 else if (!(action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Active))
-                    sendChatMessage($"I can't get {article} {publicName} status {action.DescBase.Status}.", bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't get {article} {publicName} status {action.DescBase.Status}.", "Pickup Item" + "TalkInChatNotifyActionFail", bot.Agent);
             }
 
         }
@@ -312,21 +310,19 @@ public class ZiMain : BasePlugin
             string receverOrMyslef = descriptor.Receiver == bot.Agent ? "myself" : descriptor.Receiver.PlayerName;
             log.LogInfo($"Got receiver or myself {receverOrMyslef}");
             if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
-                if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify resource share"))
-                    sendChatMessage($"I gave {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%).", bot.Agent);
-                else { }
-            else if ((bool)zSlideComputer.ActionPermissions.ValueAt("Notify share fail"))
+                zChatHandler.sendChatMessage($"I gave {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%).", "Share Resources" + "TalkInChatNotifyActionSuccess", bot.Agent);
+            else
             {
                 if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Failed)
-                    sendChatMessage($"I coul't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%).", bot.Agent);
+                    zChatHandler.sendChatMessage($"I coul't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%).", "Share Resources" + "TalkInChatNotifyActionFail", bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Interrupted)
-                    sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) right now.", bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) right now.", "Share Resources" + "TalkInChatNotifyActionFail", bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Aborted)
-                    sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) right now.", bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) right now.", "Share Resources" + "TalkInChatNotifyActionFail", bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Stopped)
-                    sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) right now.", bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) right now.", "Share Resources" + "TalkInChatNotifyActionFail", bot.Agent);
                 else
-                    sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) status {action.DescBase.Status}.", bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) status {action.DescBase.Status}.", "Share Resources" + "TalkInChatNotifyActionFail", bot.Agent);
             }
 
         }
@@ -399,17 +395,6 @@ public class ZiMain : BasePlugin
     public static void slowUpdate()
     {
         
-    }
-    private static (string, int, int) previousMessage;
-    public static void sendChatMessage(string message,PlayerAgent sender = null, PlayerAgent receiver = null)
-    {
-        var thisMessage = (message, sender.PlayerSlotIndex, sender.PlayerSlotIndex);
-        bool same = thisMessage == previousMessage;
-        previousMessage = thisMessage;
-        if (same)
-            return;
-        if ((bool)zSlideComputer.ActionPermissions.ValueAt("TalkInChat"))
-            PlayerChatManager.WantToSentTextMessage(sender != null ? sender : PlayerManager.GetLocalPlayerAgent(), message, receiver);
     }
     public static List<PlayerAIBot> GetBotList()
     {

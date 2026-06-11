@@ -1,4 +1,5 @@
-﻿using Player;
+﻿using Agents;
+using Player;
 using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
@@ -8,6 +9,7 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
         public static int collisionLayer = LayerManager.MASK_ENEMY_PROJECTILE_COLLIDERS;
         public string FriendlyName => "Move To";
         public string FriendlyNameShort => "Move";
+        public string FriendlyIdentifier => "Move";
         public Il2CppSystem.Type Type => null;
         public int? Priority => 10;
         public string pressTypeIdentifier => "Tap and Hold";
@@ -20,6 +22,7 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
             zBotActions.SendbotToMoveToLocation(BestBot, TaregetLocation, zStaticRefrences.LocalPlayer);
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_HURRY);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Hurry.", 1f);
+            zChatHandler.sendChatMessage("On the way.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

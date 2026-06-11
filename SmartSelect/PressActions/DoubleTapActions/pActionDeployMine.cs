@@ -1,7 +1,6 @@
 ﻿using Player;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
@@ -9,6 +8,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
     {
         public string FriendlyName => "Deploy Mine";
         public string FriendlyNameShort => "Mine";
+        public string FriendlyIdentifier => "Deploy Equipmenet";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Double Tap";
         public bool Invoke(Component BestComponent)
@@ -21,6 +21,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PUTATRIPMINEHERE);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Put a mine here.", 1);
             ZiMain.BotBarkBack(BestBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
+            zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         

@@ -1,13 +1,8 @@
 ﻿using BotControl.SmartSelect.PressActions;
-using Il2CppInterop.Runtime;
-using Il2CppSystem;
-using Player;
 using PrioritySet;
 using SlideDrum.sInputSystem;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using static BotControl.SmartSelect.PressTypes.IPressType;
 
 namespace BotControl.SmartSelect.PressTypes
 {
@@ -35,9 +30,9 @@ namespace BotControl.SmartSelect.PressTypes
                 if (_SelectableTypes == null)
                 {
                     _SelectableTypes = new HashSet<Il2CppSystem.Type>(new Il2CppTypePtrComparer());
-                    _SelectableTypes.Add(Il2CppType.Of<PlayerAgent>());
-                    //_SelectableTypes.Add(Il2CppType.Of<SentryGunInstance>());
-                    //_SelectableTypes.Add(Il2CppType.Of<LG_WeakDoor>());
+                    //_SelectableTypes.Add(Il2CppType.Of<PlayerAgent>());
+                    ////_SelectableTypes.Add(Il2CppType.Of<SentryGunInstance>());
+                    ////_SelectableTypes.Add(Il2CppType.Of<LG_WeakDoor>());
                 }
                 return _SelectableTypes;
             }
@@ -51,7 +46,7 @@ namespace BotControl.SmartSelect.PressTypes
         public PrioritySet<IPressAction> NullTypeActions { get { return _NullTypeActions; } set { _NullTypeActions = value; } }
         public Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> TypeActionMap { get { return _TypeActionMap; } set { _TypeActionMap = value; } }
 
-        public Type Type => throw new System.NotImplementedException();
+        //public Type Type => throw new System.NotImplementedException();
 
         // ── Private Backing Fields ────────────────────────────────────────────────
         private Component _CurrentComponent = null;

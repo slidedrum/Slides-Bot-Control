@@ -7,6 +7,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
     {
         public string FriendlyName => "Shoot Cfoam";
         public string FriendlyNameShort => "cFoam";
+        public string FriendlyIdentifier => "Deploy Equipmenet";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Double Tap";
         public bool Invoke(Component BestComponent)
@@ -16,8 +17,9 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             if (!Evaluate(BestBot.Agent)) return false;
             zBotActions.SendBotToUseCfoamGun(BestBot, zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, zStaticRefrences.LocalPlayer, 0);
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CFOAMHERE);
-            zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Put a mine here.", 1);
+            zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Put foam here.", 1);
             ZiMain.BotBarkBack(BestBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
+            zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool Evaluate(PlayerAgent ownerAgent)

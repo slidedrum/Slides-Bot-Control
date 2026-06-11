@@ -8,6 +8,7 @@ namespace BotControl.SmartSelect.PressActions
     {
         public string FriendlyName => "Revive Agent";
         public string FriendlyNameShort => "Revive";
+        public string FriendlyIdentifier => "Revive";
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
         public string pressTypeIdentifier => "Hold";
         public int? Priority => 100;
@@ -18,6 +19,7 @@ namespace BotControl.SmartSelect.PressActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             zBotActions.SendBotToReviveAgent(BestBot, Agent, zStaticRefrences.LocalPlayer, 0);
+            zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

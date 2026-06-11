@@ -10,6 +10,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
     {
         public string FriendlyName => "Attack Enemy";
         public string FriendlyNameShort => "Attack";
+        public string FriendlyIdentifier => "Attack";
         public Il2CppSystem.Type Type => Il2CppType.Of<EnemyAgent>();
         public string pressTypeIdentifier => "Hold";
         public bool Invoke(Component BestComponent)

@@ -37,5 +37,9 @@ namespace BotControl.SmartSelect.PressActions
                 ZiMain.log.LogError($"Could not find action {name} in Press Action Map.");
             return action;
         }
+        public static HashSet<IPressAction> GetAllActions()
+        {
+            return ActionMap.Values.ToHashSet();
+        }
     }
 }

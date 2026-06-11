@@ -9,6 +9,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         public string FriendlyNameShort => "Share";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Hold";
+        public string FriendlyIdentifier => "Share Resources";
         public bool Invoke(Component BestComponent)
         {
             PressActionManager.GetAction("Share Resource").Invoke(zStaticRefrences.LocalPlayer);

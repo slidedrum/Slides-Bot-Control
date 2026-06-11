@@ -17,14 +17,14 @@ namespace BotControl.SmartSelect.PressTypes
         // ── Action Maps ───────────────────────────────────────────────────────────
         public abstract PrioritySet<IPressAction> NullTypeActions { get; set; } // Backing field for Type action map of key null.
         public abstract Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> TypeActionMap { get; set; } // What actions can be performed on each type?
-        // todo why doesn't TypeActionMap get populated?
+
         // ── Identity / Configuration ──────────────────────────────────────────────
         public abstract string FriendlyName { get; } // Used for logging and configuration.
         public virtual string FriendlyNameShort => FriendlyName; // Used in the UI and hud.
         public virtual float SelectionAngle => 30f; // How wide of a angle is acceptable.  Remember that it does not search in a cone, it's a sphere arround the raycast point.
         public virtual fallbackType FallbackType => fallbackType.Default; // What to do if we don't find any valid actions from looking at selectable types.  See fallbackType enum for options.
         public abstract sSequenceDefinition PressSequence { get; } // When should this press be triggered?
-        public abstract HashSet<Il2CppSystem.Type> SelectableTypes { get; } // What types should we be looking for when trying to select a component to perform actions on?  Must be a Component.  Can be empty if FallbackType is not default, but if it is default then it should have at least one type.
+        public HashSet<Il2CppSystem.Type> SelectableTypes { get; } // What types should we be looking for when trying to select a component to perform actions on?  Must be a Component.  Can be empty if FallbackType is not default, but if it is default then it should have at least one type.
 
         // ── Methods / Enums ───────────────────────────────────────────────────────
 
@@ -35,6 +35,18 @@ namespace BotControl.SmartSelect.PressTypes
             //Nothing,     // Literally select the nothing
             PlayerAgent, // Select a player agent through walls if we can't find anything else.
             PlayerAiBot, // Select a player ai bot through walls if we can't find anything else.
+        }
+        public virtual PrioritySet<IPressAction> GetAllActions()
+        {
+            if (TypeActionMap.Count == 0)
+                PressActionManager.Initialize();
+            PrioritySet<IPressAction> combined = new PrioritySet<IPressAction>();
+            foreach (PrioritySet<IPressAction> list in TypeActionMap.Values)
+            {
+                combined.UnionWith(list);
+            }
+            combined.UnionWith(NullTypeActions);
+            return combined;
         }
         public virtual void RegisterAction(IPressAction action, int? priority = null)
         {
@@ -59,6 +71,8 @@ namespace BotControl.SmartSelect.PressTypes
                     TypeActionMap[Type] = set;
                 }
             }
+            if (action.Type != null)
+                SelectableTypes.Add(action.Type);
             set.Add(action, priority);
         } // For adding an action to this press type
         public virtual bool Invoke() // Triggerd when the PressSequence triggers.

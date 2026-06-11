@@ -1,14 +1,13 @@
-﻿using GTFO.API;
+﻿using BotControl.Networking;
+using GTFO.API;
+using SlideMenu;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BotControl.Networking;
-using BotControl;
-using SlideMenu;
+using UnityEngine;
 
-namespace BotControl
+namespace SlideDrum
 {
-
     public interface IOverrideTree
     {
         public bool IsDefaultValue(string key);
@@ -38,6 +37,18 @@ namespace BotControl
         string IOverrideTree.identifier => identifier;
         uint IOverrideTree.treeID => treeID;
 
+        public class FallbackLink
+        {
+            public Node Target { get; }
+            public int? MaxDepth { get; }
+
+            public FallbackLink(Node target, int? maxDepth = null)
+            {
+                Target = target ?? throw new ArgumentNullException(nameof(target));
+                MaxDepth = maxDepth;
+            }
+        }
+
         public class Node
         {
             public uint nodeID { get; private set; }
@@ -45,15 +56,18 @@ namespace BotControl
             public T? Value { get; set; }
             private bool hasDefaultValue { get; }
             private T? _DefaultValue { get; }
-            public T? DefaultValue { get 
-                {  
+            public T? DefaultValue
+            {
+                get
+                {
                     if (hasDefaultValue)
                         return _DefaultValue;
                     if (Parent != null)
                         return Parent.DefaultValue;
                     return default(T);
-                } }
-            public T? InitalValue { get;}
+                }
+            }
+            public T? InitalValue { get; }
             public FlexibleEvent onChanged = new();
             public FlexibleEvent onThisNodeChanged = new();
             public Func<bool>? Condition { get; }
@@ -61,6 +75,7 @@ namespace BotControl
             public Node? Parent { get; private set; }
             public OverrideTree<T> Tree { get; internal set; }
             public List<Node> Children { get; } = new();
+            public List<FallbackLink> Fallbacks { get; } = new();
             internal Node(string key, Node parent = null, T? value = default, Func<bool>? condition = null, T? defaultValue = default, bool hasDefaultValue = false) //If you supply a parent, you can opt to not supply a value
             {
                 if (defaultValue != null)
@@ -71,7 +86,7 @@ namespace BotControl
                 Parent = parent;
                 InitalValue = value;
                 _DefaultValue = defaultValue;
-                nodeID = zHelpers.HashString(GetNodeTreeString());
+                nodeID = HashString(GetNodeTreeString());
                 this.hasDefaultValue = hasDefaultValue;
             }
             public T? GetValue() //Traverse down the tree to get deepest value
@@ -89,12 +104,85 @@ namespace BotControl
                 }
                 return ret;
             }
+            public void AddFallback(Node target, int? maxDepth = null)
+            {
+                if (target == null)
+                    throw new ArgumentNullException(nameof(target));
+                Fallbacks.Add(new FallbackLink(target, maxDepth));
+            }
+
+            public bool RemoveFallback(Node target, int? maxDepth = null, bool matchMaxDepth = false)
+            {
+                if (target == null)
+                    throw new ArgumentNullException(nameof(target));
+                for (int i = 0; i < Fallbacks.Count; i++)
+                {
+                    var link = Fallbacks[i];
+                    if (link.Target != target)
+                        continue;
+                    if (matchMaxDepth && link.MaxDepth != maxDepth)
+                        continue;
+                    Fallbacks.RemoveAt(i);
+                    return true;
+                }
+                return false;
+            }
+
             public T? ValueAt() //Traverse up the tree to get value at given node
             {
                 if (Value != null) return Value;
+
+                foreach (var fallback in Fallbacks)
+                {
+                    var fallbackValue = ResolveFallbackValue(fallback, new HashSet<Node>());
+                    if (fallbackValue != null)
+                        return fallbackValue;
+                }
+
                 if (Parent == null)
                     throw new InvalidOperationException("Root node has null value.");
                 return Parent.ValueAt();
+            }
+
+            private T? ResolveFallbackValue(FallbackLink link, HashSet<Node> visited)
+            {
+                return ResolveFallbackNode(link.Target, link.MaxDepth, visited);
+            }
+
+            private T? ResolveFallbackNode(Node node, int? maxDepth, HashSet<Node> visited)
+            {
+                if (node == null)
+                    return default;
+
+                if (!visited.Add(node))
+                    return default;
+
+                if (node.Value != null)
+                    return node.Value;
+
+                if (maxDepth == 0)
+                    return default;
+
+                int? childBudget = maxDepth.HasValue ? maxDepth.Value - 1 : null;
+
+                foreach (var fallback in node.Fallbacks)
+                {
+                    int? effectiveDepth = CombineMaxDepth(childBudget, fallback.MaxDepth);
+                    var value = ResolveFallbackNode(fallback.Target, effectiveDepth, visited);
+                    if (value != null)
+                        return value;
+                }
+
+                return default;
+            }
+
+            private static int? CombineMaxDepth(int? budget, int? linkMaxDepth)
+            {
+                if (budget == null)
+                    return linkMaxDepth;
+                if (linkMaxDepth == null)
+                    return budget;
+                return Math.Min(budget.Value, linkMaxDepth.Value);
             }
             public void SetValue(T? newValue)
             {
@@ -150,6 +238,21 @@ namespace BotControl
                 return Parent.GetNodeTreeString() + "/" + nodeIdentity;
             }
         }
+        public static uint HashString(string str)
+        {
+            unchecked
+            {
+                uint hash = 2166136261;
+
+                for (int i = 0; i < str.Length; i++)
+                {
+                    hash ^= str[i];
+                    hash *= 16777619;
+                }
+
+                return hash;
+            }
+        }
         public static void ResetTrees()
         {
             Trees.Clear();
@@ -157,7 +260,7 @@ namespace BotControl
         public OverrideTree(T rootValue, string identifier, string rootKey = "Default", FlexibleMethodDefinition OnChanged = null)
         {
             this.identifier = identifier;
-            treeID = zHelpers.HashString(identifier);
+            treeID = HashString(identifier);
             Trees[treeID] = this;
             if (rootValue == null)
                 throw new ArgumentNullException(nameof(rootValue), "Initial value can not be null");
@@ -194,7 +297,7 @@ namespace BotControl
                 parrentNode = nodes[parent];
             }
 
-            return AddNode(key, value, parrentNode, condition, onChanged, defaultValue,  hasDefaultValue);
+            return AddNode(key, value, parrentNode, condition, onChanged, defaultValue, hasDefaultValue);
         }
         public Node AddNode(string key, T? value, Node? parent = null, Func<bool>? condition = null, FlexibleMethodDefinition onChanged = null, T? defaultValue = default, bool hasDefaultValue = false)
         {
@@ -205,7 +308,7 @@ namespace BotControl
                     throw new InvalidOperationException($"Key '{key}' already in use.");
                 else
                     throw new InvalidOperationException($"Key '{key}' already in use. Consider combineing with the parrent key for '{parent.nodeIdentity}/{key}'");
-                
+
             if (parent == null)
                 parent = rootNode;
             if (!nodes.Values.Contains(parent))
@@ -220,23 +323,41 @@ namespace BotControl
                 node.onChanged.Listen(onChanged);
             return node;
         }
+        public OverrideTree<T> AddFallback(string key, string targetKey, int? maxDepth = null)
+        {
+            AddFallback(NodeAt(key), GetNodeFromIdent(targetKey), maxDepth);
+            return this;
+        }
+        public Node AddFallback(Node node, Node target, int? maxDepth = null)
+        {
+            node.AddFallback(target, maxDepth);
+            return node;
+        }
+        public bool RemoveFallback(string key, string targetKey, int? maxDepth = null, bool matchMaxDepth = false)
+        {
+            return RemoveFallback(NodeAt(key), GetNodeFromIdent(targetKey), maxDepth, matchMaxDepth);
+        }
+        public bool RemoveFallback(Node node, Node target, int? maxDepth = null, bool matchMaxDepth = false)
+        {
+            return node.RemoveFallback(target, maxDepth, matchMaxDepth);
+        }
         public T? SetValue(uint nodeID, T? value, ulong netSender = 0)
         {
             if (!nodesByID.ContainsKey(nodeID))
             {
-                ZiMain.log.LogWarning($"Tried to set unknown nodeID '{nodeID}' in '{treeID} ({identifier}) to '{value}' via netSender {netSender} ");
+                Debug.Log($"Tried to set unknown nodeID '{nodeID}' in '{treeID} ({identifier}) to '{value}' via netSender {netSender} ");
                 return default(T);
             }
             //throw new KeyNotFoundException(nameof(nodeID));
             var node = nodesByID[nodeID];
-            ZiMain.log.LogDebug($"Setting value of node by ID '{nodeID}' ({node.GetNodeTreeString()}) in tree {treeID} ({identifier}) to '{value}' (netSender: {netSender})");
+            Debug.Log($"Setting value of node by ID '{nodeID}' ({node.GetNodeTreeString()}) in tree {treeID} ({identifier}) to '{value}' (netSender: {netSender})");
             return SetValue(nodesByID[nodeID].nodeIdentity, value, netSender);
         }
         public T? ResetToDefault(string key, ulong netSender = 0)
         {
             if (!nodes.ContainsKey(key))
             {
-                ZiMain.log.LogWarning($"Tried to reset unknown key '{key}' in '{treeID} ({identifier}) to default via netSender {netSender} ");
+                Debug.Log($"Tried to reset unknown key '{key}' in '{treeID} ({identifier}) to default via netSender {netSender} ");
                 return default(T);
             }
             Node node = nodes[key];
@@ -246,12 +367,12 @@ namespace BotControl
         {
             if (!nodes.ContainsKey(key))
             {
-                ZiMain.log.LogWarning($"Tried to set unknown key '{key}' in '{treeID} ({identifier}) to '{value}' via netSender {netSender} ");
+                Debug.Log($"Tried to set unknown key '{key}' in '{treeID} ({identifier}) to '{value}' via netSender {netSender} ");
                 return default(T);
             }
             //throw new KeyNotFoundException(nameof(key));
             Node node = nodes[key];
-            ZiMain.log.LogDebug($"Setting value of node by key '{node.GetNodeTreeString()}' ({node.nodeID}) in tree {treeID} ({identifier}) to '{value}' (netSender: {netSender})");
+            Debug.Log($"Setting value of node by key '{node.GetNodeTreeString()}' ({node.nodeID}) in tree {treeID} ({identifier}) to '{value}' (netSender: {netSender})");
             node.SetValue(value);
             if (netSender == 0) // We need to sync these values between clients.
             {
@@ -326,7 +447,7 @@ namespace BotControl
                         }
                     default:
                         {
-                            ZiMain.log.LogWarning($"set unusual type ({value?.GetType().Name ?? "null"}) in override tree.");
+                            Debug.Log($"set unusual type ({value?.GetType().Name ?? "null"}) in override tree.");
                             break;
                         }
 
@@ -342,7 +463,7 @@ namespace BotControl
         public T? GetValue(string key = null)
         {
             if (key == null)
-                 return rootNode.GetValue();
+                return rootNode.GetValue();
             return NodeAt(key).GetValue();
         }
         public T? ValueAt(string key)

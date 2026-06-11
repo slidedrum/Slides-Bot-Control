@@ -126,6 +126,8 @@ namespace BotControl
             {
                 foreach (Il2CppSystem.Type Type in Types)
                 {
+                    if (Type == null)
+                        continue;
                     Component componenet = collider.GetComponentInParent(Type);
                     if (componenet != null)
                     {

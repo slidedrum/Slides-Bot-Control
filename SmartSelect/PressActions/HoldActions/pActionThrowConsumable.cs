@@ -1,6 +1,7 @@
 ﻿using Player;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions
 {
@@ -8,6 +9,7 @@ namespace BotControl.SmartSelect.PressActions
     {
         private static List<string> ThrowableArchatipes = new() { "Glow Stick", "C-Foam Grenade" , "Fog Repeller" };
         public string FriendlyName => "Throw Consumable";
+        public string FriendlyIdentifier => "Throw Consumable";
         public string FriendlyNameShort => "Throw";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Hold";
@@ -41,6 +43,7 @@ namespace BotControl.SmartSelect.PressActions
                 zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Put a fog reppeler here.", 1f);
             }
             zBotActions.SendBotToThrowItem(LocalPlayer, BestBot.Agent, ThrowType, LocalPlayer.transform.position, LocalPlayer.FPSCamera.CameraRayPos);
+            zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

@@ -1,7 +1,4 @@
-﻿using Agents;
-using Il2CppInterop.Runtime;
-using Player;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
 {
@@ -9,6 +6,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     {
         public string FriendlyName => "Select All";
         public string _FriendlyNameShort => "Select-A";
+        public string FriendlyIdentifier => "Select";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);

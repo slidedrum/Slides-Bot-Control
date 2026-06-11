@@ -7,9 +7,11 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
     public class pActionDestroyDoor : IPressAction
     {
         public string FriendlyName => "Destroy Door";
+        public string FriendlyIdentifier => "Destroy Door";
         public string FriendlyNameShort => "Destroy";
         public Il2CppSystem.Type Type => Il2CppType.Of<LG_WeakDoor>();
         public string pressTypeIdentifier => "Double Tap";
+        public bool Enabled => false;
         public bool Invoke(Component BestComponent)
         {
             LG_WeakDoor Door = BestComponent.TryCast<LG_WeakDoor>();

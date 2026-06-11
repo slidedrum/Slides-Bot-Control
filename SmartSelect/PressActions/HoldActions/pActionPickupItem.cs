@@ -10,6 +10,7 @@ namespace BotControl.SmartSelect.PressActions
     {
         public string FriendlyName => "Pickup Item";
         public string FriendlyNameShort => "Pickup";
+        public string FriendlyIdentifier => "Pickup Item";
         public Il2CppSystem.Type Type => Il2CppType.Of<ItemInLevel>();
         public string pressTypeIdentifier => "Hold";
         public bool Invoke(Component BestComponent)
@@ -23,6 +24,7 @@ namespace BotControl.SmartSelect.PressActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_GRABTHEITEM);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Grab the item.", 1);
             zBotActions.SendBotToPickupItem(BestBot, Item, zStaticRefrences.LocalPlayer);
+            //zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "NotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)
