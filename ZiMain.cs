@@ -236,12 +236,13 @@ public class ZiMain : BasePlugin
         bool manualAction = zActions.isManualAction(action.DescBase);
         if (manualAction)
         {
-            PlayerBotActionBase.Descriptor actionToRemove = null;
-            foreach (var desc in zActions.manualActions)
+            ManualAction actionToRemove = null;
+            foreach (ManualAction Action in zActions.manualActions)
             {
+                var desc = Action.ActionDescriptor;
                 if (desc.Pointer == action.DescBase.Pointer)
                 {
-                    actionToRemove = desc;
+                    actionToRemove = Action;
                     break;
                 }
             }

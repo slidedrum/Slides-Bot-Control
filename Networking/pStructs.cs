@@ -98,6 +98,7 @@ namespace BotControl.Networking
             public ushort MineReplicatorKey;
             public pPlayerAgent BotAgent;
             public pPlayerAgent Commander;
+            internal uint ID;
         }
         public struct pAttackEnemyInfo
         {
@@ -116,41 +117,48 @@ namespace BotControl.Networking
             public pStateReplicatorProvider Lock;
             public pPlayerAgent BotAgent;
             public pPlayerAgent Commander;
+            internal uint ID;
         }
         internal struct pPlaceToolInfo
         {
             public pPlayerAgent playerAgent;
             public pPlayerAgent commander;
             public Pose Pose;
+            internal uint ID;
         }
         internal struct pPickupSentryInfo
         {
             public pPlayerAgent playerAgent;
             public pPlayerAgent commander;
+            internal uint ID;
         }
         internal struct pPickupItemInfo
         {
             public pItemData item;
             public pPlayerAgent playerAgent;
             public pPlayerAgent commander;
+            internal uint ID;
         }
         internal struct pShareResourceInfo
         {
             public pPlayerAgent sender;
             public pPlayerAgent receiver;
             public pPlayerAgent commander;
+            internal uint ID;
         }
         internal struct pReviveAgentInfo
         {
             public pPlayerAgent Revier;
             public pPlayerAgent Downed;
             public pPlayerAgent commander;
+            internal uint ID;
         }
         internal struct pUseCfoamInfo
         {
             public pPlayerAgent Agent;
             public pPlayerAgent Commander;
             public Vector3 position;
+            internal uint ID;
         }
         internal struct pPlaceMineInfo
         {
@@ -158,12 +166,14 @@ namespace BotControl.Networking
             public pPlayerAgent Commander;
             public Pose pose;
             public InventorySlot slot;
+            internal uint ID;
         }
         internal struct pMoveToLocationInfo
         {
             public Vector3 position;
             public pPlayerAgent BotAgent;
             public pPlayerAgent Commander;
+            public uint ID;
         }
         internal struct pBoolOverideTreeInfo
         {
@@ -199,6 +209,7 @@ namespace BotControl.Networking
             //public pThrowType ThrowType;
             public Vector3 MovePosition;
             public Vector3 TargetPosition;
+            internal uint ID;
         }
     }
 }

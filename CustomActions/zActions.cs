@@ -1,5 +1,6 @@
 ﻿using Player;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace BotControl.zRootBotPlayerAction
 {
@@ -12,15 +13,24 @@ namespace BotControl.zRootBotPlayerAction
         public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase> m_actions { get; set; } = new();
         public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor> m_queuedActions { get; set; } = new();
     }
-    public struct ManualAction
+    public class ManualAction
     {
         public PlayerBotActionBase.Descriptor ActionDescriptor;
         public PlayerAgent Commander;
         public PlayerAIBot Bot;
+        public uint ID;
+        private ManualAction() { }
+        public ManualAction(PlayerBotActionBase.Descriptor ActionDescriptor, PlayerAgent Commander, PlayerAIBot Bot, uint ID)
+        {
+            this.ActionDescriptor = ActionDescriptor;
+            this.Commander = Commander;
+            this.Bot = Bot;
+            //this.ID = zHelpers.HashString($"{ActionDescriptor.GetIl2CppType().FullName}{Commander.PlayerName}{Bot.Agent.PlayerName}{Time.time}");
+        }
     }
     public static class zActions
     {
-        public static List<PlayerBotActionBase.Descriptor> manualActions = new();
+        public static List<ManualAction> manualActions = new();
         internal static readonly Dictionary<int, dataStore> ActionDataStore = new();
         internal static dataStore GetOrCreateData(PlayerBotActionBase.Descriptor desc)
         {
@@ -54,9 +64,10 @@ namespace BotControl.zRootBotPlayerAction
             if (descriptor == null) return false;
             if (manualActions == null) return false;
 
-            foreach (var desc in manualActions)
+            foreach (ManualAction Action in manualActions)
             {
-                if (desc == null) continue; // just in case
+                var desc = Action.ActionDescriptor;
+                if (desc == null) continue;
 
                 if (desc.Pointer == descriptor.Pointer)
                     return true;
