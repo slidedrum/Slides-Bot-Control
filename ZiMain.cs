@@ -17,6 +17,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using BotControl.SmartSelect;
 using static BotControl.Networking.pStructs;
+using BotControl.CustomActions;
 
 /*
  == TODO == Priority: Clean up the mess I made creating custom actions.
@@ -165,7 +166,7 @@ public class ZiMain : BasePlugin
         m_Harmony.PatchAll();
         ClassInjector.RegisterTypeInIl2Cpp<zUpdater>();
         ClassInjector.RegisterTypeInIl2Cpp<zCameraEvents>();
-         
+
         //NetworkAPI.RegisterEvent<pItemPrioDisable>          ("SetItemPrioDisable",              zNetworking.ReciveSetItemPrioDisable);
         //NetworkAPI.RegisterEvent<pItemPrio>                 ("SetItemPrio",                     zNetworking.ReciveSetItemPrio);
         //NetworkAPI.RegisterEvent<pResourceThreshold>        ("SetResourceThreshold",            zNetworking.reciveSetResourceThreshold);
@@ -192,6 +193,8 @@ public class ZiMain : BasePlugin
 
         //EventAPI.OnExpeditionStarted += ZombieController.Initialize;
         log = Log;
+        PlayerAIBotPatch.Apply(m_Harmony, log.LogInfo);
+        PlayerAgentPatch.Apply(m_Harmony, log.LogInfo);
         zActionSub.addOnRemoved((Action<PlayerAIBot, PlayerBotActionBase>)onActionTerminated);
         zActionSub.addOnAdded((Action<PlayerAIBot, PlayerBotActionBase>)onActionAdded);
         EventAPI.OnManagersSetup += () =>
