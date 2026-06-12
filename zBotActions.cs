@@ -537,8 +537,7 @@ namespace BotControl
             aiBot.StartAction(descriptor);
             return descriptor;
         }
-        private static PlayerBotActionUnlock.Descriptor.MethodEnum method = PlayerBotActionUnlock.Descriptor.MethodEnum.Any;
-        internal static void SendbotToBreakLock(PlayerAIBot aiBot, LG_WeakLock Lock, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
+        internal static void SendbotToBreakLock(PlayerAIBot aiBot, LG_WeakLock Lock, PlayerBotActionUnlock.Descriptor.MethodEnum method, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
@@ -584,6 +583,7 @@ namespace BotControl
                 info.Commander = pStructs.Get_pStructFromRefrence(Commander);
                 info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
                 info.ID = actionID;
+                info.Method = method;
                 NetworkAPI.InvokeEvent<pBreakLockInfo>("RequestToBreakLock", info);
             }
 

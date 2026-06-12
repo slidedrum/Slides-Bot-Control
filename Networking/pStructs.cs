@@ -122,6 +122,7 @@ namespace BotControl.Networking
             public pStateReplicatorProvider Lock;
             public pPlayerAgent BotAgent;
             public pPlayerAgent Commander;
+            public PlayerBotActionUnlock.Descriptor.MethodEnum Method;
             internal uint ID;
         }
         internal struct pPlaceToolInfo

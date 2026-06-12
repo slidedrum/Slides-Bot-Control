@@ -5,6 +5,7 @@ using Player;
 using SlideDrum;
 using SNetwork;
 using UnityEngine;
+using static Player.PlayerBotActionUnlock.Descriptor;
 
 namespace BotControl.Networking
 {
@@ -340,13 +341,14 @@ namespace BotControl.Networking
             info.Lock.pRep.TryGetID(out IReplicator rep);
             GameObject LockGO = rep.ReplicatorSupplier.gameObject;
             LG_WeakLock Lock = LockGO.GetComponent<LG_WeakLock>();
+            MethodEnum method = info.Method;
             ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to use break the lock at {LockGO.transform.position}");
             if (!BotAgent.Owner.IsBot)
             {
                 ZiMain.log.LogWarning("Invalid request to break lock, You can't tell a player what to do.");
                 return;
             }
-            zBotActions.SendbotToBreakLock(BotAgent.GetComponent<PlayerAIBot>(), Lock, Commander, netSender, info.ID);
+            zBotActions.SendbotToBreakLock(BotAgent.GetComponent<PlayerAIBot>(), Lock, method, Commander, netSender, info.ID);
         }
         internal static void ReciveRequestToSetLeader(ulong netSender, pStructs.pLeaderInfo info)
         {

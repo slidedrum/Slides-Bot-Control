@@ -28,7 +28,28 @@ One of the major features of this mod is letting you change the priority of diff
  - Control if bots are allowed to revive players or bots.
  - Control what things bots are allowed to ping.
  - Control if bots are allowed to smash locks
-
+ 
+## How to use Smart select!
+ - Depending on what you're looking at and context, you can tell the bots to do one of 4 different actions at any given time.  Tap V while looking at a bot to select them, then you can see what they can do at any time on the bottom of your screen.  You can command them by (from left to right) Tapping V, Holding V, Double tapping V, and Tapping then holding V.  There are about 2 dozen different things you can tell them to do!  With more coming eventually.  Below is the full chart of what they can do and how to tell them to do it:
+            (      TAP     /     HOLD      /   DOUBLE TAP  /  TAP & HOLD   ) 
+            ( ------------------------------------------------------------ ) 
+        Bot ( ---Select--- / ----Share---- / Follow/Cancel / ---Send To--- )
+     Player ( ------------ / ----Share---- / ---Follow---- / ---Send To--- )
+       Item ( ------------ / ---Pickup---- / ------------- / ------------- )
+  Equipment ( ---Pickup--- / --*Refill*--- / -Pickup All-- / ------------- )
+  Container ( ---*Open*--- / ------------- / --*Place?*--- / ------------- )
+ Floor/Wall ( ------------ / -Consumable-- / --Equipment-- / ----Move----- )
+    Holding ( ------------ / -*Drop Here*- / --Drop Now--- / ------------- )
+       Door ( *Open/Close* / -Throw cFoam- / --*Break?*--- / ------------- )
+       Lock ( ---Unlock--- / -Lock Melter- / ------------- / ------------- )
+      Enemy ( ------------ / --*Attack*--- / -*Countdown*- / ------------- )
+  Generator ( ------------ / *Place Cell*- / ------------- / ------------- )
+    Look Up ( Cancel Last- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
+  Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- )
+ - Items surrounded by * mean that it's not in the current version, but coming eventually.
+ - When you tell a bot to move to a location, they will no longer follow you.  You must double tap them to tell them to follow you again, they will never come back untill you do. I plan to make some sort of option to have they return to you if you go some distnace away, or if they get attacked.  That will come eventually.
+ - Known bug: bots will have trouble reaching some containers, mostly ones that exist above or below another part of the level.
+ 
 ## Planned features:
  - Better in game explanation of how to use the menu and what it can do.
  - Integration with [TheArchive Core](https://thunderstore.io/c/gtfo/p/AuriRex/TheArchive_Core/) for a settings menu with settings like:
@@ -38,12 +59,6 @@ One of the major features of this mod is letting you change the priority of diff
    - binding specific toggles to a hotkey
  - Show what the bot is currently doing above their head.
  - Allow you to have per bot permissions, so Dauda is allowed to use ammo but Hacket is not for example.
- - Expand smart select
-   - Tell a bot to revive a player
-   - tell a bot to place/pickup their turret
-   - tell a bot to stand in a specific place
-     - with options to come back if attacked
-     - with options to change how far they are allowed to wander if attacked
  - Optionally replace the Q menu entirely with my menu with all of it's features.
  
 ## Known issues:
@@ -67,6 +82,12 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
 
 
 ### Changelog
+
+
+V1.1.0
+ - Completely overhauled the smart select system!  
+ - Added (possibly too many) options to control when the bots talk in chat.
+
 V1.0.3
  - Stopped bots from repeatedly spamming chat with failed actions.
  - Added submenu for 'bots talking settings', letting you disable individual things they say.
