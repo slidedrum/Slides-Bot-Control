@@ -13,8 +13,8 @@ namespace BotControl.Menus
             unlockNode.ClearListeners(sMenuManager.nodeEvent.OnUnpressedSelected);
             unlockNode.AddListener(sMenuManager.nodeEvent.OnDoubleTapped, unlockMenu.Open);
             unlockMenu.AddPannel(sMenu.sMenuPannel.Side.top, "This controls if the bots are allowed to smash locks on doors/containers");
-            unlockMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "No settins here (yet?)");
-            unlockMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "I'm not ev en sure what settings you would want.");
+            unlockMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "TODO: Control if bots can use lock melters automatically.");
+            unlockMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "TODO: Control if bots will auto unlock containers or doors or both");
         }
     }
 }
