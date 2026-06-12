@@ -115,6 +115,7 @@ want to add new bot actions like hold position, look for resource type (in nearb
 want to make "go here" command
 want to make "home" location function where they "follow" a set location but aren't strickly stuck to it if they get into combat, similar to following a player.
 want to make it so bots will open doors to get back to the person they are folling if they have to.
+want to rework collection logic so it collects all reachable items for all bots, then picks the "best" set of items for the bots to carry, and then has the bots pick those up.  No more hot potato!
 
 found bot commands in PUI_CommunicationMenu.execute
 public enum eGameEvent might be useful
@@ -129,7 +130,7 @@ namespace BotControl;
 [BepInDependency("com.east.bb", BepInDependency.DependencyFlags.SoftDependency)]
 public class ZiMain : BasePlugin
 { //this class should contain all methods to call actions, any helpers to faciliate that, and inital setup,
-    public const string version = "1.0.3";
+    public const string version = "1.1.0";
     public static ManualLogSource log;
     internal static bool newRootBotPlayerAction = true;
     public static Dictionary<string, PlayerAIBot> BotTable = new();
