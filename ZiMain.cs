@@ -2,12 +2,15 @@
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using BotControl.Networking;
+using BotControl.SmartSelect;
+using BotControl.zRootBotPlayerAction;
 using CellMenu;
 using Enemies;
 using GTFO.API;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using LevelGeneration;
+using Patches.Native;
 using Player;
 using SlideMenu;
 using SNetwork;
@@ -15,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using BotControl.SmartSelect;
 using static BotControl.Networking.pStructs;
 using BotControl.CustomActions;
 
@@ -197,6 +199,7 @@ public class ZiMain : BasePlugin
         PlayerAgentPatch.Apply(m_Harmony, log.LogInfo);
         zActionSub.addOnRemoved((Action<PlayerAIBot, PlayerBotActionBase>)onActionTerminated);
         zActionSub.addOnAdded((Action<PlayerAIBot, PlayerBotActionBase>)onActionAdded);
+        UseBioscanEvaluatePatches.ApplyNativePatch();
         EventAPI.OnManagersSetup += () =>
         {
             zUpdater.CreateInstance();
