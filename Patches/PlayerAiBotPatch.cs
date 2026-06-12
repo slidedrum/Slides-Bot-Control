@@ -2,11 +2,9 @@
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Player;
 using UnityEngine;
-using BotControl.zRootBotPlayerAction;
 
 
 //using ZombieTweak2.zRootBotPlayerAction.CustomActions;
-using BotControl;
 
 namespace BotControl.Patches
 {

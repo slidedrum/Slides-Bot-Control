@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BotControl.zRootBotPlayerAction
+namespace BotControl
 {
     public class dataStore
     {

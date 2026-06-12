@@ -33,8 +33,8 @@ One of the major features of this mod is letting you change the priority of diff
  - Depending on what you're looking at and context, you can tell the bots to do one of 4 different actions at any given time.  Tap V while looking at a bot to select them, then you can see what they can do at any time on the bottom of your screen.  You can command them by (from left to right) Tapping V, Holding V, Double tapping V, and Tapping then holding V.  There are about 2 dozen different things you can tell them to do!  With more coming eventually.  Below is the full chart of what they can do and how to tell them to do it:
             (      TAP     /     HOLD      /   DOUBLE TAP  /  TAP & HOLD   ) 
             ( ------------------------------------------------------------ ) 
-        Bot ( ---Select--- / ----Share---- / Follow/Cancel / ---Send To--- )
-     Player ( ------------ / ----Share---- / ---Follow---- / ---Send To--- )
+        Bot ( ---Select--- / ----Share---- / --Follow me-- / ---Send To--- )
+     Player ( ------------ / ----Share---- / ------------- / ---Send To--- )
        Item ( ------------ / ---Pickup---- / ------------- / ------------- )
   Equipment ( ---Pickup--- / --*Refill*--- / -Pickup All-- / ------------- )
   Container ( ---*Open*--- / ------------- / --*Place?*--- / ------------- )
@@ -86,7 +86,9 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
 
 V1.1.0
  - Completely overhauled the smart select system!  
+ - This is completly underselling what this update is, there is SO MUCH new stuff in the smart select system now.
  - Added (possibly too many) options to control when the bots talk in chat.
+ - Overhauled the backend of how different types of taps work.  It's now extremely generic and very cool even if it makes no difference to players.
 
 V1.0.3
  - Stopped bots from repeatedly spamming chat with failed actions.
