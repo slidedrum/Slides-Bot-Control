@@ -13,7 +13,8 @@ namespace BotControl.SmartSelect.PressActions
         public string FriendlyIdentifier => "Pickup Item";
         public Il2CppSystem.Type Type => Il2CppType.Of<ItemInLevel>();
         public string pressTypeIdentifier => "Hold";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent) // TODO make sure bots don't instantly drop the item you just told them to pick up.  
+                                                    // But then how do you tell bots they are allowed to pick stuff up again?
         {
             ItemInLevel Item = BestComponent.TryCast<ItemInLevel>();
             if (Item == null)

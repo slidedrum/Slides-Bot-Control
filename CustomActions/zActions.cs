@@ -25,7 +25,7 @@ namespace BotControl.zRootBotPlayerAction
             this.ActionDescriptor = ActionDescriptor;
             this.Commander = Commander;
             this.Bot = Bot;
-            //this.ID = zHelpers.HashString($"{ActionDescriptor.GetIl2CppType().FullName}{Commander.PlayerName}{Bot.Agent.PlayerName}{Time.time}");
+            this.ID = ID;
         }
     }
     public static class zActions

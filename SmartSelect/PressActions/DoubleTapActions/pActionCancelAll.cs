@@ -12,6 +12,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         public string FriendlyIdentifier => "Cancel Action";
         public Il2CppSystem.Type Type => null;
         public bool Enabled => true;
+        public int? Priority => 20;
         public string pressTypeIdentifier => "Double Tap";
         public bool Invoke(Component BestComponent)
         {
@@ -36,7 +37,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             bool facingUp = Vector3.Angle(zStaticRefrences.CameraTransform.forward, Vector3.up) < 15f;
             if (!facingUp) return false;
             if (zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Count <= 1) return false;
-            return false;
+            return true;
         }
     }
 }

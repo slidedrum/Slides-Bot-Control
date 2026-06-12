@@ -74,7 +74,7 @@ namespace BotControl
         public static void SendbotToMoveToLocation(PlayerAIBot aiBot,Vector3 TargetLocation, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (aiBot == null) return;
-            if (actionID == 0 && !SNet.IsMaster)
+            if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             PlayerBotActionTravel.Descriptor Desc = new PlayerBotActionTravel.Descriptor(aiBot)
             {
@@ -136,7 +136,7 @@ namespace BotControl
         }
         public static void SendBotToPickUpSentry(PlayerAIBot aiBot, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
-            if (actionID == 0 && !SNet.IsMaster)
+            if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             PlayerBotActionDeploySentryGun.Descriptor desc = new(aiBot)
             {
@@ -162,7 +162,7 @@ namespace BotControl
         }
         public static void SendBotToPlaceSentry(PlayerAIBot aiBot, Pose sentryPose, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
-            if (actionID == 0 && !SNet.IsMaster)
+            if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             PlayerBotActionDeploySentryGun.Descriptor desc = new(aiBot)
             {
@@ -190,7 +190,7 @@ namespace BotControl
         }
         public static void SendBotToPlaceMine(PlayerAIBot aiBot, Pose minePose, InventorySlot slot, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
-            if (actionID == 0 && !SNet.IsMaster)
+            if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             PlayerBotActionDeployTripMine.Descriptor desc = new(aiBot)
             {
@@ -220,7 +220,7 @@ namespace BotControl
         }
         public static void SendBotToUseCfoamGun(PlayerAIBot aiBot, Vector3 targetPosition, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
-            if (actionID == 0 && !SNet.IsMaster)
+            if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             PlayerBotActionUseGlueGun.Descriptor desc = new(aiBot)
             {
@@ -251,7 +251,7 @@ namespace BotControl
         }
         public static void SendBotToPickupItem(PlayerAIBot aiBot, ItemInLevel item, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
-            if (actionID == 0 && !SNet.IsMaster)
+            if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             float prio = defaultPrio;
             float haste = 1f;
@@ -292,7 +292,7 @@ namespace BotControl
         }
         public static void SendBotToReviveAgent(PlayerAIBot Reviver, PlayerAgent Downed, PlayerAgent Commander = null, ulong netsender  = 0, uint actionID = 0)
         {
-            if (actionID == 0 && !SNet.IsMaster)
+            if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{Reviver.Agent.PlayerName}{Time.time}");
             PlayerBotActionRevive.Descriptor desc = new(Reviver)
             {
@@ -326,7 +326,7 @@ namespace BotControl
         }
         public static void SendBotToCarryItem(PlayerAIBot aiBot, CarryItemPickup_Core item, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
-            if (actionID == 0 && !SNet.IsMaster)
+            if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             float prio = 11;
             PlayerBotActionCarryExpeditionItem.Descriptor desc = new(aiBot)
@@ -357,7 +357,7 @@ namespace BotControl
         }
         public static void SendBotToShareResourcePack(PlayerAIBot aiBot, PlayerAgent receiver, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
-            if (actionID == 0 && !SNet.IsMaster)
+            if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             //todo add to manual action list for refrence later.
             float prio = defaultPrio;
@@ -455,7 +455,7 @@ namespace BotControl
             // TODO Alow you to supply a target object, or target position.
             // If you supply a target poisition, then move position will be set to commanders location.
             // TODO low priority add option to revert back to old system where they throw as soon as they can see the target.
-            if (actionID == 0 && !SNet.IsMaster)
+            if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{botAgent.PlayerName}{Time.time}");
             PlayerAIBot aiBot = botAgent.GetComponent<PlayerAIBot>();
             zHelpers.TryGetAgentBackpackItem(aiBot.Agent, InventorySlot.Consumable, out var item);
@@ -540,7 +540,7 @@ namespace BotControl
         private static PlayerBotActionUnlock.Descriptor.MethodEnum method = PlayerBotActionUnlock.Descriptor.MethodEnum.Any;
         internal static void SendbotToBreakLock(PlayerAIBot aiBot, LG_WeakLock Lock, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
-            if (actionID == 0 && !SNet.IsMaster)
+            if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             float Prop = defaultPrio;
             iLG_WeakLockHolder holder = Lock.m_holder;

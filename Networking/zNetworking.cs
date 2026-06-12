@@ -1,6 +1,5 @@
 ﻿using BotControl.zRootBotPlayerAction;
 using Enemies;
-using InControl;
 using LevelGeneration;
 using Player;
 using SlideDrum;
@@ -84,7 +83,7 @@ namespace BotControl.Networking
             }
             PlayerAIBot aiBot = bot.GetComponent<PlayerAIBot>();
             if (aiBot == null) return;
-            zBotActions.SendbotToMoveToLocation(aiBot, position, commander, netsender);
+            zBotActions.SendbotToMoveToLocation(aiBot, position, commander, netsender, info.ID);
         }
         internal static void ReciveRequestToPickupMine(ulong sender, pStructs.pPickupMineInfo info)
         {
@@ -127,7 +126,7 @@ namespace BotControl.Networking
                 ZiMain.log.LogWarning("Invalid request to pickup mine, You can't tell a player what to do.");
                 return;
             }
-            zBotActions.SendBotToPickUpMine(agent.GetComponent<PlayerAIBot>(), Mine, commander, sender);
+            zBotActions.SendBotToPickUpMine(agent.GetComponent<PlayerAIBot>(), Mine, commander, sender, info.ID);
         }
         internal static void ReciveRequestToPickupItem(ulong sender, pStructs.pPickupItemInfo info)
         {
@@ -154,7 +153,7 @@ namespace BotControl.Networking
                 return;
             }
             PlayerAIBot aiBot = agent.gameObject.GetComponent<PlayerAIBot>();
-            zBotActions.SendBotToPickupItem(aiBot, item, commander, sender);
+            zBotActions.SendBotToPickupItem(aiBot, item, commander, sender, info.ID);
         }
         internal static void ReciveRequestToReviveAgent(ulong sender, pStructs.pReviveAgentInfo info)
         {
@@ -181,7 +180,7 @@ namespace BotControl.Networking
                 ZiMain.log.LogError($"Invalid Request to revive agent. PlayerAiBot not found on revier.  This should never happen!");
                 return;
             }
-            zBotActions.SendBotToReviveAgent(Bot, Downed, Commander, sender);
+            zBotActions.SendBotToReviveAgent(Bot, Downed, Commander, sender, info.ID);
         }
         internal static void ReciveRequestToShareResource(ulong netSender, pStructs.pShareResourceInfo info) 
         {
@@ -204,7 +203,7 @@ namespace BotControl.Networking
                 return;
             }
             PlayerAIBot aiBot = sender.gameObject.GetComponent<PlayerAIBot>();
-            zBotActions.SendBotToShareResourcePack(aiBot, receiver, commander, netSender);
+            zBotActions.SendBotToShareResourcePack(aiBot, receiver, commander, netSender, info.ID);
         }
         internal static void ReciveRequestToKillEnemy(ulong netSender, pStructs.pAttackEnemyInfo info)
         {
@@ -251,7 +250,7 @@ namespace BotControl.Networking
             PlayerAIBot aiBot = agent.gameObject.GetComponent<PlayerAIBot>();
             PlayerVoiceManager.WantToSay(commander.CharacterID, AK.EVENTS.PLAY_CL_PICKUPYOURDEPLOYABLES);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Pick up your deployables.", 1);
-            zBotActions.SendBotToPickUpSentry(aiBot, commander, netSender);
+            zBotActions.SendBotToPickUpSentry(aiBot, commander, netSender, info.ID);
         }
         internal static void ReciveRequestToPlaceSentry(ulong netSender, pStructs.pPlaceToolInfo info)
         {
@@ -276,7 +275,7 @@ namespace BotControl.Networking
             }
 
             PlayerAIBot aiBot = agent.gameObject.GetComponent<PlayerAIBot>();
-            zBotActions.SendBotToPlaceSentry(aiBot, pose, commander, netSender);
+            zBotActions.SendBotToPlaceSentry(aiBot, pose, commander, netSender, info.ID);
         }
         internal static void ReciveRequestToThrowItem(ulong netSender, pStructs.pThrowDataInfo info)
         {
@@ -294,7 +293,7 @@ namespace BotControl.Networking
                 ZiMain.log.LogWarning("Invalid request to throw item, You can't tell a player what to do.");
                 return;
             }
-            zBotActions.SendBotToThrowItem(Commander, BotAgent, MovePostion, TargetPosition, netSender);
+            zBotActions.SendBotToThrowItem(Commander, BotAgent, MovePostion, TargetPosition, netSender, info.ID);
             //zBotActions.SendBotToThrowItem(Commander, BotAgent, ThrowType, MovePostion, TargetPosition, netSender);
         }
         internal static void ReciveRequestToUseCfoam(ulong netSender, pStructs.pUseCfoamInfo info)
@@ -312,7 +311,7 @@ namespace BotControl.Networking
                 ZiMain.log.LogWarning("Invalid request to use cfoam launcher, You can't tell a player what to do.");
                 return;
             }
-            zBotActions.SendBotToUseCfoamGun(BotAgent.GetComponent<PlayerAIBot>(), TargetPosition, Commander, netSender);
+            zBotActions.SendBotToUseCfoamGun(BotAgent.GetComponent<PlayerAIBot>(), TargetPosition, Commander, netSender, info.ID);
         }
         internal static void ReciveRequestToPlaceMine(ulong netSender, pStructs.pPlaceMineInfo info)
         {
@@ -329,9 +328,8 @@ namespace BotControl.Networking
                 ZiMain.log.LogWarning("Invalid request to place mines, You can't tell a player what to do.");
                 return;
             }
-            zBotActions.SendBotToPlaceMine(BotAgent.GetComponent<PlayerAIBot>(), pose, slot, Commander, netSender);
+            zBotActions.SendBotToPlaceMine(BotAgent.GetComponent<PlayerAIBot>(), pose, slot, Commander, netSender, info.ID);
         }
-
         internal static void ReciveRequestToBreakLock(ulong netSender, pStructs.pBreakLockInfo info)
         {
             ZiMain.log.LogInfo("Recived request to break lock!");
@@ -348,7 +346,7 @@ namespace BotControl.Networking
                 ZiMain.log.LogWarning("Invalid request to break lock, You can't tell a player what to do.");
                 return;
             }
-            zBotActions.SendbotToBreakLock(BotAgent.GetComponent<PlayerAIBot>(), Lock, Commander, netSender);
+            zBotActions.SendbotToBreakLock(BotAgent.GetComponent<PlayerAIBot>(), Lock, Commander, netSender, info.ID);
         }
         internal static void ReciveRequestToSetLeader(ulong netSender, pStructs.pLeaderInfo info)
         {
@@ -376,6 +374,7 @@ namespace BotControl.Networking
         }
         internal static void ReciveRequestActionCancel(ulong netsender, pStructs.pActionTerminatedInfo info)
         {
+            ZiMain.log.LogInfo($"Recived request to cancel action {info.ID}!");
             if (!SNet.IsMaster)
                 return;
             foreach (var key in zActions.manualActions.Keys)
@@ -385,10 +384,12 @@ namespace BotControl.Networking
                     if (action.ID == info.ID)
                     {
                         zBotActions.CancelBotAction(info.ID, netsender);
+                        ZiMain.log.LogInfo($"Remotely canceld {action.Commander.PlayerName}'s command for {action.Bot.Agent.PlayerName} to {action.ActionDescriptor.GetIl2CppType().FullName}");
                         return;
                     }
                 }
             }
+            ZiMain.log.LogWarning($"Could not find action {info.ID}");
         }
     }
 }
