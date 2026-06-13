@@ -47,7 +47,7 @@ namespace BotControl
             if (searched == null)
                 searched = new();
             var node = GetNearestNode(position);
-            return node.FindUnexplored(depth,maxDepth,searched);
+            return node?.FindUnexplored(depth,maxDepth,searched);
         }
         public static bool HasCourseNodeBeenFullyExplored(AIG_CourseNode courseNode)
         {

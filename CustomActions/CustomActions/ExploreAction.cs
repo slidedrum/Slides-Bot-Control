@@ -14,6 +14,15 @@ namespace ZombieTweak2.zRootBotPlayerAction.CustomActions
 {
     internal class ExploreAction : CustomActionBase
     {
+        public static void StartTest()
+        {
+            var bot = ZiMain.GetBotList()[0];
+            var desc = new Descriptor(bot)
+            {
+
+            };
+            bot.StartAction(desc);
+        }
         private StateEnum state = StateEnum.None;
         VisitNode UnexploredNode = null;
         public static Dictionary<int, bool> ExplorePerms = new(); //bot.Agent.Owner.PlayerSlotIndex()

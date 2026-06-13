@@ -198,6 +198,7 @@ public class ZiMain : BasePlugin
         zActionSub.addOnRemoved((Action<PlayerAIBot, PlayerBotActionBase>)onActionTerminated);
         zActionSub.addOnAdded((Action<PlayerAIBot, PlayerBotActionBase>)onActionAdded);
         UseBioscanEvaluatePatches.ApplyNativePatch();
+        //Il2CppInteropNativePatches.ApplyNativePatch();
         EventAPI.OnManagersSetup += () =>
         {
             zUpdater.CreateInstance();
