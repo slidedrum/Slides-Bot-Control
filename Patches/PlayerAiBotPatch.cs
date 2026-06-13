@@ -1,5 +1,7 @@
 ﻿//using ZombieTweak2.zRootBotPlayerAction.CustomActions;
 using BotControl;
+using BotControl.zRootBotPlayerAction;
+
 //using BotControl.zRootBotPlayerAction;
 using ChainedPuzzles;
 using HarmonyLib;

@@ -1,4 +1,5 @@
-﻿using BotControl.zRootBotPlayerAction;
+﻿using BotControl;
+using BotControl.zRootBotPlayerAction;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
