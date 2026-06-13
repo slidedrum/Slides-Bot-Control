@@ -80,11 +80,14 @@ namespace BotControl.Patches // This is an AI generated patch, I had an AI port 
             pBioscanState state = bioscan.State;
             if (state.status != eBioscanStatus.Waiting && state.status != eBioscanStatus.Scanning)
             {
+                if (state.status != eBioscanStatus.Finished)
+                    ZiMain.log.LogInfo($"bioscan {bioscan.name} not ready {state.status}.");
                 return false;
             }
             CP_PlayerScanner cp_PlayerScanner = bioscan.PlayerScanner.Cast<CP_PlayerScanner>();
             if (cp_PlayerScanner == null)
             {
+                ZiMain.log.LogInfo($"bioscan {bioscan.name} cp_PlayerScanner is null.");
                 return false;
             }
             standRadius = cp_PlayerScanner.Radius;
@@ -106,6 +109,7 @@ namespace BotControl.Patches // This is an AI generated patch, I had an AI port 
                     nrOthers += PlayerManager.Current.CountObjectReservations(bot.Agent.CharacterID, bioscan.gameObject);
                     if (!cp_PlayerScanner.CanGoFaster(nrOthers))
                     {
+                        ZiMain.log.LogInfo($"bioscan {bioscan.name} cp_PlayerScanner can't go faster with {nrOthers} others.");
                         return false;
                     }
                     if (bioscan.HasAlarm)
@@ -148,10 +152,13 @@ namespace BotControl.Patches // This is an AI generated patch, I had an AI port 
                             return true;
                         }
                     }
+                    ZiMain.log.LogInfo($"bioscan {bioscan.name} cp_PlayerScanner all.");
                     return false;
                 case PlayerRequirement.Solo:
+                    ZiMain.log.LogInfo($"bioscan {bioscan.name} cp_PlayerScanner ScanPlayersRequired solo.");
                     return false;
             }
+            ZiMain.log.LogInfo($"bioscan {bioscan.name} cp_PlayerScanner ScanPlayersRequired unknown value (this should't happen).");
             return false;
         }
     }

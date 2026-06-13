@@ -14,34 +14,34 @@ namespace BotControl
         //public PlayerAgent actualLeader = null;
         //public List<IntPtr> m_actions { get; set; } = new();
         //public List<IntPtr> m_queuedActions { get; set; } = new();
-        public List<PlayerBotActionBase> m_actions { get; set; } = new();
-        public List<PlayerBotActionBase.Descriptor> m_queuedActions { get; set; } = new();
-        public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase> I_actions
-        {
-            get
-            {
-                Il2CppSystem.Collections.Generic.List<PlayerBotActionBase> ret = new();
-                foreach (var item in m_actions)
-                {
-                    if (item != null)
-                        ret.Add(PlayerAiBotPatch.Canon(item));
-                }
-                return ret;
-            }
-        }
-        public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor> I_queuedActions
-        {
-            get
-            {
-                Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor> ret = new();
-                foreach (var item in m_queuedActions)
-                {
-                    if (item != null)
-                        ret.Add(PlayerAiBotPatch.Canon(item));
-                }
-                return ret;
-            }
-        }
+        public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase> m_actions { get; set; } = new();
+        public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor> m_queuedActions { get; set; } = new();
+        //public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase> I_actions
+        //{
+        //    get
+        //    {
+        //        Il2CppSystem.Collections.Generic.List<PlayerBotActionBase> ret = new();
+        //        foreach (var item in m_actions)
+        //        {
+        //            if (item != null)
+        //                ret.Add(PlayerAiBotPatch.Canon(item));
+        //        }
+        //        return ret;
+        //    }
+        //}
+        //public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor> I_queuedActions
+        //{
+        //    get
+        //    {
+        //        Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor> ret = new();
+        //        foreach (var item in m_queuedActions)
+        //        {
+        //            if (item != null)
+        //                ret.Add(PlayerAiBotPatch.Canon(item));
+        //        }
+        //        return ret;
+        //    }
+        //}
     }
     public class ManualAction
     {
