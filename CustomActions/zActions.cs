@@ -30,7 +30,7 @@ namespace BotControl.zRootBotPlayerAction
     }
     public static class zActions
     {
-        public static List<PlayerBotActionBase.Descriptor> manualActions = new();
+        public static Dictionary<int, List<ManualAction>> manualActions = new();
         internal static readonly Dictionary<int, dataStore> ActionDataStore = new();
         internal static dataStore GetOrCreateData(PlayerBotActionBase.Descriptor desc)
         {
@@ -59,7 +59,7 @@ namespace BotControl.zRootBotPlayerAction
 
             foreach (var desc in manualActions)
             {
-                if (desc == null) continue; // just in case
+                if (desc. == null) continue; // just in case
 
                 if (desc.Pointer == descriptor.Pointer)
                     return true;
