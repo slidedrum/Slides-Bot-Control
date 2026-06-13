@@ -1,13 +1,13 @@
-﻿//using ZombieTweak2.zRootBotPlayerAction.CustomActions;
-using BotControl;
-//using BotControl.zRootBotPlayerAction;
-using ChainedPuzzles;
+﻿using BotControl.zRootBotPlayerAction;
 using HarmonyLib;
+using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Player;
 using UnityEngine;
+using ZombieTweak2.zRootBotPlayerAction.CustomActions;
+//using Zombified_Initiative;
 
-namespace BotControl.Patches
+namespace ZombieTweak2.zRootBotPlayerAction.Patches
 {
     [HarmonyPatch]
     internal class PlayerAiBotPatch
@@ -90,18 +90,14 @@ namespace BotControl.Patches
             __instance.m_queuedActions = data.m_queuedActions;
             //var m_exploreAction = new CustomActions.exploreDescriptor(instance);
             //data.customActions.Add(m_exploreAction);
-                //ClassInjector.RegisterTypeInIl2Cpp(typeof(CustomActionBase.Descriptor));
-                //ClassInjector.RegisterTypeInIl2Cpp(typeof(CustomActionBase));
-                //ClassInjector.RegisterTypeInIl2Cpp(typeof(ExploreAction.Descriptor));
-                //ClassInjector.RegisterTypeInIl2Cpp(typeof(ExploreAction));
-                //ClassInjector.RegisterTypeInIl2Cpp(typeof(ClearRoomAction.Descriptor));
-                //ClassInjector.RegisterTypeInIl2Cpp(typeof(ClearRoomAction));
-                //ClearRoomAction.Descriptor m_clearRoomAction = new ClearRoomAction.Descriptor(__instance);
-                //data.customActions.Add(m_clearRoomAction);
-                //CustomActionBase.Descriptor m_testAction = new CustomActionBase.Descriptor(__instance);
-                //data.customActions.Add(m_testAction);
-                //ExploreAction.Descriptor m_exploreAction = new ExploreAction.Descriptor(__instance);
-                //data.customActions.Add(m_exploreAction);
+            ClassInjector.RegisterTypeInIl2Cpp(typeof(CustomActionBase.Descriptor));
+            ClassInjector.RegisterTypeInIl2Cpp(typeof(CustomActionBase));
+            ClassInjector.RegisterTypeInIl2Cpp(typeof(ExploreAction.Descriptor));
+            ClassInjector.RegisterTypeInIl2Cpp(typeof(ExploreAction));
+            CustomActionBase.Descriptor m_testAction = new CustomActionBase.Descriptor(__instance);
+            data.customActions.Add(m_testAction);
+            ExploreAction.Descriptor m_exploreAction = new ExploreAction.Descriptor(__instance);
+            data.customActions.Add(m_exploreAction);
             ZiMain.log.LogMessage("init playerbot");
         }
         //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.Update))]
@@ -233,14 +229,14 @@ namespace BotControl.Patches
         }
         //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.SetEnabled))]
         //[HarmonyPrefix]
-        //public static bool SetEnabled(PlayerAIBot instance, bool State)
+        //public static bool SetEnabled(PlayerAIBot instance, bool state)
         //{
         //    var data = zActions.GetOrCreateData(instance);
-        //    if (State == instance.enabled)
+        //    if (state == instance.enabled)
         //    {
         //        return false;
         //    }
-        //    if (State)
+        //    if (state)
         //    {
         //        NavMeshHit navMeshHit;
         //        if (NavMesh.SamplePosition(instance.m_playerAgent.Position, out navMeshHit, 3f, -1))
@@ -285,7 +281,7 @@ namespace BotControl.Patches
         //        }
         //        while (hasRemoved);
         //    }
-        //    instance.enabled = State;
+        //    instance.enabled = state;
         //    return false;
         //}
         [HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.StartAction))]
@@ -293,12 +289,6 @@ namespace BotControl.Patches
         public static bool StartAction(PlayerAIBot __instance, PlayerBotActionBase.Descriptor desc)
         {
             var data = zActions.GetOrCreateData(__instance);
-            //if (data. consideringActions)
-            //{
-            //    data.bestAction = desc;
-            //    return false;
-            //}
-                
             if (!desc.IsTerminated())
             {
                 Debug.LogError("Action was queued while active: " + desc);
@@ -317,79 +307,39 @@ namespace BotControl.Patches
             data.m_queuedActions.Add(desc);
             return false;
         }
-        public static void Eval(CP_Bioscan_Core Bioscan, PlayerAIBot bot)
-        {
-            float standRadius;
-            int nrOthers;
-            bool ret = PlayerBotActionUseBioscan.Descriptor.Evaluate(Bioscan, bot, out standRadius, out nrOthers);
-        }
-        [HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.StopAction))]
-        [HarmonyPrefix]
-        public static bool PreStopAction(PlayerAIBot __instance, PlayerBotActionBase.Descriptor desc)
-        {
-            if (desc == PlayerAIBot.s_updatingAction)
-            {
-                Debug.LogError("Action was removed during its update: " + desc);
-            }
-            if (desc.Status == PlayerBotActionBase.Descriptor.StatusType.Queued)
-            {
-                desc.OnAborted();
-                for (int i = 0; i < __instance.m_queuedActions.Count; i++)
-                {
-                    if (__instance.m_queuedActions[i] == desc)
-                    {
-                        __instance.m_queuedActions.RemoveAt(i);
-                        return false;
-                    }
-                }
-                return false;
-            }
-            if (desc.Status == PlayerBotActionBase.Descriptor.StatusType.Active)
-            {
-                if (desc.ActionBase == null)
-                {
-                    Debug.LogError("Active descriptor is missing action: " + desc);
-                }
-                __instance.m_actions.Remove(desc.ActionBase);
-                desc.ActionBase.Stop();
-                desc.OnStopped();
-            }
-            return false;
-        }
-
-            //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.StopAction))]
-            //[HarmonyPrefix]
-            //public static bool StopAction(PlayerAIBot instance, PlayerBotActionBase.Descriptor desc)
-            //{
-            //    var data = zActions.GetOrCreateData(instance);
-            //    if (desc == PlayerAIBot.s_updatingAction)
-            //    {
-            //        VisDebug.LogError("Action was removed during its update: " + desc);
-            //    }
-            //    if (desc.Status == PlayerBotActionBase.Descriptor.StatusType.Queued)
-            //    {
-            //        desc.OnAborted();
-            //        for (int i = 0; i < data.m_queuedActions.Count; i++)
-            //        {
-            //            if (data.m_queuedActions[i] == desc)
-            //            {
-            //                data.m_queuedActions.RemoveAt(i);
-            //                return false;
-            //            }
-            //        }
-            //        return false;
-            //    }
-            //    if (desc.Status == PlayerBotActionBase.Descriptor.StatusType.Active)
-            //    {
-            //        if (desc.ActionBase == null)
-            //        {
-            //            VisDebug.LogError("Active descriptor is missing action: " + desc);
-            //        }
-            //        data.m_actions.Remove(desc.ActionBase);
-            //        desc.ActionBase.Stop();
-            //        desc.OnStopped();
-            //    }
-            //    return false;
-            //}
-        } // class
+        //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.StopAction))]
+        //[HarmonyPrefix]
+        //public static bool StopAction(PlayerAIBot instance, PlayerBotActionBase.Descriptor desc)
+        //{
+        //    var data = zActions.GetOrCreateData(instance);
+        //    if (desc == PlayerAIBot.s_updatingAction)
+        //    {
+        //        VisDebug.LogError("Action was removed during its update: " + desc);
+        //    }
+        //    if (desc.Status == PlayerBotActionBase.Descriptor.StatusType.Queued)
+        //    {
+        //        desc.OnAborted();
+        //        for (int i = 0; i < data.m_queuedActions.Count; i++)
+        //        {
+        //            if (data.m_queuedActions[i] == desc)
+        //            {
+        //                data.m_queuedActions.RemoveAt(i);
+        //                return false;
+        //            }
+        //        }
+        //        return false;
+        //    }
+        //    if (desc.Status == PlayerBotActionBase.Descriptor.StatusType.Active)
+        //    {
+        //        if (desc.ActionBase == null)
+        //        {
+        //            VisDebug.LogError("Active descriptor is missing action: " + desc);
+        //        }
+        //        data.m_actions.Remove(desc.ActionBase);
+        //        desc.ActionBase.Stop();
+        //        desc.OnStopped();
+        //    }
+        //    return false;
+        //}
+    } // class
 }// namespace
