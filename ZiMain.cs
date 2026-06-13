@@ -1,16 +1,16 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
+//using BotControl.CustomActions;
 using BotControl.Networking;
+using BotControl.Patches;
 using BotControl.SmartSelect;
-using BotControl.zRootBotPlayerAction;
 using CellMenu;
 using Enemies;
 using GTFO.API;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using LevelGeneration;
-using Patches.Native;
 using Player;
 using SlideMenu;
 using SNetwork;
@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static BotControl.Networking.pStructs;
-using BotControl.CustomActions;
 
 /*
  == TODO == Priority: Clean up the mess I made creating custom actions.
@@ -195,8 +194,8 @@ public class ZiMain : BasePlugin
 
         //EventAPI.OnExpeditionStarted += ZombieController.Initialize;
         log = Log;
-        PlayerAIBotPatch.Apply(m_Harmony, log.LogInfo);
-        PlayerAgentPatch.Apply(m_Harmony, log.LogInfo);
+        //PlayerAIBotPatch.Apply(m_Harmony, log.LogInfo);
+        //PlayerAgentPatch.Apply(m_Harmony, log.LogInfo);
         zActionSub.addOnRemoved((Action<PlayerAIBot, PlayerBotActionBase>)onActionTerminated);
         zActionSub.addOnAdded((Action<PlayerAIBot, PlayerBotActionBase>)onActionAdded);
         UseBioscanEvaluatePatches.ApplyNativePatch();

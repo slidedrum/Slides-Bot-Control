@@ -281,7 +281,7 @@ namespace BotControl.Patches
         [HarmonyPrefix]
         public static bool OnTravelActionEventPatch(PlayerBotActionCollectItem __instance, PlayerBotActionBase.Descriptor descBase)
         { //This is supposed to fix bots not always being able to pick up items, but I don't really remember how it works.
-            if (descBase != __instance.m_travelAction)
+            if (descBase.Pointer != __instance.m_travelAction.Pointer)
             {
                 __instance.PrintError("Rogue action.");
             }

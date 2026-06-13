@@ -19,7 +19,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Include="Patches\PlayerAiBotPatch.cs backup" />
+	  <None Include="Patches\PlayerAiBotPatch.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Iced" Version="1.18.0" />

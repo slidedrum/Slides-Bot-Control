@@ -1,4 +1,6 @@
-﻿using Player;
+﻿using BotControl.Patches;
+using Player;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,8 +12,36 @@ namespace BotControl
         public PlayerBotActionBase.Descriptor bestAction = null;
         //public bool consideringActions = false;
         //public PlayerAgent actualLeader = null;
-        public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase> m_actions { get; set; } = new();
-        public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor> m_queuedActions { get; set; } = new();
+        //public List<IntPtr> m_actions { get; set; } = new();
+        //public List<IntPtr> m_queuedActions { get; set; } = new();
+        public List<PlayerBotActionBase> m_actions { get; set; } = new();
+        public List<PlayerBotActionBase.Descriptor> m_queuedActions { get; set; } = new();
+        public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase> I_actions
+        {
+            get
+            {
+                Il2CppSystem.Collections.Generic.List<PlayerBotActionBase> ret = new();
+                foreach (var item in m_actions)
+                {
+                    if (item != null)
+                        ret.Add(PlayerAiBotPatch.Canon(item));
+                }
+                return ret;
+            }
+        }
+        public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor> I_queuedActions
+        {
+            get
+            {
+                Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor> ret = new();
+                foreach (var item in m_queuedActions)
+                {
+                    if (item != null)
+                        ret.Add(PlayerAiBotPatch.Canon(item));
+                }
+                return ret;
+            }
+        }
     }
     public class ManualAction
     {
