@@ -325,7 +325,7 @@ namespace BotControl.Patches
                         [HarmonyPrefix]
                         public static bool PreStopAction(PlayerAIBot __instance, PlayerBotActionBase.Descriptor desc)
                         {
-                            if (desc == PlayerAIBot.s_updatingAction) // TODO if this is a custom action we lose the strict typing for some reason.
+                            if (desc == PlayerAIBot.s_updatingAction) // TODO if this is a custom action we lose the strict typing for some reason. // Actually maybe we don't?
                             {
                                 Debug.LogError("Action was removed during its update: " + desc);
                             }

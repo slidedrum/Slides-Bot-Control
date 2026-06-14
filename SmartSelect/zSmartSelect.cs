@@ -21,7 +21,7 @@ namespace BotControl.SmartSelect
 //    Holding ( ------------ / -*Drop Here*- / --Drop Now--- / ------------- ) Raycast normal
 //       Door ( *Open/Close* / -Throw cFoam- / --*Break?*--- / ------------- ) LG_WeakDoor
 //       Lock ( ---Unlock--- / -Lock Melter- / ------------- / ------------- ) LG_WeakLock
-//      Enemy ( ------------ / --*Attack*--- / -*Countdown*- / ------------- ) EnemyAgent //use voiceline PLAY_CL_THREETWOONEGO
+//      Enemy ( ------------ / --*Attack*--- / -*Countdown*- / *Syncronize*- ) EnemyAgent //use voiceline PLAY_CL_THREETWOONEGO
 //  Generator ( ------------ / *Place Cell*- / ------------- / ------------- ) LG_PowerGenerator_Core 
 //    Look Up ( Cancel Last- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
 //  Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- ) 

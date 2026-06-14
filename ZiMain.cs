@@ -204,9 +204,9 @@ public class ZiMain : BasePlugin
             zUpdater.CreateInstance();
             zUpdater.onUpdate.Listen(sMenuManager.Update);
             zUpdater.onUpdate.Listen(zActionSub.Update);
-            zUpdater.onUpdate.Listen(zFindableManager.Update);
+            //zUpdater.onUpdate.Listen(zFindableManager.Update);
             zUpdater.onUpdate.Listen(zDebug.debugUpdate);
-            zUpdater.onUpdate.Listen(zVisitedManager.Update);
+            //zUpdater.onUpdate.Listen(zVisitedManager.Update);
             zUpdater.onUpdate.Listen(zSmartSelect.Update);
             zUpdater.onLateUpdate.Listen(sMenuManager.LateUpdate);
             OnLateLoad();

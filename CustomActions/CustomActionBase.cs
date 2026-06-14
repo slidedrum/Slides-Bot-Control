@@ -19,13 +19,11 @@ public class CustomActionBase : PlayerBotActionBase
     public new class Descriptor : PlayerBotActionBase.Descriptor
     {
         private CustomDescBase _Base = null; //This is used to call base methods without causing inf loops.
-        [Obsolete]
-        public Descriptor() : base(ClassInjector.DerivedConstructorPointer<Descriptor>())
+            public Descriptor() : base(ClassInjector.DerivedConstructorPointer<Descriptor>())
         {
             ClassInjector.DerivedConstructorBody(this);
             //Don't use
         }
-        [Obsolete]
         public Descriptor(IntPtr ptr) : base(ptr)
         {
             ClassInjector.DerivedConstructorBody(this);
@@ -36,7 +34,7 @@ public class CustomActionBase : PlayerBotActionBase
             ClassInjector.DerivedConstructorBody(this);
             InitDescriptor(bot);
         }
-        protected void InitDescriptor(PlayerAIBot bot)
+        public void InitDescriptor(PlayerAIBot bot)
         {
             _Base = new CustomDescBase(this);
             Bot = bot;
@@ -69,13 +67,11 @@ public class CustomActionBase : PlayerBotActionBase
         {
         }
     }
-    [Obsolete]
     public CustomActionBase() : base(ClassInjector.DerivedConstructorPointer<CustomActionBase>())
     {
         ClassInjector.DerivedConstructorBody(this);
         //Don't use
     }
-    [Obsolete]
     public CustomActionBase(IntPtr ptr) : base(ptr) 
     {
         ClassInjector.DerivedConstructorBody(this);
@@ -86,11 +82,12 @@ public class CustomActionBase : PlayerBotActionBase
         ClassInjector.DerivedConstructorBody(this);
         InitFromDescriptor(desc);
     }
-    protected void InitFromDescriptor(Descriptor desc)
+    public void InitFromDescriptor(Descriptor desc)
     {
         _Base = new CustomBase(this);
         desc.ActionBase = this;
         m_bot = desc.Bot;
+
         m_agent = m_bot.Agent;
         m_loco = m_agent?.Locomotion;
         m_descBase = desc;

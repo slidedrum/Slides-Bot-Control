@@ -1,4 +1,5 @@
-﻿using Il2CppInterop.Runtime;
+﻿using BotControl.CustomActions.CustomActions;
+using Il2CppInterop.Runtime;
 using LevelGeneration;
 using Player;
 using UnityEngine;
@@ -16,8 +17,13 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         public bool Invoke(Component BestComponent)
         {
             LG_WeakResourceContainer container = BestComponent.TryCast<LG_WeakResourceContainer>();
-            //TODO
-            // This might require custom action framework before i can do this.
+            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            OpenLockerAction.Descriptor desc = new OpenLockerAction.Descriptor(BestBot)
+            {
+                TargetContainer = container,
+                Prio = 13
+            };
+            BestBot.StartAction(desc);
             return false;
         }
 
@@ -30,7 +36,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             if (!zHelpers.CanBotReach(BestBot, container.transform.position)) return false;
-            return false;
+            return true;
 
         }
     }

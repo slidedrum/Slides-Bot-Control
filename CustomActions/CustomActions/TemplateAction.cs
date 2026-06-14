@@ -106,7 +106,10 @@ namespace BotControl.CustomActions.CustomActions
         public override bool Update()
         {
             //This is called every frame when your action is active.
-            return base.Update();
+            if (base.Update())
+                return true;
+            //Your stuff goes here
+            return !base.IsActive();
         }
         public override bool IsActionAllowed(PlayerBotActionBase.Descriptor desc)
         {

@@ -104,20 +104,22 @@ namespace BotControl.CustomActions.Patches
             var data = zActions.GetOrCreateData(__instance);
             __instance.m_actions = data.m_actions;
             __instance.m_queuedActions = data.m_queuedActions;
-            //var m_exploreAction = new CustomActions.exploreDescriptor(instance);
-            //data.customActions.Add(m_exploreAction);
             ZiMain.log.LogInfo(typeof(CustomActionBase.Descriptor).FullName);
             ZiMain.log.LogInfo(typeof(DropHereAction.Descriptor).FullName);
             ZiMain.log.LogInfo(typeof(ExploreAction.Descriptor).FullName);
+            ZiMain.log.LogInfo(typeof(OpenLockerAction.Descriptor).FullName);
             ZiMain.log.LogInfo(typeof(CustomActionBase.Descriptor).Name);
             ZiMain.log.LogInfo(typeof(DropHereAction.Descriptor).Name);
             ZiMain.log.LogInfo(typeof(ExploreAction.Descriptor).Name);
+            ZiMain.log.LogInfo(typeof(OpenLockerAction.Descriptor).Name);
             ClassInjector.RegisterTypeInIl2Cpp(typeof(CustomActionBase.Descriptor));
             ClassInjector.RegisterTypeInIl2Cpp(typeof(CustomActionBase));
             ClassInjector.RegisterTypeInIl2Cpp(typeof(ExploreAction.Descriptor));
             ClassInjector.RegisterTypeInIl2Cpp(typeof(ExploreAction));
             ClassInjector.RegisterTypeInIl2Cpp(typeof(DropHereAction.Descriptor));
             ClassInjector.RegisterTypeInIl2Cpp(typeof(DropHereAction));
+            ClassInjector.RegisterTypeInIl2Cpp(typeof(OpenLockerAction.Descriptor));
+            ClassInjector.RegisterTypeInIl2Cpp(typeof(OpenLockerAction));
             CustomActionBase.Descriptor m_testAction = new CustomActionBase.Descriptor(__instance);
             CustomActionBase m_testActionBase = new CustomActionBase(m_testAction);
             data.customActionDescriptors.Add(m_testAction);
@@ -130,6 +132,10 @@ namespace BotControl.CustomActions.Patches
             DropHereAction m_DropHereActionBase = new DropHereAction(m_DropHereAction);
             data.customActionDescriptors.Add(m_DropHereAction);
             data.customActionBases.Add(m_DropHereActionBase);
+            OpenLockerAction.Descriptor m_OpenAction = new OpenLockerAction.Descriptor(__instance);
+            OpenLockerAction m_OpenLockerBase = new OpenLockerAction(m_OpenAction);
+            data.customActionDescriptors.Add(m_OpenAction);
+            data.customActionBases.Add(m_OpenLockerBase);
             ZiMain.log.LogMessage("init playerbot");
         }
         //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.Update))]

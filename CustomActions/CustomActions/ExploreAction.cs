@@ -29,7 +29,7 @@ namespace BotControl.CustomActions.CustomActions
         public static bool GetExplorePerm(int index)
         {
             if (ExplorePerms.TryGetValue(index, out var perm)) { return perm; }
-            return ExplorePerms[index] = true;
+            return ExplorePerms[index] = false;
         }
         public PlayerBotActionTravel.Descriptor travelAction = null;
         public new class Descriptor : CustomActionBase.Descriptor
@@ -80,6 +80,8 @@ namespace BotControl.CustomActions.CustomActions
                 if (Time.time - lastLooked < lookCooldown)
                     return;
                 if (!IsTerminated())
+                    return;
+                if (!GetExplorePerm(Bot))
                     return;
                 bool foundEnemy = HasFoundEnemies();
                 if (foundEnemy)
@@ -141,7 +143,9 @@ namespace BotControl.CustomActions.CustomActions
             base.Update();
             if (!GetExplorePerm(m_bot))
             {
-                m_bot.StopAction(travelAction);
+                if (travelAction != null)
+                    m_bot.StopAction(travelAction);
+                DescBase.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Successful);
                 state = StateEnum.Finished;
                 return true;
             }
