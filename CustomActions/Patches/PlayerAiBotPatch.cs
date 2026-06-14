@@ -3,6 +3,7 @@ using BotControl.zRootBotPlayerAction;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using Il2CppSystem.Security.Cryptography;
 using Player;
 using UnityEngine;
 using ZombieTweak2.zRootBotPlayerAction.CustomActions;
@@ -25,8 +26,17 @@ namespace ZombieTweak2.zRootBotPlayerAction.Patches
             var array = new Il2CppReferenceArray<PlayerBotActionBase.Descriptor>(data.m_queuedActions.Count);
             data.m_queuedActions.CopyTo(array);
             data.m_queuedActions.Clear();
-            foreach (PlayerBotActionBase.Descriptor descriptor in array)
+            foreach (PlayerBotActionBase.Descriptor desc in array)
             {
+                PlayerBotActionBase.Descriptor descriptor = desc;
+                foreach (var custom in data.customActionDescriptors)
+                {
+                    if (custom.Pointer == desc.Pointer)
+                    {
+                        descriptor = custom;
+                        break;
+                    }
+                }
                 if (descriptor.Status == PlayerBotActionBase.Descriptor.StatusType.Queued)
                 {
                     descriptor.OnStarted();
@@ -52,6 +62,15 @@ namespace ZombieTweak2.zRootBotPlayerAction.Patches
             for (int i = 0; i < array.Length; i++)
             {
                 PlayerBotActionBase playerBotActionBase = array[i];
+                //foreach (var custom in data.customActionDescriptors)
+                //{
+                //    if (custom.ActionBase.Pointer == playerBotActionBase.Pointer)
+                //    {
+                //        playerBotActionBase = custom.ActionBase; 
+                //        break; 
+                //    }
+                //}
+
                 PlayerAIBot.s_updatingAction = playerBotActionBase.DescBase;
                 if (!playerBotActionBase.IsActive() || playerBotActionBase.Update())
                 { //Has the action completed?
@@ -91,14 +110,30 @@ namespace ZombieTweak2.zRootBotPlayerAction.Patches
             __instance.m_queuedActions = data.m_queuedActions;
             //var m_exploreAction = new CustomActions.exploreDescriptor(instance);
             //data.customActions.Add(m_exploreAction);
+            ZiMain.log.LogInfo(typeof(CustomActionBase.Descriptor).FullName);
+            ZiMain.log.LogInfo(typeof(DropHereAction.Descriptor).FullName);
+            ZiMain.log.LogInfo(typeof(ExploreAction.Descriptor).FullName);
+            ZiMain.log.LogInfo(typeof(CustomActionBase.Descriptor).Name);
+            ZiMain.log.LogInfo(typeof(DropHereAction.Descriptor).Name);
+            ZiMain.log.LogInfo(typeof(ExploreAction.Descriptor).Name);
             ClassInjector.RegisterTypeInIl2Cpp(typeof(CustomActionBase.Descriptor));
             ClassInjector.RegisterTypeInIl2Cpp(typeof(CustomActionBase));
             ClassInjector.RegisterTypeInIl2Cpp(typeof(ExploreAction.Descriptor));
             ClassInjector.RegisterTypeInIl2Cpp(typeof(ExploreAction));
+            ClassInjector.RegisterTypeInIl2Cpp(typeof(DropHereAction.Descriptor));
+            ClassInjector.RegisterTypeInIl2Cpp(typeof(DropHereAction));
             CustomActionBase.Descriptor m_testAction = new CustomActionBase.Descriptor(__instance);
-            data.customActions.Add(m_testAction);
+            CustomActionBase m_testActionBase = new CustomActionBase(m_testAction);
+            data.customActionDescriptors.Add(m_testAction);
+            data.customActionBases.Add(m_testActionBase);
             ExploreAction.Descriptor m_exploreAction = new ExploreAction.Descriptor(__instance);
-            data.customActions.Add(m_exploreAction);
+            ExploreAction m_exploreActionBase = new ExploreAction(m_exploreAction);
+            data.customActionDescriptors.Add(m_exploreAction);
+            data.customActionBases.Add(m_exploreActionBase);
+            DropHereAction.Descriptor m_DropHereAction = new DropHereAction.Descriptor(__instance);
+            DropHereAction m_DropHereActionBase = new DropHereAction(m_DropHereAction);
+            data.customActionDescriptors.Add(m_DropHereAction);
+            data.customActionBases.Add(m_DropHereActionBase);
             ZiMain.log.LogMessage("init playerbot");
         }
         //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.Update))]
@@ -197,6 +232,14 @@ namespace ZombieTweak2.zRootBotPlayerAction.Patches
                 while (i < data.m_queuedActions.Count)
                 {
                     PlayerBotActionBase.Descriptor descriptor = data.m_queuedActions[i];
+                    //foreach (var custom in data.customActionDescriptors)
+                    //{
+                    //    if (custom.Pointer == desc.Pointer)
+                    //    {
+                    //        descriptor = custom;
+                    //        break;
+                    //    }
+                    //}
                     if (descriptor.Status == PlayerBotActionBase.Descriptor.StatusType.Queued && descriptor.CheckCollision(desc))
                     {
                         data.m_queuedActions.RemoveAt(i);
@@ -290,6 +333,9 @@ namespace ZombieTweak2.zRootBotPlayerAction.Patches
         public static bool StartAction(PlayerAIBot __instance, PlayerBotActionBase.Descriptor desc)
         {
             var data = zActions.GetOrCreateData(__instance);
+            //foreach (var custom in data.customActionDescriptors)
+            //    if (custom.Pointer == desc.Pointer)
+            //    { desc = custom; break; }
             if (!desc.IsTerminated())
             {
                 Debug.LogError("Action was queued while active: " + desc);
@@ -297,7 +343,7 @@ namespace ZombieTweak2.zRootBotPlayerAction.Patches
             }
             for (int i = 0; i < data.m_actions.Count; i++)
             {
-                if (data.m_actions[i].DescBase == desc)
+                if (data.m_actions[i].DescBase.Pointer == desc.Pointer)
                 {
                     data.m_actions.RemoveAt(i);
                     break;

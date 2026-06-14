@@ -15,8 +15,7 @@ using static BoundingBox;
 
 namespace BotControl
 {
-    [Obsolete]
-    public static class zSearchOld
+    public static class zFindableManager
     {
         //TODO refactor this too. wtf even is this.
 
@@ -29,6 +28,7 @@ namespace BotControl
         public static Dictionary<Vector2, List<FindableObject>> findbleObjectMap = new();
         public static Dictionary<string, List<FindableObject>> courseNodeFindableObjectCache = new(); //This should perfectly mirror findbleObjectMap but I'm not 100% sure if I missed anything.  If weird bugs come up, this is where to look.
         private static List<Transform> pingTransforms = new();
+        [Obsolete]
         public static GameObject ResolveObjectInLookDirection(Transform baseTransform, List<GameObject> candidates, float maxAngle = 180f, Vector3? candidateOffset = null, Vector3? baseOffset = null)
         {
             //TODO add some optional leeway for very close objects
@@ -63,6 +63,7 @@ namespace BotControl
 
             return null;
         }
+        [Obsolete]
         public static List<GameObject> GetObjectsWithComponentsInRadius(Vector3 position, float searchRadius, List<Il2CppSystem.Type> types)
         {
             List<GameObject> results = new List<GameObject>();
@@ -81,6 +82,7 @@ namespace BotControl
             }
             return results;
         }
+        [Obsolete]
         public static List<T> GetComponentsInRadius<T>(Vector3 position, float searchRadius) where T : Component
         {
             List<T> results = new List<T>();
@@ -96,6 +98,7 @@ namespace BotControl
             }
             return results;
         }
+        [Obsolete]
         public static List<GameObject> GetObjectsWithComponentInRadius<T>(Vector3 position,float searchRadius) where T : Component
         {
             List<GameObject> results = new List<GameObject>();
@@ -111,6 +114,7 @@ namespace BotControl
             }
             return results;
         }
+        [Obsolete]
         public static List<GameObject> GetGameObjectsWithLookDirection(Transform source, List<Il2CppSystem.Type> types, float searchRadius = 3, float rayDistance = 10000f)
         {
             Ray ray = new Ray(source.position, source.forward);
@@ -120,6 +124,7 @@ namespace BotControl
             }
             return new List<GameObject>();
         }
+        [Obsolete]
         public static List<GameObject> GetGameObjectsWithLookDirection<T>(Transform source,float searchRadius = 3,float rayDistance = 10000f) where T : Component
         {
             Ray ray = new Ray(source.position, source.forward);
@@ -135,10 +140,12 @@ namespace BotControl
         public static float lastSearched = 0f;
         public static void Update()
         {
-            return;
+            //return;
             if (localPlayer == null)
                 localPlayer = PlayerManager.GetLocalPlayerAgent();
             if (localPlayer == null)
+                return;
+            if (localPlayer.Owner == null)
                 return;
             if (localPlayer.Owner.refSessionMode != SNetwork.eReplicationMode.Playing)
             {
@@ -534,9 +541,11 @@ namespace BotControl
             if (lastCheckedPosition.ContainsKey(agent.gameObject.GetInstanceID()) && Vector3.Distance(lastCheckedPosition[agent.gameObject.GetInstanceID()], agent.transform.position) < staticRange)
                 return;
             lastCheckedPosition[agent.gameObject.GetInstanceID()] = agent.transform.position;
-            var pingTargets = GetComponentsInRadius<PlayerPingTarget>(agent.EyePosition, foundDistance).ToArray();
+            //var pingTargets = GetComponentsInRadius<PlayerPingTarget>(agent.EyePosition, foundDistance).ToArray();
+            var pingTargets = zSearch.FindAllNearby<PlayerPingTarget>(agent.EyePosition, foundDistance).ToArray();
             ProcessPingTargetsIntoFindableObjectMap(pingTargets);
-            var enemyAgents = GetComponentsInRadius<EnemyAgent>(agent.EyePosition, foundDistance).ToArray();
+            //var enemyAgents = GetComponentsInRadius<EnemyAgent>(agent.EyePosition, foundDistance).ToArray();
+            var enemyAgents = zSearch.FindAllNearby<EnemyAgent>(agent.EyePosition, foundDistance).ToArray();
             ProcessEnemiesIntoFindableObjectMap(enemyAgents);
             return;
         }
@@ -645,10 +654,10 @@ namespace BotControl
                 AIG_CourseNode.TryGetCourseNode(dimension, box.Center,1, out _courseNode);
                 if (_courseNode == null)
                     return null;
-                if (!zSearchOld.courseNodeFindableObjectCache.ContainsKey(_courseNode.Name))
-                    zSearchOld.courseNodeFindableObjectCache[_courseNode.Name] = new();
-                if (!zSearchOld.courseNodeFindableObjectCache[_courseNode.Name].Contains(this))
-                    zSearchOld.courseNodeFindableObjectCache[_courseNode.Name].Add(this);
+                if (!zFindableManager.courseNodeFindableObjectCache.ContainsKey(_courseNode.Name))
+                    zFindableManager.courseNodeFindableObjectCache[_courseNode.Name] = new();
+                if (!zFindableManager.courseNodeFindableObjectCache[_courseNode.Name].Contains(this))
+                    zFindableManager.courseNodeFindableObjectCache[_courseNode.Name].Add(this);
                 return _courseNode;
             }
             set

@@ -155,7 +155,7 @@ public class ZiMain : BasePlugin
     public static int approachWakeChance = 5;
     public static int wakeChancePerSecond = 20;
 
-    internal const bool debugMode = false;
+    internal const bool debugMode = true;
     internal const bool customActions = false;
     internal static bool VoiceMenu = false;
     internal static bool extraActionMenus =false;
@@ -204,9 +204,9 @@ public class ZiMain : BasePlugin
             zUpdater.CreateInstance();
             zUpdater.onUpdate.Listen(sMenuManager.Update);
             zUpdater.onUpdate.Listen(zActionSub.Update);
-            //zUpdater.onUpdate.Listen(zSearchOld.Update);
+            zUpdater.onUpdate.Listen(zFindableManager.Update);
             zUpdater.onUpdate.Listen(zDebug.debugUpdate);
-            //zUpdater.onUpdate.Listen(zVisitedManager.Update);
+            zUpdater.onUpdate.Listen(zVisitedManager.Update);
             zUpdater.onUpdate.Listen(zSmartSelect.Update);
             zUpdater.onLateUpdate.Listen(sMenuManager.LateUpdate);
             OnLateLoad();

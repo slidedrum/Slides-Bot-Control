@@ -1,17 +1,30 @@
-﻿using Il2CppInterop.Runtime.Injection;
+﻿using BotControl;
+using Il2CppInterop.Runtime.Injection;
 using Player;
+using SlideMenu;
 using System;
 using UnityEngine;
 
-public class TemplateAction : CustomActionBase
+public class DropHereAction : CustomActionBase
 {
+    public static void TestStart(PlayerAIBot bot)
+    {
+        DropHereAction.Descriptor desc = new DropHereAction.Descriptor(bot)
+        {
+            DropPosition = zStaticRefrences.LocalPlayer.Position
+        };
+        bot.StartAction(desc);
+    }
+    
     //This is an example of how you can set up your own custom action!
     public static new bool Setup() //This will be called when your class is regestered, it should return true if your action will even activate on it's own, or false if it's an exclusively manual action.
     {
-        return true;
+        return false;
     }
     public new class Descriptor : CustomActionBase.Descriptor
     {
+        public Vector3 DropPosition;
+        public static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionBase.AccessLayers.Legs | PlayerBotActionBase.AccessLayers.Hip | PlayerBotActionBase.AccessLayers.Spine | PlayerBotActionBase.AccessLayers.LeftArm | PlayerBotActionBase.AccessLayers.RightArm | PlayerBotActionBase.AccessLayers.RootPosition | PlayerBotActionBase.AccessLayers.RootRotation | PlayerBotActionBase.AccessLayers.WieldPrimary;
         //This is an example of how you can set up your own custom descriptor!
         [Obsolete]
         public Descriptor() : base(ClassInjector.DerivedConstructorPointer<Descriptor>()) // Don't use this!  Needed for il2cpp nonsense.
@@ -23,10 +36,9 @@ public class TemplateAction : CustomActionBase
         {
             ClassInjector.DerivedConstructorBody(this);
         }  // Don't use this!  Needed for il2cpp nonsense.
-        public Descriptor(PlayerAIBot bot) : base(ClassInjector.DerivedConstructorPointer<Descriptor>())
+        public Descriptor(PlayerAIBot bot) : base(bot)
         {
-            ClassInjector.DerivedConstructorBody(this);
-            InitDescriptor(bot);
+            this.RequiredLayers = DropHereAction.Descriptor.s_RequiredLayers;
             //Use this is your descriptor constructor.
             //The descriptor is used to describe everything about your action.
             //Any paramaters are set up by the calling class.  
@@ -38,11 +50,11 @@ public class TemplateAction : CustomActionBase
             //This converts your descriptor into an action instance.
             //This means your action is starting!
             //You probably won't need to do anything else here.
-            return new TemplateAction(this);
+            return new DropHereAction(this);
         }
         public override bool IsActionAllowed(PlayerBotActionBase.Descriptor desc)
         {
-            //Does your action play nice with desc?
+            //Does your action play nice with this desc?
             return base.IsActionAllowed(desc);
         }
         public override bool CheckCollision(PlayerBotActionBase.Descriptor desc)
@@ -76,22 +88,34 @@ public class TemplateAction : CustomActionBase
         }
 
     }
-    [Obsolete]
-    public TemplateAction() : base(ClassInjector.DerivedConstructorPointer<TemplateAction>())// Don't use this!  Needed for il2cpp nonsense.
+    private enum State
     {
-        ClassInjector.DerivedConstructorBody(this);
-        
-    }// Don't use this!  Needed for il2cpp nonsense.
+        Idle,
+        Move,
+        Drop,
+        Finished,
+        Failed,
+    }
+    public PlayerBotActionTravel.Descriptor TravelAction;
+    public PlayerBotActionCarryExpeditionItem.Descriptor DropAction;
+    private DropHereAction.Descriptor m_desc;
+    private State state;
     [Obsolete]
-    public TemplateAction(IntPtr ptr) : base(ptr) // Don't use this!  Needed for il2cpp nonsense.
+    public DropHereAction() : base(ClassInjector.DerivedConstructorPointer<CustomActionBase>())// Don't use this!  Needed for il2cpp nonsense.
     {
         ClassInjector.DerivedConstructorBody(this);
 
     }// Don't use this!  Needed for il2cpp nonsense.
-    public TemplateAction(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<TemplateAction>())
+    [Obsolete]
+    public DropHereAction(IntPtr ptr) : base(ptr) // Don't use this!  Needed for il2cpp nonsense.
     {
         ClassInjector.DerivedConstructorBody(this);
-        InitFromDescriptor(desc);
+
+    }// Don't use this!  Needed for il2cpp nonsense.
+    public DropHereAction(Descriptor desc) : base(desc)
+    {
+        this.m_desc = desc;
+        this.state = State.Idle;
         //Use this constructor.
         //This means your action is starting!
     }
@@ -104,7 +128,98 @@ public class TemplateAction : CustomActionBase
     public override bool Update()
     {
         //This is called every frame when your action is active.
-        return base.Update();
+        if (base.Update())
+            return true;
+        switch (state)
+        {
+            case State.Idle:
+                UpdateIdle();
+                break;
+            case State.Move:
+                UpdateMove();
+                break;
+            case State.Drop:
+                UpdateDrop();
+                break;
+            case State.Finished:
+                this.m_desc.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Successful);
+                return true;
+            case State.Failed:
+                this.m_desc.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Failed);
+                return true;
+        }
+        return !base.IsActive();
+    }
+    private bool VerifyDropPosition()
+    {
+        if (zHelpers.CanBotReach(m_bot, m_desc.DropPosition))
+        {
+            return true;
+        }
+        return false;
+    }
+    private bool VerifyBotCarrying()
+    {
+        if (!zHelpers.TryGetAgentBackpackItem(m_agent, InventorySlot.InLevelCarry, out var item))
+        {
+            return false;
+        }
+        return true;
+    }
+    private void UpdateIdle()
+    {
+        if (!VerifyDropPosition())
+        {
+            state = State.Failed;
+        }
+        if (!VerifyBotCarrying())
+        {
+            state = State.Failed;
+        }
+        PlayerBotActionTravel.Descriptor Desc = new(m_bot)
+        {
+            DestinationPos = m_desc.DropPosition,
+            DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.Position,
+            ParentActionBase = this,
+            Prio = m_desc.Prio,
+            Persistent = false,
+        };
+        if (this.m_bot.RequestAction(Desc))
+        {
+            this.TravelAction = Desc;
+            this.state = State.Move;
+            FlexibleMethodDefinition callback = new(OnTravelCompleted, [TravelAction]);
+            zActionSub.addOnTerminated(TravelAction, callback);
+        }
+        else
+        {
+            this.state = State.Failed;
+        }
+    }
+    private void UpdateMove()
+    {
+
+    }
+    private void UpdateDrop()
+    {
+        foreach (var action in m_bot.Actions)
+        {
+            if (action.TryCast<PlayerBotActionCarryExpeditionItem>() == null)
+                continue;
+            m_bot.StopAction(action.DescBase);
+        }
+        this.state = State.Finished;
+    }
+    public void OnTravelCompleted(PlayerBotActionBase.Descriptor descBase)
+    { 
+        if (descBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
+        {
+            this.state = State.Drop;
+        }
+        else
+        {
+            this.state = State.Failed;
+        }
     }
     public override bool IsActionAllowed(PlayerBotActionBase.Descriptor desc)
     {

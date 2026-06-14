@@ -1,12 +1,9 @@
-﻿using BetterBots.Data;
-using BotControl;
-using Enemies;
+﻿using BotControl;
 using Il2CppInterop.Runtime.Injection;
 using Player;
 using SlideMenu;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 //using Zombified_Initiative;
 
@@ -14,15 +11,6 @@ namespace ZombieTweak2.zRootBotPlayerAction.CustomActions
 {
     internal class ExploreAction : CustomActionBase
     {
-        public static void StartTest()
-        {
-            var bot = ZiMain.GetBotList()[0];
-            var desc = new Descriptor(bot)
-            {
-
-            };
-            bot.StartAction(desc);
-        }
         private StateEnum state = StateEnum.None;
         VisitNode UnexploredNode = null;
         public static Dictionary<int, bool> ExplorePerms = new(); //bot.Agent.Owner.PlayerSlotIndex()
@@ -73,8 +61,10 @@ namespace ZombieTweak2.zRootBotPlayerAction.CustomActions
                 ClassInjector.DerivedConstructorBody(this);
                 //Don't use.  This is needed for Il2cpp nonsnse.
             }
-            public Descriptor(PlayerAIBot bot) : base(bot)
+            public Descriptor(PlayerAIBot bot) : base(ClassInjector.DerivedConstructorPointer<Descriptor>())
             {
+                ClassInjector.DerivedConstructorBody(this);
+                InitDescriptor(bot);
                 //Use this
             }
             public override void compareAction(ref PlayerBotActionBase.Descriptor bestAction)
@@ -124,7 +114,7 @@ namespace ZombieTweak2.zRootBotPlayerAction.CustomActions
                 return new ExploreAction(this);
             }
         }
-        public ExploreAction() : base(ClassInjector.DerivedConstructorPointer<CustomActionBase>())
+        public ExploreAction() : base(ClassInjector.DerivedConstructorPointer<ExploreAction>())
         {//Don't use!
             ClassInjector.DerivedConstructorBody(this);
             
@@ -133,8 +123,10 @@ namespace ZombieTweak2.zRootBotPlayerAction.CustomActions
         {//Don't use!
             ClassInjector.DerivedConstructorBody(this);
         }
-        public ExploreAction(Descriptor desc) : base(desc)
+        public ExploreAction(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<ExploreAction>())
         {// Use this.
+            ClassInjector.DerivedConstructorBody(this);
+            InitFromDescriptor(desc);
             //ZiMain.sendChatMessage("Here I go exploring because I feel like it.",m_bot.Agent);
             state = StateEnum.lookingForUnexplored;
         }

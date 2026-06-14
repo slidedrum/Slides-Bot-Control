@@ -34,20 +34,26 @@ namespace BotControl
         private static ChatMessage previousMessage = new();
         public static void sendChatMessage(string message, string PermissionString, PlayerAgent sender = null, PlayerAgent receiver = null)
         {
-            if (!(bool)zSlideComputer.ActionPermissions.ValueAt(PermissionString))
-                return;
-            ChatMessage ThisMessage = new()
+            if (zSlideComputer.ActionPermissions.HasKey(PermissionString))
             {
-                Message = message,
-                SpeakerID = sender?.CharacterID,
-                ReceiverID = receiver?.CharacterID,
-            };
-            bool same = ThisMessage.Hash == previousMessage.Hash;
-            previousMessage = ThisMessage;
-            if (same)
+                if (!(bool)zSlideComputer.ActionPermissions.ValueAt(PermissionString, false))
+                    return;
+                ChatMessage ThisMessage = new()
+                {
+                    Message = message,
+                    SpeakerID = sender?.CharacterID,
+                    ReceiverID = receiver?.CharacterID,
+                };
+                bool same = ThisMessage.Hash == previousMessage.Hash;
+                previousMessage = ThisMessage;
+                if (same)
+                    return;
+                if ((bool)zSlideComputer.ActionPermissions.ValueAt("TalkInChat"))
+                    PlayerChatManager.WantToSentTextMessage(sender != null ? sender : PlayerManager.GetLocalPlayerAgent(), message, receiver);
                 return;
-            if ((bool)zSlideComputer.ActionPermissions.ValueAt("TalkInChat"))
-                PlayerChatManager.WantToSentTextMessage(sender != null ? sender : PlayerManager.GetLocalPlayerAgent(), message, receiver);
+            }
+            ZiMain.log.LogWarning($"PermissionString not found {PermissionString}");
+            PlayerChatManager.WantToSentTextMessage(sender != null ? sender : PlayerManager.GetLocalPlayerAgent(), message, receiver);
         }
     }
 }

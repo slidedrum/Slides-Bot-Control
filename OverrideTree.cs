@@ -466,9 +466,9 @@ namespace SlideDrum
                 return rootNode.GetValue();
             return NodeAt(key).GetValue();
         }
-        public T? ValueAt(string key)
+        public T? ValueAt(string key, bool shouldthrow = true)
         {
-            return NodeAt(key).ValueAt();
+            return NodeAt(key, shouldthrow).ValueAt();
         }
         public bool HasParrent(string key)
         {

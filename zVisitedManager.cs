@@ -499,7 +499,7 @@ namespace BotControl
                     {
                         Vector3Int checkGridPosition = new Vector3Int(gridPosition.x + x, gridPosition.y + y, gridPosition.z + z);
 
-                        if (NodeMap.TryGetValue(checkGridPosition, out var nodes))
+                        if (NodeMap.TryGetValue(checkGridPosition, out var nodes)) // TODO nodemap is not built.
                         {
                             foreach (VisitNode node in nodes)
                             {

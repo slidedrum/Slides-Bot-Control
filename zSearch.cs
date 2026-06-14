@@ -1,5 +1,7 @@
-﻿using PrioritySet;
+﻿using Il2CppInterop.Runtime;
+using PrioritySet;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace BotControl
@@ -10,7 +12,7 @@ namespace BotControl
         {
             return FindBestAligned(Look, Candidates, x => x.transform, MaxAngle);
         }
-        public static Component FindBestAligned(Transform Look, HashSet<Component> Candidates, float MaxAngle = 180f)
+        public static Component FindBestAlignedComponenet(Transform Look, HashSet<Component> Candidates, float MaxAngle = 180f)
         {
             return FindBestAligned(Look, Candidates, x => x.transform, MaxAngle);
         }
@@ -57,7 +59,7 @@ namespace BotControl
                 TypeLists[type] = CandidateList;
                 BigCandidateList.UnionWith(CandidateList);
             }
-            Component selected = FindBestAligned(Look, BigCandidateList, MaxAngle);
+            Component selected = FindBestAlignedComponenet(Look, BigCandidateList, MaxAngle);
             Type = null;
             foreach(var kvp in TypeLists)
             {
@@ -68,6 +70,18 @@ namespace BotControl
                 }
             }
             return selected;
+        }
+        public static HashSet<T> FindAllInView<T>(Transform Look, float MaxDistance = 10000f, float radius = 3) where T : Component 
+        {
+            var source = FindAllInView(Look, Il2CppType.Of<T>(), MaxDistance, radius);
+            var result = new HashSet<T>();
+            foreach (var component in source)
+            {
+                T comp = component.TryCast<T>();
+                if (comp != null)
+                    result.Add(comp);
+            }
+            return result;
         }
         public static HashSet<Component> FindAllInView(Transform Look, Il2CppSystem.Type Type, float MaxDistance = 10000f, float radius = 3)
         {
@@ -113,6 +127,27 @@ namespace BotControl
                 }
             }
             return BestCandidate;
+        }
+        public static HashSet<T> FindAllNearby<T>(
+            Vector3 Position,
+            float Radius = 3)
+            where T : Component
+        {
+            var results = FindAllNearby(
+                Position,
+                Il2CppType.Of<T>(),
+                Radius);
+
+            HashSet<T> ret = new();
+
+            foreach (var component in results)
+            {
+                T comp = component.TryCast<T>();
+                if (comp != null)
+                    ret.Add(comp);
+            }
+
+            return ret;
         }
         public static HashSet<Component> FindAllNearby(Vector3 Position, Il2CppSystem.Type Type, float Radius = 3)
         {

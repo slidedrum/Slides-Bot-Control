@@ -91,7 +91,7 @@ namespace ZombieTweak2.zRootBotPlayerAction.Patches
             //after vanilla actions eval we need to eval custom actions.
             //Whatever vanilla action is best still gets called no matter what, might want to chagne that?  Might not be a problem?
             var data = zActions.GetOrCreateData(__instance);
-            foreach (var act in data.customActions)
+            foreach (var act in data.customActionDescriptors)
             {
                 act.compareAction(ref data.bestAction);
             }
