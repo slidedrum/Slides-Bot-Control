@@ -618,7 +618,7 @@ namespace BotControl
                     ret = BasicObjectVisibilityChec(target, observer, settings);
                     break;
                 case visMethods.VeryBasic:
-                    ret = VeryBasicObjectVisibilityChec(target, observer, settings);
+                    ret = VeryBasicObjectVisibilityCheck(target, observer, settings);
                     break;
             }
             return ret;
@@ -844,43 +844,62 @@ namespace BotControl
                 }
             return (ret/729)*fogPenalty;
         }
-        private static float VeryBasicObjectVisibilityChec(GameObject target, GameObject observer, visSettings settings)
+        private static float VeryBasicObjectVisibilityCheck(GameObject target, GameObject observer, visSettings settings)
         {
-            float range = settings.maxDistance;
-            var preLit = Camera.main.GetComponent<FPSCamera>().PrelitVolume;
-            float fogPenalty = preLit.GetFogDensity(target.transform.position) + preLit.GetFogDensity(observer.transform.position);
-            fogPenalty = HelperMethods.InverseLerp(3f, 0, fogPenalty);
-            range *= fogPenalty;
+            if (target == null || observer == null)
+                return 0f;
 
-            //TODO figure out how to do a lighting penalty for dark areas.
+            float range = settings.maxDistance;
+            float fogPenalty = 1f;
+
+            if (Camera.main != null)
+            {
+                var fpsCamera = Camera.main.GetComponent<FPSCamera>();
+                if (fpsCamera?.PrelitVolume != null)
+                {
+                    var preLit = fpsCamera.PrelitVolume;
+                    fogPenalty = preLit.GetFogDensity(target.transform.position) + preLit.GetFogDensity(observer.transform.position);
+                    fogPenalty = HelperMethods.InverseLerp(3f, 0, fogPenalty);
+                    range *= fogPenalty;
+                }
+            }
 
             float distance = Vector3.Distance(target.transform.position, observer.transform.position);
             if (distance > range)
-                return 0;
-            var observerBounds = HelperMethods.GetRendererMaxBounds(observer);
-            var targetBounds = HelperMethods.GetRendererMaxBounds(target);
+                return 0f;
 
-            Vector3 dir = (targetBounds.center + settings.targetOffset) - (observerBounds.center + settings.observerOffest);
+            var observerBounds = HelperMethods.GetRendererMaxBounds(observer);
+            observerBounds.Encapsulate(HelperMethods.GetColliderMaxBounds(observer));
+
+            var targetBounds = HelperMethods.GetRendererMaxBounds(target);
+            targetBounds.Encapsulate(HelperMethods.GetColliderMaxBounds(target));
+
+            Vector3 origin = observerBounds.center + settings.observerOffest;
+            Vector3 destination = targetBounds.center + settings.targetOffset;
+            Vector3 dir = destination - origin;
             float checkDistance = dir.magnitude;
-            RaycastHit hit;
+
+            if (checkDistance <= Mathf.Epsilon)
+                return 1f;
+
             int layerMask =
-                (1 << 0) | //Default
-                (1 << 11) | //Dynamic
+                (1 << 0) |  // Default
+                (1 << 11) | // Dynamic
                 (1 << 15) | // Glue Gun proj
-                (1 << 16) | //Enemy
+                (1 << 16) | // Enemy
                 (1 << 17) | // Enemy dead
-                (1 << 18) | // Debris 
-                (1 << 19); // Denemy Damageble
-            if (Physics.Raycast(observerBounds.center + settings.observerOffest, dir.normalized, out hit, checkDistance, layerMask))
+                (1 << 18) | // Debris
+                (1 << 19);  // Enemy Damageable
+
+            if (Physics.Raycast(origin, dir.normalized, out RaycastHit hit, checkDistance, layerMask))
             {
-                if (hit.collider.transform.IsChildOf(target.transform))
-                {
-                    //zDebug.DrawLine(observerBounds.Center, targetBounds.Center, new Color(0.1f, 0.1f, 0.1f), 0.01f);
-                    return 1f;
-                }
+                if (hit.collider.gameObject == target || hit.collider.transform.IsChildOf(target.transform))
+                    return fogPenalty;
+
                 return 0f;
             }
-            return 1f;
+
+            return fogPenalty;
         }
     }
 }

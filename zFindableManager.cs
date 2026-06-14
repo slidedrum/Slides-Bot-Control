@@ -25,6 +25,9 @@ namespace BotControl
         public static float foundDistance = 30f;
         private static PlayerAgent localPlayer = null;
         public static int MapCellSise = 5;
+        public static List<FindableObject> AllFindableObjects = new();
+        public static List<FindableObject> AllFoundFindables = new();
+        public static List<FindableObject> AllUnfoundFindables = new();
         public static Dictionary<Vector2, List<FindableObject>> findbleObjectMap = new();
         public static Dictionary<string, List<FindableObject>> courseNodeFindableObjectCache = new(); //This should perfectly mirror findbleObjectMap but I'm not 100% sure if I missed anything.  If weird bugs come up, this is where to look.
         private static List<Transform> pingTransforms = new();
@@ -353,7 +356,9 @@ namespace BotControl
             if (!findbleObjectMap.ContainsKey(cell))
                 findbleObjectMap[cell] = new();
             findbleObjectMap[cell].Add(findable);
-            if(findable.courseNode == null)
+            AllFindableObjects.Add(findable);
+            AllUnfoundFindables.Add(findable);
+            if (findable.courseNode == null)
             {
                 ZiMain.log.LogWarning($"Findable {findable.gameObject.name} has no coursenode!");
                 return;
@@ -586,7 +591,7 @@ namespace BotControl
                 };
                 if (zVisibilityManager.CheckObjectVisiblity(gameObject, agent.gameObject, settings) > visiblityThreshold)
                 {
-                    findable.found = true;
+                    findable.SetFound();
                     GuiManager.AttemptSetPlayerPingStatus(agent, true, findable.box.Center, style: findable.pingSyle);
                     ZiMain.log.LogInfo($"Found object {findable.type}! {gameObject.name}");
                     var levelItem = findable.gameObject.GetComponent<ItemInLevel>();
@@ -663,6 +668,30 @@ namespace BotControl
             set
             {
                 _courseNode = value;
+            }
+        }
+        public void SetFound()
+        {
+            found = true;
+            zFindableManager.AllUnfoundFindables.Remove(this);
+            zFindableManager.AllFoundFindables.Add(this);
+        }
+        public static Vector2 CellFromPosition(Vector3 worldPos) =>
+            new Vector2(
+                Mathf.FloorToInt(worldPos.x / zFindableManager.MapCellSise),
+                Mathf.FloorToInt(worldPos.z / zFindableManager.MapCellSise));
+        private Vector2 _Cell;
+        public override string ToString()
+        {
+            return pingSyle.ToString();
+        }
+        public Vector2 Cell
+        {
+            get
+            {
+                if (_Cell == null)
+                    _Cell = CellFromPosition(gameObject.transform.position);
+                return _Cell;
             }
         }
         public Type type;

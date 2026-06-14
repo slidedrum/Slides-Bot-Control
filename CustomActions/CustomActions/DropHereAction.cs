@@ -15,7 +15,8 @@ namespace BotControl.CustomActions.CustomActions
         {
             DropHereAction.Descriptor desc = new DropHereAction.Descriptor(bot)
             {
-                DropPosition = zStaticRefrences.LocalPlayer.Position
+                DropPosition = zStaticRefrences.LocalPlayer.Position,
+                Prio = 13
             };
             bot.StartAction(desc);
         }
@@ -40,8 +41,10 @@ namespace BotControl.CustomActions.CustomActions
             {
                 ClassInjector.DerivedConstructorBody(this);
             }  // Don't use this!  Needed for il2cpp nonsense.
-            public Descriptor(PlayerAIBot bot) : base(bot)
+            public Descriptor(PlayerAIBot bot) : base(ClassInjector.DerivedConstructorPointer<Descriptor>())
             {
+                ClassInjector.DerivedConstructorBody(this);
+                InitDescriptor(bot);
                 this.RequiredLayers = DropHereAction.Descriptor.s_RequiredLayers;
                 //Use this is your descriptor constructor.
                 //The descriptor is used to describe everything about your action.
@@ -105,7 +108,7 @@ namespace BotControl.CustomActions.CustomActions
         private DropHereAction.Descriptor m_desc;
         private State state;
         [Obsolete]
-        public DropHereAction() : base(ClassInjector.DerivedConstructorPointer<CustomActionBase>())// Don't use this!  Needed for il2cpp nonsense.
+        public DropHereAction() : base(ClassInjector.DerivedConstructorPointer<DropHereAction>())// Don't use this!  Needed for il2cpp nonsense.
         {
             ClassInjector.DerivedConstructorBody(this);
 
@@ -116,8 +119,9 @@ namespace BotControl.CustomActions.CustomActions
             ClassInjector.DerivedConstructorBody(this);
 
         }// Don't use this!  Needed for il2cpp nonsense.
-        public DropHereAction(Descriptor desc) : base(desc)
+        public DropHereAction(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<DropHereAction>())
         {
+            InitFromDescriptor(desc);
             this.m_desc = desc;
             this.state = State.Idle;
             //Use this constructor.

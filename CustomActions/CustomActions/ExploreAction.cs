@@ -1,10 +1,9 @@
-﻿using BotControl;
-using BotControl.CustomActions;
-using Il2CppInterop.Runtime.Injection;
+﻿using Il2CppInterop.Runtime.Injection;
 using Player;
 using SlideMenu;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 //using Zombified_Initiative;
 
@@ -74,7 +73,7 @@ namespace BotControl.CustomActions.CustomActions
                     return;
                 if (lastLooked == 0)
                     lastLooked = Time.time;
-                if (DramaManager.CurrentStateEnum != DRAMA_State.Exploration)// && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking)
+                if (DramaManager.CurrentStateEnum != DRAMA_State.Exploration && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking)
                     return;
                 //if (DramaManager.EnemiesAreClose)
                 //    return;
@@ -82,7 +81,7 @@ namespace BotControl.CustomActions.CustomActions
                     return;
                 if (!IsTerminated())
                     return;
-                bool foundEnemy = false;//zSearch.FindableObjects.Values.Any(obj => obj.found && obj.gameObject.GetComponent<EnemyAgent>() != null);
+                bool foundEnemy = HasFoundEnemies();
                 if (foundEnemy)
                     return;
                 float maxprio = 0f;
@@ -201,7 +200,7 @@ namespace BotControl.CustomActions.CustomActions
             }
             else if (state == StateEnum.Moving) 
             {
-                if (HasUnfoundEnemies())
+                if (HasFoundEnemies())
                 {
                     m_bot.StopAction(travelAction);
                     state = StateEnum.Finished;
@@ -216,7 +215,7 @@ namespace BotControl.CustomActions.CustomActions
             }
             return !IsActive();
         }
-        private bool HasUnfoundEnemies()
+        public static bool HasFoundEnemies()
         {
             //foreach (var findable in zSearch.FindableObjects.Values)
             //{
@@ -225,7 +224,7 @@ namespace BotControl.CustomActions.CustomActions
             //        return true;
             //    }
             //}
-            return false;
+            return zFindableManager.AllFoundFindables.Any(obj => obj.found && obj.pingSyle == eNavMarkerStyle.PlayerPingEnemy && obj.gameObject != null && obj.gameObject.activeInHierarchy); ;
         }
         public void OnTravelActionEvent(PlayerBotActionBase.Descriptor descBase)
         {
