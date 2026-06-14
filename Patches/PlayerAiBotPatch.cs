@@ -1,6 +1,6 @@
 ﻿                //using ZombieTweak2.zRootBotPlayerAction.CustomActions;
                 using BotControl;
-                using BotControl.zRootBotPlayerAction;
+                using BotControl.CustomActions;
 
                 //using BotControl.zRootBotPlayerAction;
                 using ChainedPuzzles;

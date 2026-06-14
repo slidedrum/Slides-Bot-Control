@@ -1,11 +1,11 @@
-﻿using BotControl.zRootBotPlayerAction;
+﻿using BotControl.CustomActions;
+using BotControl.CustomActions.CustomActions;
 using HarmonyLib;
 using Il2CppMono.Security.Interface;
 using Player;
 using System.Diagnostics.Metrics;
-using ZombieTweak2.zRootBotPlayerAction.CustomActions;
 
-namespace ZombieTweak2.zRootBotPlayerAction.Patches
+namespace BotControl.CustomActions.Patches
 {
     [HarmonyPatch]
     public class RootPlayerBotActionPatch

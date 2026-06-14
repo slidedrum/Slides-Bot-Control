@@ -2,7 +2,10 @@
 using Player;
 using System;
 using UnityEngine;
-using ZombieTweak2.zRootBotPlayerAction.Patches;
+using BotControl.CustomActions.Patches;
+namespace BotControl.CustomActions
+{
+
 
 public class CustomActionBase : PlayerBotActionBase
 {
@@ -116,4 +119,5 @@ public class CustomActionBase : PlayerBotActionBase
     {
         _Base.OnWarped(position);
     }
+}
 }

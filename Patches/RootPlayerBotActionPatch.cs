@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using Player;
-using BotControl.zRootBotPlayerAction;
+using BotControl.CustomActions;
 
 
 //using ZombieTweak2.zRootBotPlayerAction.CustomActions;

@@ -1,15 +1,11 @@
-﻿using BotControl;
-using BotControl.zRootBotPlayerAction;
+﻿using BotControl.CustomActions.CustomActions;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppSystem.Security.Cryptography;
 using Player;
 using UnityEngine;
-using ZombieTweak2.zRootBotPlayerAction.CustomActions;
-//using Zombified_Initiative;
 
-namespace ZombieTweak2.zRootBotPlayerAction.Patches
+namespace BotControl.CustomActions.Patches
 {
     [HarmonyPatch]
     internal class PlayerAiBotPatch

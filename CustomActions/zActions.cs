@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 //using Zombified_Initiative;
 
-namespace BotControl.zRootBotPlayerAction
+namespace BotControl.CustomActions
 {
     public class dataStore
     {

@@ -1,4 +1,5 @@
 ﻿using BotControl;
+using BotControl.CustomActions;
 using Il2CppInterop.Runtime.Injection;
 using Player;
 using SlideMenu;
@@ -7,7 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 //using Zombified_Initiative;
 
-namespace ZombieTweak2.zRootBotPlayerAction.CustomActions
+namespace BotControl.CustomActions.CustomActions
 {
     internal class ExploreAction : CustomActionBase
     {
@@ -73,7 +74,7 @@ namespace ZombieTweak2.zRootBotPlayerAction.CustomActions
                     return;
                 if (lastLooked == 0)
                     lastLooked = Time.time;
-                if (DramaManager.CurrentStateEnum != DRAMA_State.Exploration && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking)
+                if (DramaManager.CurrentStateEnum != DRAMA_State.Exploration)// && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking)
                     return;
                 //if (DramaManager.EnemiesAreClose)
                 //    return;
@@ -194,7 +195,7 @@ namespace ZombieTweak2.zRootBotPlayerAction.CustomActions
                     zChatHandler.sendChatMessage("I have looked everywhere!", "");
                 if (travelAction.Status == PlayerBotActionBase.Descriptor.StatusType.Active)
                     ZiMain.log.LogWarning("Travel action still active somehow.");
-                DescBase.SetCompletionStatus(travelAction.Status);
+                DescBase.SetCompletionStatus(travelAction.Status == PlayerBotActionBase.Descriptor.StatusType.Successful ? PlayerBotActionBase.Descriptor.StatusType.Successful : PlayerBotActionBase.Descriptor.StatusType.Failed);
                 Stop();
                 return true;
             }
