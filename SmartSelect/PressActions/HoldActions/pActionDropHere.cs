@@ -1,6 +1,8 @@
-﻿using Player;
-using UnityEngine;
+﻿using BotControl.CustomActions.CustomActions;
+using Player;
 using System;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions
 {
@@ -20,8 +22,14 @@ namespace BotControl.SmartSelect.PressActions
             if (!BestBot.Agent.Alive) return false;
             BackpackItem item = zHelpers.GetAgentBackpackItem(BestBot.Agent, InventorySlot.InLevelCarry);
             if (item == null) return false;
-            PlayerBackpackManager.WantToDropItem(BestBot.Agent.Owner, item.Instance.Get_pItemData(), zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, BestBot.Agent.Rotation, true);
+            //PlayerBackpackManager.WantToDropItem(BestBot.Agent.Owner, item.Instance.Get_pItemData(), zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, BestBot.Agent.Rotation, true);
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CANCELTHAT);
+            DropHereAction.Descriptor desc = new DropHereAction.Descriptor(BestBot)
+            {
+                DropPosition = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos,
+                Prio = 13
+            };
+            BestBot.StartAction(desc);
             return true;
         }
         public bool IsActionValid(Component candidate)
@@ -30,7 +38,7 @@ namespace BotControl.SmartSelect.PressActions
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             if (zHelpers.GetAgentBackpackItem(BestBot.Agent, InventorySlot.InLevelCarry) == null) return false;
-            return false;
+            return true;
         }
     }
 }

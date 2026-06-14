@@ -29,7 +29,7 @@ namespace BotControl.CustomActions.CustomActions
         public new class Descriptor : CustomActionBase.Descriptor
         {
             public Vector3 DropPosition;
-            public static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionBase.AccessLayers.Legs | PlayerBotActionBase.AccessLayers.Hip | PlayerBotActionBase.AccessLayers.Spine | PlayerBotActionBase.AccessLayers.LeftArm | PlayerBotActionBase.AccessLayers.RightArm | PlayerBotActionBase.AccessLayers.RootPosition | PlayerBotActionBase.AccessLayers.RootRotation | PlayerBotActionBase.AccessLayers.WieldPrimary;
+            //public static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionBase.AccessLayers.Legs | PlayerBotActionBase.AccessLayers.Hip | PlayerBotActionBase.AccessLayers.Spine | PlayerBotActionBase.AccessLayers.LeftArm | PlayerBotActionBase.AccessLayers.RightArm | PlayerBotActionBase.AccessLayers.RootPosition | PlayerBotActionBase.AccessLayers.RootRotation | PlayerBotActionBase.AccessLayers.WieldPrimary;
             //This is an example of how you can set up your own custom descriptor!
             [Obsolete]
             public Descriptor() : base(ClassInjector.DerivedConstructorPointer<Descriptor>()) // Don't use this!  Needed for il2cpp nonsense.
@@ -45,7 +45,7 @@ namespace BotControl.CustomActions.CustomActions
             {
                 ClassInjector.DerivedConstructorBody(this);
                 InitDescriptor(bot);
-                this.RequiredLayers = DropHereAction.Descriptor.s_RequiredLayers;
+                //this.RequiredLayers = DropHereAction.Descriptor.s_RequiredLayers;
                 //Use this is your descriptor constructor.
                 //The descriptor is used to describe everything about your action.
                 //Any paramaters are set up by the calling class.  
@@ -215,6 +215,7 @@ namespace BotControl.CustomActions.CustomActions
                 if (action.TryCast<PlayerBotActionCarryExpeditionItem>() == null)
                     continue;
                 m_bot.StopAction(action.DescBase);
+                break;
             }
             this.state = State.Finished;
         }

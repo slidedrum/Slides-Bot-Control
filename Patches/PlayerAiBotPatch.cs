@@ -1,15 +1,11 @@
-﻿                //using ZombieTweak2.zRootBotPlayerAction.CustomActions;
-                using BotControl;
-                using BotControl.CustomActions;
+﻿//using ZombieTweak2.zRootBotPlayerAction.CustomActions;
 
-                //using BotControl.zRootBotPlayerAction;
-                using ChainedPuzzles;
-                using HarmonyLib;
-                using Il2CppInterop.Runtime.InteropTypes.Arrays;
-                using Player;
-                using UnityEngine;
+//using BotControl.zRootBotPlayerAction;
+using HarmonyLib;
+using Player;
+using UnityEngine;
 
-                namespace BotControl.Patches
+namespace BotControl.Patches
                 {
                     [HarmonyPatch]
                     internal class PlayerAiBotPatch
@@ -329,7 +325,7 @@
                         [HarmonyPrefix]
                         public static bool PreStopAction(PlayerAIBot __instance, PlayerBotActionBase.Descriptor desc)
                         {
-                            if (desc == PlayerAIBot.s_updatingAction)
+                            if (desc == PlayerAIBot.s_updatingAction) // TODO if this is a custom action we lose the strict typing for some reason.
                             {
                                 Debug.LogError("Action was removed during its update: " + desc);
                             }

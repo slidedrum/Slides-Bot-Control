@@ -143,7 +143,7 @@ namespace BotControl.CustomActions.CustomActions
             {
                 m_bot.StopAction(travelAction);
                 state = StateEnum.Finished;
-                return false;
+                return true;
             }
             if (state == StateEnum.lookingForUnexplored)
             {

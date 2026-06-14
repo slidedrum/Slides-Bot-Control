@@ -194,7 +194,7 @@ namespace BotControl
                 // Collect invalids once
                 foreach (var f in list)
                 {
-                    if (f == null || !f.gameObject.activeInHierarchy)
+                    if (f?.gameObject == null || !f.gameObject.activeInHierarchy)
                         toRemove.Add(f);
                 }
 
