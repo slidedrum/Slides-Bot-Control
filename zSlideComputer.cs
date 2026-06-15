@@ -133,6 +133,8 @@ namespace BotControl
 
         public static void Init()
         {
+            if (ZiMain.HasBetterBots)
+                BBCompat.SetBotsOpenContainersToFalse();
             zSmartSelectHud.Setup();
         }
         public static void FirstTimeSetup()
