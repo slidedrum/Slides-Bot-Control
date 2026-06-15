@@ -236,7 +236,7 @@ namespace BotControl
             if (!setup)
                 return;
             if (agents.Any(x => x == null))
-                agents = PlayerManager.PlayerAgentsInLevel.ToArray().ToList();
+                agents = PlayerManager.PlayerAgentsInLevel.ToArray().ToList(); // This bad, TODO refactor.
             foreach(PlayerAgent agent in agents)
             {
                 HashSet<VisitNode> visitableNodes = GetNearByNodes(agent.transform.position, NodeVisitDistance);
