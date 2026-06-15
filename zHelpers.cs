@@ -30,6 +30,17 @@ namespace BotControl
                 return hash;
             }
         }
+        public static bool SnapPositionToNav(Vector3 originalPosition, out Vector3 resultPosition, float maxdistance = 1.5f, int areamask = -1)
+        {
+            NavMeshHit navMeshHit;
+            if (NavMesh.SamplePosition(originalPosition, out navMeshHit, maxdistance, areamask))
+            {
+                resultPosition = navMeshHit.position;
+                return true;
+            }
+            resultPosition = originalPosition;
+            return false;
+        }
         public static bool IsObstructed(
             Vector3 from,
             GameObject target,
