@@ -13,95 +13,95 @@ namespace BotControl.CustomActions.Patches
         private static float updateInterval = 0.16f;
         private static float LastUpdate = 0f;
 
-        [HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.StartQueuedActions))]
-        [HarmonyPrefix]
-        public static bool StartQueuedActions(PlayerAIBot __instance)
-        {
-            var data = zActions.GetOrCreateData(__instance);
-            if (data.m_queuedActions.Count == 0)
-            {
-                return false;
-            }
-            var array = new Il2CppReferenceArray<PlayerBotActionBase.Descriptor>(data.m_queuedActions.Count);
-            data.m_queuedActions.CopyTo(array);
-            data.m_queuedActions.Clear();
-            foreach (PlayerBotActionBase.Descriptor desc in array)
-            {
-                PlayerBotActionBase.Descriptor descriptor = desc;
-                foreach (var custom in data.customActionDescriptors)
-                {
-                    if (custom.Pointer == desc.Pointer)
-                    {
-                        descriptor = custom;
-                        break;
-                    }
-                }
-                if (descriptor.Status == PlayerBotActionBase.Descriptor.StatusType.Queued)
-                {
-                    descriptor.OnStarted();
-                    PlayerBotActionBase playerBotActionBase = descriptor.CreateAction();
-                    __instance.RemoveCollidingActions(descriptor);
-                    data.m_actions.Add(playerBotActionBase);
-                }
-            }
-            return false;
-        }
-        [HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.UpdateActions))]
-        [HarmonyPrefix]
-        public static bool UpdateActions(PlayerAIBot __instance)
-        {
-            if (Time.time < LastUpdate + updateInterval)
-            {
-                return false;
-            }
-            var data = zActions.GetOrCreateData(__instance);
-            if (data.m_actions.Count == 0)
-            {
-                return false;
-            }
-            //PlayerBotActionBase[] array = new PlayerBotActionBase[instance.m_actions.Count];
-            var array = new Il2CppReferenceArray<PlayerBotActionBase>(data.m_actions.Count);
-            data.m_actions.CopyTo(array, 0);
-            for (int i = 0; i < array.Length; i++)
-            {
-                PlayerBotActionBase playerBotActionBase = array[i];
-                PlayerAIBot.s_updatingAction = playerBotActionBase.DescBase;
-                if (!playerBotActionBase.IsActive() || playerBotActionBase.Update())
-                { //Has the action completed?
-                    int num = i;
-                    if (num >= data.m_actions.Count || data.m_actions[num] != playerBotActionBase)
-                    { //Find the instance to remove it at
-                        bool flag = false;
-                        for (int j = 0; j < data.m_actions.Count; j++)
-                        {
-                            if (data.m_actions[j].Pointer == playerBotActionBase.Pointer) //this is failing as a direct comparison so have to compare pointer
-                            {
-                                flag = true;
-                                num = j;
-                                break;
-                            }
-                        }
-                        if (!flag)
-                        {
-                            continue;
-                        }
-                    }
-                    PlayerAIBot.s_updatingAction = null;
-                    data.m_actions.RemoveAt(num);
-                    playerBotActionBase.DescBase.OnExpired();
-                    playerBotActionBase.Stop();
-                }
-            }
-            PlayerAIBot.s_updatingAction = null;
-            return false;
-        }
+                    //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.StartQueuedActions))]
+                    //[HarmonyPrefix]
+                    //public static bool StartQueuedActions(PlayerAIBot __instance)
+                    //{
+                    //    //var data = zActions.GetOrCreateData(__instance);
+                    //    //if (data.m_queuedActions.Count == 0)
+                    //    //{
+                    //    //    return false;
+                    //    //}
+                    //    var array = new Il2CppReferenceArray<PlayerBotActionBase.Descriptor>(__instance.m_queuedActions.Count);
+                    //    __instance.m_queuedActions.CopyTo(array);
+                    //    __instance.m_queuedActions.Clear();
+                    //    foreach (PlayerBotActionBase.Descriptor desc in array)
+                    //    {
+                    //        PlayerBotActionBase.Descriptor descriptor = desc;
+                    //        //foreach (var custom in data.customActionDescriptors)
+                    //        //{
+                    //        //    if (custom.Pointer == desc.Pointer)
+                    //        //    {
+                    //        //        descriptor = custom;
+                    //        //        break;
+                    //        //    }
+                    //        //}
+                    //        if (descriptor.Status == PlayerBotActionBase.Descriptor.StatusType.Queued)
+                    //        {
+                    //            descriptor.OnStarted();
+                    //            PlayerBotActionBase playerBotActionBase = descriptor.CreateAction();
+                    //            __instance.RemoveCollidingActions(descriptor);
+                    //            __instance.m_actions.Add(playerBotActionBase);
+                    //        }
+                    //    }
+                    //    return false;
+                    //}
+                    //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.UpdateActions))]
+                    //[HarmonyPrefix]
+                    //public static bool UpdateActions(PlayerAIBot __instance)
+                    //{
+                    //    if (Time.time < LastUpdate + updateInterval)
+                    //    {
+                    //        return false;
+                    //    }
+                    //    //var data = zActions.GetOrCreateData(__instance);
+                    //    //if (data.m_actions.Count == 0)
+                    //    //{
+                    //    //    return false;
+                    //    //}
+                    //    //PlayerBotActionBase[] array = new PlayerBotActionBase[instance.m_actions.Count];
+                    //    var array = new Il2CppReferenceArray<PlayerBotActionBase>(__instance.m_actions.Count);
+                    //    __instance.m_actions.CopyTo(array, 0);
+                    //    for (int i = 0; i < array.Length; i++)
+                    //    {
+                    //        PlayerBotActionBase playerBotActionBase = array[i];
+                    //        PlayerAIBot.s_updatingAction = playerBotActionBase.DescBase;
+                    //        if (!playerBotActionBase.IsActive() || playerBotActionBase.Update())
+                    //        { //Has the action completed?
+                    //            int num = i;
+                    //            if (num >= __instance.m_actions.Count || __instance.m_actions[num] != playerBotActionBase)
+                    //            { //Find the instance to remove it at
+                    //                bool flag = false;
+                    //                for (int j = 0; j < __instance.m_actions.Count; j++)
+                    //                {
+                    //                    if (__instance.m_actions[j].Pointer == playerBotActionBase.Pointer) //this is failing as a direct comparison so have to compare pointer
+                    //                    {
+                    //                        flag = true;
+                    //                        num = j;
+                    //                        break;
+                    //                    }
+                    //                }
+                    //                if (!flag)
+                    //                {
+                    //                    continue;
+                    //                }
+                    //            }
+                    //            PlayerAIBot.s_updatingAction = null;
+                    //            __instance.m_actions.RemoveAt(num);
+                    //            playerBotActionBase.DescBase.OnExpired();
+                    //            playerBotActionBase.Stop();
+                    //        }
+                    //    }
+                    //    PlayerAIBot.s_updatingAction = null;
+                    //    return false;
+                    //}
         [HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.Setup))]
         [HarmonyPrefix]
         public static void Setup(PlayerAIBot __instance)
         {
             var data = zActions.GetOrCreateData(__instance);
-            __instance.m_actions = data.m_actions;
-            __instance.m_queuedActions = data.m_queuedActions;
+            //__instance.m_actions = data.m_actions;
+            //__instance.m_queuedActions = data.m_queuedActions;
             ZiMain.log.LogInfo(typeof(CustomActionBase.Descriptor).FullName);
             ZiMain.log.LogInfo(typeof(DropHereAction.Descriptor).FullName);
             ZiMain.log.LogInfo(typeof(ExploreAction.Descriptor).FullName);
@@ -219,58 +219,58 @@ namespace BotControl.CustomActions.Patches
         //    instance.ApplyValues();
         //    return false;
         //}
-        [HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.RemoveCollidingActions))]
-        [HarmonyPrefix]
-        public static bool RemoveCollidingActions(PlayerAIBot __instance, PlayerBotActionBase.Descriptor desc)
-        {
-            var data = zActions.GetOrCreateData(__instance);
-            bool hasRemoved;
-            do
-            {
-                hasRemoved = false;
-                int i = 0;
-                while (i < data.m_queuedActions.Count)
-                {
-                    PlayerBotActionBase.Descriptor descriptor = data.m_queuedActions[i];
-                    //foreach (var custom in data.customActionDescriptors)
+                    //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.RemoveCollidingActions))]
+                    //[HarmonyPrefix]
+                    //public static bool RemoveCollidingActions(PlayerAIBot __instance, PlayerBotActionBase.Descriptor desc)
                     //{
-                    //    if (custom.Pointer == desc.Pointer)
+                    //    //var data = zActions.GetOrCreateData(__instance);
+                    //    bool hasRemoved;
+                    //    do
                     //    {
-                    //        descriptor = custom;
-                    //        break;
+                    //        hasRemoved = false;
+                    //        int i = 0;
+                    //        while (i < __instance.m_queuedActions.Count)
+                    //        {
+                    //            PlayerBotActionBase.Descriptor descriptor = __instance.m_queuedActions[i];
+                    //            //foreach (var custom in data.customActionDescriptors)
+                    //            //{
+                    //            //    if (custom.Pointer == desc.Pointer)
+                    //            //    {
+                    //            //        descriptor = custom;
+                    //            //        break;
+                    //            //    }
+                    //            //}
+                    //            if (descriptor.Status == PlayerBotActionBase.Descriptor.StatusType.Queued && descriptor.CheckCollision(desc))
+                    //            {
+                    //                __instance.m_queuedActions.RemoveAt(i);
+                    //                descriptor.OnAborted();
+                    //                hasRemoved = true;
+                    //            }
+                    //            else
+                    //            {
+                    //                i++;
+                    //            }
+                    //        }
+                    //        int j = 0;
+                    //        while (j < __instance.m_actions.Count)
+                    //        {
+                    //            PlayerBotActionBase playerBotActionBase = __instance.m_actions[j];
+                    //            if (playerBotActionBase.CheckCollision(desc)) //this might be a problem with pointers?
+                    //            {
+                    //                __instance.m_actions.RemoveAt(j);
+                    //                playerBotActionBase.DescBase.OnInterrupted();
+                    //                playerBotActionBase.Stop();
+                    //                hasRemoved = true;
+                    //            }
+                    //            else
+                    //            {
+                    //                j++;
+                    //            }
+                    //        }
                     //    }
+                    //    while (hasRemoved && !desc.IsTerminated());
+                    //    return false;
                     //}
-                    if (descriptor.Status == PlayerBotActionBase.Descriptor.StatusType.Queued && descriptor.CheckCollision(desc))
-                    {
-                        data.m_queuedActions.RemoveAt(i);
-                        descriptor.OnAborted();
-                        hasRemoved = true;
-                    }
-                    else
-                    {
-                        i++;
-                    }
-                }
-                int j = 0;
-                while (j < data.m_actions.Count)
-                {
-                    PlayerBotActionBase playerBotActionBase = data.m_actions[j];
-                    if (playerBotActionBase.CheckCollision(desc)) //this might be a problem with pointers?
-                    {
-                        data.m_actions.RemoveAt(j);
-                        playerBotActionBase.DescBase.OnInterrupted();
-                        playerBotActionBase.Stop();
-                        hasRemoved = true;
-                    }
-                    else
-                    {
-                        j++;
-                    }
-                }
-            }
-            while (hasRemoved && !desc.IsTerminated());
-            return false;
-        }
         //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.SetEnabled))]
         //[HarmonyPrefix]
         //public static bool SetEnabled(PlayerAIBot instance, bool state)
@@ -328,32 +328,32 @@ namespace BotControl.CustomActions.Patches
         //    instance.enabled = state;
         //    return false;
         //}
-        [HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.StartAction))]
-        [HarmonyPrefix]
-        public static bool StartAction(PlayerAIBot __instance, PlayerBotActionBase.Descriptor desc)
-        {
-            var data = zActions.GetOrCreateData(__instance);
-            //foreach (var custom in data.customActionDescriptors)
-            //    if (custom.Pointer == desc.Pointer)
-            //    { desc = custom; break; }
-            if (!desc.IsTerminated())
-            {
-                Debug.LogError("Action was queued while active: " + desc);
-                return false;
-            }
-            for (int i = 0; i < data.m_actions.Count; i++)
-            {
-                if (data.m_actions[i].DescBase.Pointer == desc.Pointer)
-                {
-                    data.m_actions.RemoveAt(i);
-                    break;
-                }
-            }
-            desc.OnQueued();
-            __instance.RemoveCollidingActions(desc);
-            data.m_queuedActions.Add(desc);
-            return false;
-        }
+                //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.StartAction))]
+                //[HarmonyPrefix]
+                //public static bool StartAction(PlayerAIBot __instance, PlayerBotActionBase.Descriptor desc)
+                //{
+                //    //var data = zActions.GetOrCreateData(__instance);
+                //    //foreach (var custom in data.customActionDescriptors)
+                //    //    if (custom.Pointer == desc.Pointer)
+                //    //    { desc = custom; break; }
+                //    if (!desc.IsTerminated())
+                //    {
+                //        Debug.LogError("Action was queued while active: " + desc);
+                //        return false;
+                //    }
+                //    for (int i = 0; i < __instance.m_actions.Count; i++)
+                //    {
+                //        if (__instance.m_actions[i].DescBase.Pointer == desc.Pointer)
+                //        {
+                //            __instance.m_actions.RemoveAt(i);
+                //            break;
+                //        }
+                //    }
+                //    desc.OnQueued();
+                //    __instance.RemoveCollidingActions(desc);
+                //    __instance.m_queuedActions.Add(desc);
+                //    return false;
+                //}
         //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.StopAction))]
         //[HarmonyPrefix]
         //public static bool StopAction(PlayerAIBot instance, PlayerBotActionBase.Descriptor desc)

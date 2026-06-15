@@ -11,8 +11,8 @@ namespace BotControl.CustomActions
         public PrioritySet<CustomActionBase.Descriptor> customActionDescriptors = new();
         public PrioritySet<CustomActionBase> customActionBases = new();
         public PlayerBotActionBase.Descriptor bestAction = null;
-        public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase> m_actions { get; set; } = new();
-        public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor> m_queuedActions { get; set; } = new();
+        //public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase> m_actions { get; set; } = new();
+        //public Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor> m_queuedActions { get; set; } = new();
     }
     public class ManualAction
     {
