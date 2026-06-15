@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace BotControl.CustomActions.CustomActions
 {
-    internal class ExploreAction : CustomActionBase
+    internal class CustomBotActionExplore : CustomActionBase
     {
         private StateEnum state = StateEnum.None;
         VisitNode UnexploredNode = null;
@@ -114,19 +114,19 @@ namespace BotControl.CustomActions.CustomActions
             }
             public override PlayerBotActionBase CreateAction()
             {
-                return new ExploreAction(this);
+                return new CustomBotActionExplore(this);
             }
         }
-        public ExploreAction() : base(ClassInjector.DerivedConstructorPointer<ExploreAction>())
+        public CustomBotActionExplore() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionExplore>())
         {//Don't use!
             ClassInjector.DerivedConstructorBody(this);
             
         }
-        public ExploreAction(IntPtr ptr) : base(ptr)
+        public CustomBotActionExplore(IntPtr ptr) : base(ptr)
         {//Don't use!
             ClassInjector.DerivedConstructorBody(this);
         }
-        public ExploreAction(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<ExploreAction>())
+        public CustomBotActionExplore(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<CustomBotActionExplore>())
         {// Use this.
             ClassInjector.DerivedConstructorBody(this);
             InitFromDescriptor(desc);

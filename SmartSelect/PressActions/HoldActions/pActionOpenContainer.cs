@@ -18,7 +18,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         {
             LG_WeakResourceContainer container = BestComponent.TryCast<LG_WeakResourceContainer>();
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
-            OpenLockerAction.Descriptor desc = new OpenLockerAction.Descriptor(BestBot)
+            CustomBotActionOpenLocker.Descriptor desc = new CustomBotActionOpenLocker.Descriptor(BestBot)
             {
                 TargetContainer = container,
                 Prio = 13

@@ -8,7 +8,7 @@ using UnityEngine;
 namespace BotControl.CustomActions.CustomActions
 {
 
-    public class OpenLockerAction : CustomActionBase
+    public class CustomBotActionOpenLocker : CustomActionBase
     {
         //This is an example of how you can set up your own custom action!
         public static new bool Setup() //This will be called when your class is regestered, it should return true if your action will even activate on it's own, or false if it's an exclusively manual action.
@@ -19,6 +19,7 @@ namespace BotControl.CustomActions.CustomActions
         {
             public LG_WeakResourceContainer TargetContainer;
             public float Haste = 1f;
+            public PlayerBotActionUnlock.Descriptor.MethodEnum method = PlayerBotActionUnlock.Descriptor.MethodEnum.Any;
             private PlayerManager.PositionReservation m_posReservation;
             private PlayerManager.ObjectReservation m_objReservation;
             public static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionBase.AccessLayers.Legs | PlayerBotActionBase.AccessLayers.Hip | PlayerBotActionBase.AccessLayers.RootPosition | PlayerBotActionBase.AccessLayers.RootRotation;
@@ -47,7 +48,7 @@ namespace BotControl.CustomActions.CustomActions
                 //This converts your descriptor into an action instance.
                 //This means your action is starting!
                 //You probably won't need to do anything else here.
-                return new OpenLockerAction(this);
+                return new CustomBotActionOpenLocker(this);
             }
             public override bool IsActionAllowed(PlayerBotActionBase.Descriptor desc)
             {
@@ -111,6 +112,8 @@ namespace BotControl.CustomActions.CustomActions
                 //This gets called when your action is getting terminated.
                 //This includes any form of interuption, but does not include finishing the action.
                 base.InternalOnTerminated();
+                PlayerManager.Current.RemovePositionReservation(this.m_posReservation);
+                PlayerManager.Current.RemoveGameObjectReservation(this.m_objReservation);
             }
             public virtual void CompareAction(ref PlayerBotActionBase.Descriptor bestAction)
             {
@@ -126,6 +129,8 @@ namespace BotControl.CustomActions.CustomActions
         {
             Idle,
             Move,
+            StartUnlock,
+            Unlocking,
             StartOpening,
             Opening,
             Open,
@@ -134,6 +139,7 @@ namespace BotControl.CustomActions.CustomActions
         }
         private PlayerBotActionTravel.Descriptor TravelAction;
         private PlayerBotActionLook.Descriptor LookAction;
+        private PlayerBotActionUnlock.Descriptor UnlockAction;
         private float Haste = 1f;
         private LG_WeakResourceContainer TargetContainer;
         private Vector3 TargetLoction;
@@ -141,17 +147,17 @@ namespace BotControl.CustomActions.CustomActions
         private State state;
         private float openingTime = 1f;
         private float startOpeningTimestamp = 0f;
-        public OpenLockerAction() : base(ClassInjector.DerivedConstructorPointer<OpenLockerAction>())// Don't use this!  Needed for il2cpp nonsense.
+        public CustomBotActionOpenLocker() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionOpenLocker>())// Don't use this!  Needed for il2cpp nonsense.
         {
             ClassInjector.DerivedConstructorBody(this);
 
         }// Don't use this!  Needed for il2cpp nonsense.
-        public OpenLockerAction(IntPtr ptr) : base(ptr) // Don't use this!  Needed for il2cpp nonsense.
+        public CustomBotActionOpenLocker(IntPtr ptr) : base(ptr) // Don't use this!  Needed for il2cpp nonsense.
         {
             ClassInjector.DerivedConstructorBody(this);
 
         }// Don't use this!  Needed for il2cpp nonsense.
-        public OpenLockerAction(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<OpenLockerAction>())
+        public CustomBotActionOpenLocker(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<CustomBotActionOpenLocker>())
         {
             ClassInjector.DerivedConstructorBody(this);
             InitFromDescriptor(desc);
@@ -166,6 +172,9 @@ namespace BotControl.CustomActions.CustomActions
         {
             //This is called when your action is told to stop.
             //Be sure to do any cleanup if you need to.
+            SafeStopAction(TravelAction);
+            SafeStopAction(LookAction);
+            SafeStopAction(UnlockAction);
             base.Stop();
         }
         public override bool Update()
@@ -180,6 +189,12 @@ namespace BotControl.CustomActions.CustomActions
                     break;
                 case State.Move:
                     UpdateStateMove();
+                    break;
+                case State.StartUnlock:
+                    UpdateStateStartUnlock();
+                    break;
+                case State.Unlocking:
+                    UpdateStateUnlocking();
                     break;
                 case State.StartOpening:
                     UpdateStateStartOpening();
@@ -214,6 +229,8 @@ namespace BotControl.CustomActions.CustomActions
                 Haste = Haste,
                 Persistent = true,
             };
+            SafeStopAction(LookAction);
+            LookAction = null;
             if (this.m_bot.RequestAction(Desc))
             {
                 this.TravelAction = Desc;
@@ -230,7 +247,51 @@ namespace BotControl.CustomActions.CustomActions
         {
             UpdateLookAction();
             if ((m_bot.transform.position - TargetLoction).magnitude < 0.1f)
-                state = State.StartOpening;
+            {
+                if (TargetContainer.m_weakLock == null)
+                    state = State.StartOpening;
+                else
+                {
+                    state = State.StartUnlock;
+                    m_bot.StopAction(TravelAction);
+                }
+            }
+        }
+        private void UpdateStateStartUnlock()
+        {
+            //UpdateLookAction();
+            float Prop = m_desc.Prio;
+            PlayerBotActionUnlock.Descriptor.TargetTypeEnum targetType;
+            GameObject targetObject;
+            targetObject = TargetContainer.gameObject;
+            targetType = PlayerBotActionUnlock.Descriptor.TargetTypeEnum.Container;
+            PlayerBotActionUnlock.Descriptor Desc = new(m_bot)
+            {
+                TargetType = targetType,
+                TargetGO = targetObject,
+                Prio = 13,
+                ParentActionBase = this,
+                TargetPosition = targetObject.transform.position,
+                Method = m_desc.method,
+                Lock = TargetContainer.m_weakLock,
+            };
+            SafeStopAction(LookAction);
+            if (this.m_bot.RequestAction(Desc))
+            {
+                this.UnlockAction = Desc;
+                this.state = State.Unlocking;
+                FlexibleMethodDefinition callback = new(OnUnlockCompleted, [UnlockAction]);
+                zActionSub.addOnTerminated(UnlockAction, callback);
+            }
+            else
+            {
+                this.state = State.Failed;
+            }
+        }
+        private void UpdateStateUnlocking()
+        {
+            //UpdateLookAction();
+
         }
         private void UpdateStateStartOpening()
         {
@@ -254,6 +315,11 @@ namespace BotControl.CustomActions.CustomActions
             state = State.Finished;
         }
         public void OnTravelCompleted(PlayerBotActionBase.Descriptor descBase)
+        {
+            if (this.state == State.Move && descBase.Status != PlayerBotActionBase.Descriptor.StatusType.Successful)
+                this.state = State.Failed;
+        }
+        public void OnUnlockCompleted(PlayerBotActionBase.Descriptor descBase)
         {
             if (descBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
             {
@@ -287,7 +353,7 @@ namespace BotControl.CustomActions.CustomActions
         }
         public void OnLookActionEvent(PlayerBotActionBase.Descriptor descBase)
         {
-            if (descBase != this.LookAction)
+            if (descBase.Pointer != this.LookAction.Pointer)
             {
                 base.PrintError("Rogue action.");
             }
