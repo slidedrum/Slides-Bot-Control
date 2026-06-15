@@ -1,5 +1,5 @@
-﻿using BotControl.Networking;
-using BotControl.CustomActions;
+﻿using BotControl.CustomActions;
+using BotControl.Networking;
 using Enemies;
 using GTFO.API;
 using LevelGeneration;
@@ -7,7 +7,9 @@ using Player;
 using SlideMenu;
 using SNetwork;
 using System;
+using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
 using static BotControl.Networking.pStructs;
 
 namespace BotControl
@@ -221,7 +223,7 @@ namespace BotControl
         public static void SendBotToUseCfoamGun(PlayerAIBot aiBot, Vector3 targetPosition, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0)
-                actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+                actionID = zHelpers.HashString($"RequestToUseCfoamGun{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             PlayerBotActionUseGlueGun.Descriptor desc = new(aiBot)
             {
                 Prio = 15f,
@@ -249,17 +251,21 @@ namespace BotControl
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             
         }
+
         public static void SendBotToPickupItem(PlayerAIBot aiBot, ItemInLevel item, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0)
-                actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+                actionID = zHelpers.HashString($"RequestToPickupItem{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             float prio = defaultPrio;
+            float standDist = RootPlayerBotAction.s_collectItemStandDistance; // 1.0f
+            Vector3 standCandidate = item.transform.position - item.transform.up * standDist;
+            zHelpers.SnapPositionToNav(standCandidate, out Vector3 TargetPosition);
             float haste = 1f;
             PlayerBotActionCollectItem.Descriptor desc = new(aiBot)
             {
                 TargetItem = item,
                 TargetContainer = item.container,
-                TargetPosition = item.transform.position,
+                TargetPosition = TargetPosition,
                 Prio = prio,
                 Haste = haste,
             };
@@ -288,7 +294,6 @@ namespace BotControl
 
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
             zChatHandler.sendChatMessage($"Picking up {item.PublicName}", "Pickup Item" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, Commander);
-
         }
         public static void SendBotToReviveAgent(PlayerAIBot Reviver, PlayerAgent Downed, PlayerAgent Commander = null, ulong netsender  = 0, uint actionID = 0)
         {
