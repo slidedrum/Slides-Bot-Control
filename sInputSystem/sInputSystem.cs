@@ -61,8 +61,8 @@ namespace SlideDrum.sInputSystem
 
                 WasKeyHeldOnThePreviousFrame[Key] = keyPressed;
             }
-            List<sKeyPressRefrence> Refrences = new(sTimeline.KeyPressRefrences); // we want to make our own clone so we don't rebuild the list every time we check it.
-            EvaluateDefinitions(Refrences);
+            //List<sKeyPressRefrence> Refrences = new(sTimeline.KeyPressRefrences); // this was a huge heap alocation, BAD.
+            EvaluateDefinitions(sTimeline.KeyPressRefrences);
         }
         private static void EvaluateDefinitions(List<sKeyPressRefrence> Refrences)
         {
