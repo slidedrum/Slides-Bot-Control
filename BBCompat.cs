@@ -1,14 +1,14 @@
-﻿using BepInEx.Unity.IL2CPP;
-using BetterBots.Components;
+﻿using BetterBots.Components;
+using BetterBots.Managers;
 using HarmonyLib;
 using Player;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace BotControl
 {
+    [HarmonyPatch]
     public static class BBCompat
     {
 
@@ -16,7 +16,12 @@ namespace BotControl
         public static void OnInit()
         {
             var original = AccessTools.Method(typeof(RootPlayerBotAction), nameof(RootPlayerBotAction.UpdateActionCollectItem));
-            ZiMain.m_Harmony.Unpatch(original, HarmonyPatchType.Prefix,"com.east.bb");
+            ZiMain.m_Harmony.Unpatch(original, HarmonyPatchType.Prefix, "com.east.bb");
+
+        }
+        public static void SetBotsOpenContainersToFalse()
+        {
+            ConfigurationPluginManager.BetterBotsOpenContainers = false;
         }
         public static BotRecorder GetBotRecorder(PlayerAIBot bot)
         {
