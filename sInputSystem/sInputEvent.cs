@@ -2,7 +2,7 @@
 
 namespace SlideDrum.sInputSystem
 {
-    public class sInputEvent
+    public struct sInputEvent
     {
         public float Time;
         public bool Pressed;
