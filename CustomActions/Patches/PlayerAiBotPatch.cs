@@ -10,6 +10,9 @@ namespace BotControl.CustomActions.Patches
     [HarmonyPatch]
     internal class PlayerAiBotPatch
     {
+        private static float updateInterval = 0.16f;
+        private static float LastUpdate = 0f;
+
         [HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.StartQueuedActions))]
         [HarmonyPrefix]
         public static bool StartQueuedActions(PlayerAIBot __instance)
@@ -47,6 +50,10 @@ namespace BotControl.CustomActions.Patches
         [HarmonyPrefix]
         public static bool UpdateActions(PlayerAIBot __instance)
         {
+            if (Time.time < LastUpdate + updateInterval)
+            {
+                return false;
+            }
             var data = zActions.GetOrCreateData(__instance);
             if (data.m_actions.Count == 0)
             {
@@ -58,15 +65,6 @@ namespace BotControl.CustomActions.Patches
             for (int i = 0; i < array.Length; i++)
             {
                 PlayerBotActionBase playerBotActionBase = array[i];
-                //foreach (var custom in data.customActionDescriptors)
-                //{
-                //    if (custom.ActionBase.Pointer == playerBotActionBase.Pointer)
-                //    {
-                //        playerBotActionBase = custom.ActionBase; 
-                //        break; 
-                //    }
-                //}
-
                 PlayerAIBot.s_updatingAction = playerBotActionBase.DescBase;
                 if (!playerBotActionBase.IsActive() || playerBotActionBase.Update())
                 { //Has the action completed?

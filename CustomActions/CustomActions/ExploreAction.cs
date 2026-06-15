@@ -69,6 +69,7 @@ namespace BotControl.CustomActions.CustomActions
             }
             public override void compareAction(ref PlayerBotActionBase.Descriptor bestAction)
             {
+                return;
                 if (!canExplore)
                     return;
                 if (lastLooked == 0)

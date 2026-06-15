@@ -204,7 +204,7 @@ namespace BotControl.Patches
             float basePriority = (float)zSlideComputer.ActionPriorities.ValueAt(actionKey);
             //float basePriority = RootPlayerBotAction.s_itemBasePrios[itemID];
 
-            List<PlayerAgent> playerAgentsList = PlayerManager.PlayerAgentsInLevel.ToArray().ToList();
+            var playerAgentsList = PlayerManager.PlayerAgentsInLevel;//.ToArray().ToList();
 
             float highestAmmoCap = 0f;
             float currentTotalAmmoOfOtherBotsNotThisBot = 0f;
@@ -404,7 +404,8 @@ namespace BotControl.Patches
             // If the area node is null we won't find containers to search
             if (activityNode != null && activityNode.MetaData?.StorageContainers != null)
             {
-                List<LG_ResourceContainer_Storage> storageList = activityNode.MetaData.StorageContainers.ToArray().ToList();
+                //List<LG_ResourceContainer_Storage> storageList = activityNode.MetaData.StorageContainers.ToArray().ToList();
+                var storageList = activityNode.MetaData.StorageContainers;
                 // iterate through storage containers
                 foreach (var container in storageList)
                 {
@@ -421,8 +422,9 @@ namespace BotControl.Patches
                     var containerGO = container.gameObject;
                     if (containerGO == null)
                         continue;
-
-                    var weakContainerComp = containerGO.GetComponent<LG_WeakResourceContainer>();
+                    
+                    //var weakContainerComp = containerGO.GetComponent<LG_WeakResourceContainer>();
+                    LG_WeakResourceContainer weakContainerComp = container.m_core.Cast<LG_WeakResourceContainer>();
                     if (weakContainerComp == null)
                         continue;
 
@@ -524,13 +526,16 @@ namespace BotControl.Patches
                     // We'll traverse game objects / child items: find components of type Item in container children.
                     // This mirrors the decompiled behavior of scanning children and calling GetComponentInParent<Item>().
                     //Component[] potentialItems = container.GetComponentsInChildren<Component>(true);
-                    Item[] potentialItems = container.GetComponentsInChildren<Item>(true);
-                    if (potentialItems.Length == 0)
+                    //Item[] potentialItems = container.GetComponentsInChildren<Item>(true);
+                    if (container.PickupInteractions.Count == 0)
                         continue;
 
                     // iterate potentialItems like the decompiled code scanned coroutines entries
-                    foreach (Item item in potentialItems)
+                    //foreach (Item item in potentialItems)
+                    foreach (Interact_Base interact in container.PickupInteractions)
                     {
+                        if (interact == null || !interact.IsActive) continue;
+                        Item item = interact.GetComponentInParent<Item>();
                         // In the decomp they did a series of type checks / generic checks; here we attempt to find Item in parent
                         if (item == null)
                             continue;
@@ -547,7 +552,7 @@ namespace BotControl.Patches
                         if (dataBlock == null)
                             continue;
 
-                        float itemPrio = __instance.GetItemPrio(dataBlock.inventorySlot, item.pItemData.itemID_gearCRC);
+                        float itemPrio = __instance.GetItemPrio(dataBlock.inventorySlot, gearCRC);
 
                         // if this item's prio is not greater than the currently best, skip
                         if (itemPrio <= bestItemPrio)
