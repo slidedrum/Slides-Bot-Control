@@ -40,7 +40,7 @@ namespace BotControl.SmartSelect
         public static bool FallbackToClosest = true;
         private static float now => Time.time;
         private static float roundedTime => now - (now % slowupdateinterval);
-        private const float slowupdateinterval = 0.1f;
+        private const float slowupdateinterval = 0.33f;
         public enum PressTypes
         {
             Tap,

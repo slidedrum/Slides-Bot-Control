@@ -49,6 +49,11 @@ One of the major features of this mod is letting you change the priority of diff
  - Items surrounded by * mean that it's not in the current version, but coming eventually.
  - When you tell a bot to move to a location, they will no longer follow you.  You must double tap them to tell them to follow you again, they will never come back untill you do. I plan to make some sort of option to have they return to you if you go some distnace away, or if they get attacked.  That will come eventually.
  - Known bug: bots will have trouble reaching some containers, mostly ones that exist above or below another part of the level.
+### Important note about how Smart Select works under the hood.
+ - This system may seem to be inconsistant or not pick up on things you think you're looking at, here's why:
+ - The system checks a sphere arround the point you're looking at, NOT a cone infront of you.  This allows the system to run faster and perform better.
+ - The system only updates about 10 times per second. 
+ - Keep this in mind if you feel like selection is inconsistant.
  
 ## Planned features:
  - Better in game explanation of how to use the menu and what it can do.
