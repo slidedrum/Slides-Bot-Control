@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static BotControl.Networking.pStructs;
+using System.Linq;
 
 /*
  == TODO == Priority: Clean up the mess I made creating custom actions.
@@ -159,6 +160,8 @@ public class ZiMain : BasePlugin
     internal const bool customActions = false;
     internal static bool VoiceMenu = false;
     internal static bool extraActionMenus =false;
+    private static List<PlayerAIBot> _botList;
+    private static int LastPlayerCount = 0;
     public static Harmony m_Harmony;
 
     public override void Load()
@@ -168,7 +171,7 @@ public class ZiMain : BasePlugin
         m_Harmony.PatchAll();
         ClassInjector.RegisterTypeInIl2Cpp<zUpdater>();
         ClassInjector.RegisterTypeInIl2Cpp<zCameraEvents>();
-         
+        CustomActionRegistry.RegisterIl2CppTypes();
         //NetworkAPI.RegisterEvent<pItemPrioDisable>          ("SetItemPrioDisable",              zNetworking.ReciveSetItemPrioDisable);
         //NetworkAPI.RegisterEvent<pItemPrio>                 ("SetItemPrio",                     zNetworking.ReciveSetItemPrio);
         //NetworkAPI.RegisterEvent<pResourceThreshold>        ("SetResourceThreshold",            zNetworking.reciveSetResourceThreshold);
@@ -205,7 +208,7 @@ public class ZiMain : BasePlugin
             zUpdater.onUpdate.Listen(sMenuManager.Update);
             zUpdater.onUpdate.Listen(zActionSub.Update);
             //zUpdater.onUpdate.Listen(zFindableManager.Update);
-            zUpdater.onUpdate.Listen(zDebug.debugUpdate);
+            //zUpdater.onUpdate.Listen(zDebug.debugUpdate);
             //zUpdater.onUpdate.Listen(zVisitedManager.Update);
             zUpdater.onUpdate.Listen(zSmartSelect.Update);
             zUpdater.onLateUpdate.Listen(sMenuManager.LateUpdate);
@@ -416,20 +419,29 @@ public class ZiMain : BasePlugin
     }
     public static List<PlayerAIBot> GetBotList()
     {
-        //TODO this is bad there's got to be a better way.  Though it's pretty cheap regardless.
-        //TODO add caching?
-        List<PlayerAIBot> playerAiBots = new();
-        var playerAgentsInLevel = PlayerManager.PlayerAgentsInLevel;
-        foreach (var agent in playerAgentsInLevel)
+        if (LastPlayerCount != PlayerManager.PlayerAgentsInLevel.Count)
+            UpdateBotList();
+        else if (_botList == null)
+            UpdateBotList();
+        else if (_botList.Contains(null))
+            UpdateBotList();
+        return _botList;
+    }
+    private static void UpdateBotList()
+    {
+        if (_botList == null)
+            _botList = new();
+        else
+            _botList.Clear();
+        LastPlayerCount = PlayerManager.PlayerAgentsInLevel.Count;
+        foreach (var agent in PlayerManager.PlayerAgentsInLevel)
         {
             if (agent.Owner.IsBot)
             {
-                playerAiBots.Add(agent.gameObject.GetComponent<PlayerAIBot>());
+                _botList.Add(agent.gameObject.GetComponent<PlayerAIBot>());
             }
         }
-        return playerAiBots;
     }
-
 
 
     
