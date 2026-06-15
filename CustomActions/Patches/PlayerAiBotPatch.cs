@@ -13,88 +13,89 @@ namespace BotControl.CustomActions.Patches
         private static float updateInterval = 0.16f;
         private static float LastUpdate = 0f;
 
-                    //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.StartQueuedActions))]
-                    //[HarmonyPrefix]
-                    //public static bool StartQueuedActions(PlayerAIBot __instance)
-                    //{
-                    //    //var data = zActions.GetOrCreateData(__instance);
-                    //    //if (data.m_queuedActions.Count == 0)
-                    //    //{
-                    //    //    return false;
-                    //    //}
-                    //    var array = new Il2CppReferenceArray<PlayerBotActionBase.Descriptor>(__instance.m_queuedActions.Count);
-                    //    __instance.m_queuedActions.CopyTo(array);
-                    //    __instance.m_queuedActions.Clear();
-                    //    foreach (PlayerBotActionBase.Descriptor desc in array)
-                    //    {
-                    //        PlayerBotActionBase.Descriptor descriptor = desc;
-                    //        //foreach (var custom in data.customActionDescriptors)
-                    //        //{
-                    //        //    if (custom.Pointer == desc.Pointer)
-                    //        //    {
-                    //        //        descriptor = custom;
-                    //        //        break;
-                    //        //    }
-                    //        //}
-                    //        if (descriptor.Status == PlayerBotActionBase.Descriptor.StatusType.Queued)
-                    //        {
-                    //            descriptor.OnStarted();
-                    //            PlayerBotActionBase playerBotActionBase = descriptor.CreateAction();
-                    //            __instance.RemoveCollidingActions(descriptor);
-                    //            __instance.m_actions.Add(playerBotActionBase);
-                    //        }
-                    //    }
-                    //    return false;
-                    //}
-                    //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.UpdateActions))]
-                    //[HarmonyPrefix]
-                    //public static bool UpdateActions(PlayerAIBot __instance)
-                    //{
-                    //    if (Time.time < LastUpdate + updateInterval)
-                    //    {
-                    //        return false;
-                    //    }
-                    //    //var data = zActions.GetOrCreateData(__instance);
-                    //    //if (data.m_actions.Count == 0)
-                    //    //{
-                    //    //    return false;
-                    //    //}
-                    //    //PlayerBotActionBase[] array = new PlayerBotActionBase[instance.m_actions.Count];
-                    //    var array = new Il2CppReferenceArray<PlayerBotActionBase>(__instance.m_actions.Count);
-                    //    __instance.m_actions.CopyTo(array, 0);
-                    //    for (int i = 0; i < array.Length; i++)
-                    //    {
-                    //        PlayerBotActionBase playerBotActionBase = array[i];
-                    //        PlayerAIBot.s_updatingAction = playerBotActionBase.DescBase;
-                    //        if (!playerBotActionBase.IsActive() || playerBotActionBase.Update())
-                    //        { //Has the action completed?
-                    //            int num = i;
-                    //            if (num >= __instance.m_actions.Count || __instance.m_actions[num] != playerBotActionBase)
-                    //            { //Find the instance to remove it at
-                    //                bool flag = false;
-                    //                for (int j = 0; j < __instance.m_actions.Count; j++)
-                    //                {
-                    //                    if (__instance.m_actions[j].Pointer == playerBotActionBase.Pointer) //this is failing as a direct comparison so have to compare pointer
-                    //                    {
-                    //                        flag = true;
-                    //                        num = j;
-                    //                        break;
-                    //                    }
-                    //                }
-                    //                if (!flag)
-                    //                {
-                    //                    continue;
-                    //                }
-                    //            }
-                    //            PlayerAIBot.s_updatingAction = null;
-                    //            __instance.m_actions.RemoveAt(num);
-                    //            playerBotActionBase.DescBase.OnExpired();
-                    //            playerBotActionBase.Stop();
-                    //        }
-                    //    }
-                    //    PlayerAIBot.s_updatingAction = null;
-                    //    return false;
-                    //}
+        //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.StartQueuedActions))]
+        //[HarmonyPrefix]
+        //public static bool StartQueuedActions(PlayerAIBot __instance)
+        //{
+        //    //var data = zActions.GetOrCreateData(__instance);
+        //    //if (data.m_queuedActions.Count == 0)
+        //    //{
+        //    //    return false;
+        //    //}
+        //    var array = new Il2CppReferenceArray<PlayerBotActionBase.Descriptor>(__instance.m_queuedActions.Count);
+        //    __instance.m_queuedActions.CopyTo(array);
+        //    __instance.m_queuedActions.Clear();
+        //    foreach (PlayerBotActionBase.Descriptor desc in array)
+        //    {
+        //        PlayerBotActionBase.Descriptor descriptor = desc;
+        //        //foreach (var custom in data.customActionDescriptors)
+        //        //{
+        //        //    if (custom.Pointer == desc.Pointer)
+        //        //    {
+        //        //        descriptor = custom;
+        //        //        break;
+        //        //    }
+        //        //}
+        //        if (descriptor.Status == PlayerBotActionBase.Descriptor.StatusType.Queued)
+        //        {
+        //            descriptor.OnStarted();
+        //            PlayerBotActionBase playerBotActionBase = descriptor.CreateAction();
+        //            __instance.RemoveCollidingActions(descriptor);
+        //            __instance.m_actions.Add(playerBotActionBase);
+        //        }
+        //    }
+        //    return false;
+        //}
+        [HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.UpdateActions))]
+        [HarmonyPrefix]
+        public static bool UpdateActions(PlayerAIBot __instance)
+        {
+            if (Time.time < LastUpdate + updateInterval)
+            {
+                return false;
+            }
+            return true;
+            //var data = zActions.GetOrCreateData(__instance);
+            //if (data.m_actions.Count == 0)
+            //{
+            //    return false;
+            //}
+            //PlayerBotActionBase[] array = new PlayerBotActionBase[instance.m_actions.Count];
+            var array = new Il2CppReferenceArray<PlayerBotActionBase>(__instance.m_actions.Count);
+            __instance.m_actions.CopyTo(array, 0);
+            for (int i = 0; i < array.Length; i++)
+            {
+                PlayerBotActionBase playerBotActionBase = array[i];
+                PlayerAIBot.s_updatingAction = playerBotActionBase.DescBase;
+                if (!playerBotActionBase.IsActive() || playerBotActionBase.Update())
+                { //Has the action completed?
+                    int num = i;
+                    if (num >= __instance.m_actions.Count || __instance.m_actions[num] != playerBotActionBase)
+                    { //Find the instance to remove it at
+                        bool flag = false;
+                        for (int j = 0; j < __instance.m_actions.Count; j++)
+                        {
+                            if (__instance.m_actions[j].Pointer == playerBotActionBase.Pointer) //this is failing as a direct comparison so have to compare pointer
+                            {
+                                flag = true;
+                                num = j;
+                                break;
+                            }
+                        }
+                        if (!flag)
+                        {
+                            continue;
+                        }
+                    }
+                    PlayerAIBot.s_updatingAction = null;
+                    __instance.m_actions.RemoveAt(num);
+                    playerBotActionBase.DescBase.OnExpired();
+                    playerBotActionBase.Stop();
+                }
+            }
+            PlayerAIBot.s_updatingAction = null;
+            return false;
+        }
         [HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.Setup))]
         [HarmonyPrefix]
         public static void Setup(PlayerAIBot __instance)
@@ -102,38 +103,7 @@ namespace BotControl.CustomActions.Patches
             var data = zActions.GetOrCreateData(__instance);
             //__instance.m_actions = data.m_actions;
             //__instance.m_queuedActions = data.m_queuedActions;
-            ZiMain.log.LogInfo(typeof(CustomActionBase.Descriptor).FullName);
-            ZiMain.log.LogInfo(typeof(DropHereAction.Descriptor).FullName);
-            ZiMain.log.LogInfo(typeof(ExploreAction.Descriptor).FullName);
-            ZiMain.log.LogInfo(typeof(OpenLockerAction.Descriptor).FullName);
-            ZiMain.log.LogInfo(typeof(CustomActionBase.Descriptor).Name);
-            ZiMain.log.LogInfo(typeof(DropHereAction.Descriptor).Name);
-            ZiMain.log.LogInfo(typeof(ExploreAction.Descriptor).Name);
-            ZiMain.log.LogInfo(typeof(OpenLockerAction.Descriptor).Name);
-            ClassInjector.RegisterTypeInIl2Cpp(typeof(CustomActionBase.Descriptor));
-            ClassInjector.RegisterTypeInIl2Cpp(typeof(CustomActionBase));
-            ClassInjector.RegisterTypeInIl2Cpp(typeof(ExploreAction.Descriptor));
-            ClassInjector.RegisterTypeInIl2Cpp(typeof(ExploreAction));
-            ClassInjector.RegisterTypeInIl2Cpp(typeof(DropHereAction.Descriptor));
-            ClassInjector.RegisterTypeInIl2Cpp(typeof(DropHereAction));
-            ClassInjector.RegisterTypeInIl2Cpp(typeof(OpenLockerAction.Descriptor));
-            ClassInjector.RegisterTypeInIl2Cpp(typeof(OpenLockerAction));
-            CustomActionBase.Descriptor m_testAction = new CustomActionBase.Descriptor(__instance);
-            CustomActionBase m_testActionBase = new CustomActionBase(m_testAction);
-            data.customActionDescriptors.Add(m_testAction);
-            data.customActionBases.Add(m_testActionBase);
-            ExploreAction.Descriptor m_exploreAction = new ExploreAction.Descriptor(__instance);
-            ExploreAction m_exploreActionBase = new ExploreAction(m_exploreAction);
-            data.customActionDescriptors.Add(m_exploreAction);
-            data.customActionBases.Add(m_exploreActionBase);
-            DropHereAction.Descriptor m_DropHereAction = new DropHereAction.Descriptor(__instance);
-            DropHereAction m_DropHereActionBase = new DropHereAction(m_DropHereAction);
-            data.customActionDescriptors.Add(m_DropHereAction);
-            data.customActionBases.Add(m_DropHereActionBase);
-            OpenLockerAction.Descriptor m_OpenAction = new OpenLockerAction.Descriptor(__instance);
-            OpenLockerAction m_OpenLockerBase = new OpenLockerAction(m_OpenAction);
-            data.customActionDescriptors.Add(m_OpenAction);
-            data.customActionBases.Add(m_OpenLockerBase);
+            CustomActionRegistry.Setup(__instance);
             ZiMain.log.LogMessage("init playerbot");
         }
         //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.Update))]
