@@ -15,14 +15,14 @@ namespace BotControl.SmartSelect
 //            ( ------------------------------------------------------------ ) 
 // Player/Bot ( ---Select--- / ----Share---- / Follow/Cancel / ---Send To--- ) PlayerAgent
 //       Item ( ------------ / ---Pickup---- / ------------- / ------------- ) ItemInLevel
-//  Equipment ( ---Pickup--- / --*Refill*--- / -Pickup All-- / ------------- ) SentryGunInstance
-//  Container ( ---*Open*--- / ------------- / --*Place?*--- / ------------- ) LG_WeakResourceContainer
+//  Equipment ( ---Pickup--- / ---Refill---- / -Pickup All-- / ------------- ) SentryGunInstance
+//  Container ( ----Open---- / ------------- / --*Place?*--- / ------------- ) LG_WeakResourceContainer
 // Floor/Wall ( ------------ / -Consumable-- / --Equipment-- / ----Move----- ) Raycast normal
 //    Holding ( ------------ / -*Drop Here*- / --Drop Now--- / ------------- ) Raycast normal
-//       Door ( *Open/Close* / -Throw cFoam- / --*Break?*--- / ------------- ) LG_WeakDoor
+//       Door ( -Open/Close- / -Throw cFoam- / --*Break?*--- / ------------- ) LG_WeakDoor
 //       Lock ( ---Unlock--- / -Lock Melter- / ------------- / ------------- ) LG_WeakLock
 //      Enemy ( ------------ / --*Attack*--- / -*Countdown*- / *Syncronize*- ) EnemyAgent //use voiceline PLAY_CL_THREETWOONEGO
-//  Generator ( ------------ / *Place Cell*- / ------------- / ------------- ) LG_PowerGenerator_Core 
+//  Generator ( ------------ / -Place Cell-- / ------------- / ------------- ) LG_PowerGenerator_Core 
 //    Look Up ( Cancel Last- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
 //  Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- ) 
 

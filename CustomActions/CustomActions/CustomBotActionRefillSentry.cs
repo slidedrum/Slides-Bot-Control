@@ -7,7 +7,7 @@ using UnityEngine;
 namespace BotControl.CustomActions.CustomActions
 {
 
-    public class CustomBotActionRefillSentry : CustomActionBase // TODO handle sound, and get rid of item when empty.
+    public class CustomBotActionRefillSentry : CustomActionBase // TODO interact animation
     {
         //This is an example of how you can set up your own custom action!
         public static new bool Setup() //This will be called when your class is regestered, it should return true if your action will even activate on it's own, or false if it's an exclusively manual action.

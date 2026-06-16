@@ -407,6 +407,8 @@ namespace BotControl.CustomActions.CustomActions
                 this.state = State.Failed;
             }
             state = State.InteractTime;
+            pGenericInteractAnimation.TypeEnum reachHeight = base.GetReachHeight(TargetButton.transform.position.y);
+            this.m_agent.Sync.SendGenericInteract(reachHeight, true);
         }
 
         private void UpdateStateInteractTime()
