@@ -1,4 +1,5 @@
-﻿using Il2CppInterop.Runtime;
+﻿using BotControl.CustomActions.CustomActions;
+using Il2CppInterop.Runtime;
 using Player;
 using UnityEngine;
 
@@ -18,8 +19,13 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             if (Sentry == null) return false;
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
-            //TODO.  This might have to wait untill I get custom actions working again.
-            zBotActions.SendBotToRefillSentry(BestBot, Sentry, zStaticRefrences.LocalPlayer, 0);
+            CustomBotActionRefillSentry.Descriptor desc = new CustomBotActionRefillSentry.Descriptor(BestBot)
+            {
+                TargetSentry = Sentry,
+                Haste = 1f,
+                Prio = 13
+            };
+            BestBot.StartAction(desc);
             return true;
         }
         public bool IsActionValid(Component candidate)
@@ -43,7 +49,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 return false;
             if (!zHelpers.CanBotReach(BestBot, Sentry.transform.position)) 
                 return false;
-            return false;
+            return true;
         }
     }
 }

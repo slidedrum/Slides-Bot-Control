@@ -15,12 +15,10 @@ namespace BotControl.CustomActions.CustomActions
         public new class Descriptor : CustomActionBase.Descriptor
         {
             //This is an example of how you can set up your own custom descriptor!
-            [Obsolete]
             public Descriptor() : base(ClassInjector.DerivedConstructorPointer<Descriptor>()) // Don't use this!  Needed for il2cpp nonsense.
             {
                 ClassInjector.DerivedConstructorBody(this);
             } // Don't use this!  Needed for il2cpp nonsense.
-            [Obsolete]
             public Descriptor(IntPtr ptr) : base(ptr) // Don't use this!  Needed for il2cpp nonsense.
             {
                 ClassInjector.DerivedConstructorBody(this);
@@ -78,13 +76,11 @@ namespace BotControl.CustomActions.CustomActions
             }
 
         }
-        [Obsolete]
         public CustomBotActionTemplate() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionTemplate>())// Don't use this!  Needed for il2cpp nonsense.
         {
             ClassInjector.DerivedConstructorBody(this);
 
         }// Don't use this!  Needed for il2cpp nonsense.
-        [Obsolete]
         public CustomBotActionTemplate(IntPtr ptr) : base(ptr) // Don't use this!  Needed for il2cpp nonsense.
         {
             ClassInjector.DerivedConstructorBody(this);
