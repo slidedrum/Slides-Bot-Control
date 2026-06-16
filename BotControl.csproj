@@ -44,8 +44,4 @@
 	    <HintPath>..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\GTFO\profiles\Pancake\BetterBots.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="CustomActions\NewFolder\" />
-	</ItemGroup>
 </Project>

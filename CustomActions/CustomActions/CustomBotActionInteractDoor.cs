@@ -7,7 +7,8 @@ using System;
 using UnityEngine;
 namespace BotControl.CustomActions.CustomActions
 {
-    public class CustomBotActionOpenLocker : CustomActionBase
+
+    public class CustomBotActionInteractDoor : CustomActionBase
     {
         //This is an example of how you can set up your own custom action!
         public static new bool Setup() //This will be called when your class is regestered, it should return true if your action will even activate on it's own, or false if it's an exclusively manual action.
@@ -16,12 +17,14 @@ namespace BotControl.CustomActions.CustomActions
         }
         public new class Descriptor : CustomActionBase.Descriptor
         {
-            public LG_WeakResourceContainer TargetContainer;
+            public LG_DoorButton TargetButton;
+            public LG_WeakDoor TargetDoor;
             public float Haste = 1f;
+            public Vector3? TargetPosition;
             public PlayerBotActionUnlock.Descriptor.MethodEnum method = PlayerBotActionUnlock.Descriptor.MethodEnum.Any;
             private PlayerManager.PositionReservation m_posReservation;
             private PlayerManager.ObjectReservation m_objReservation;
-            public static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionBase.AccessLayers.Legs | PlayerBotActionBase.AccessLayers.Hip | PlayerBotActionBase.AccessLayers.RootPosition | PlayerBotActionBase.AccessLayers.RootRotation;
+            public static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionBase.AccessLayers.Legs | PlayerBotActionBase.AccessLayers.Hip | PlayerBotActionBase.AccessLayers.RootPosition | PlayerBotActionBase.AccessLayers.RootRotation | AccessLayers.RightArm;
             //This is an example of how you can set up your own custom descriptor!
             public Descriptor() : base(ClassInjector.DerivedConstructorPointer<Descriptor>()) // Don't use this!  Needed for il2cpp nonsense.
             {
@@ -47,13 +50,11 @@ namespace BotControl.CustomActions.CustomActions
                 //This converts your descriptor into an action instance.
                 //This means your action is starting!
                 //You probably won't need to do anything else here.
-                return new CustomBotActionOpenLocker(this);
+                return new CustomBotActionInteractDoor(this);
             }
             public override bool IsActionAllowed(PlayerBotActionBase.Descriptor desc)
             {
                 //Does your action play nice with desc?
-                if (desc.TryCast<PlayerBotActionHighlight.Descriptor>() != null)
-                    return false;
                 return base.IsActionAllowed(desc);
             }
             public override bool CheckCollision(PlayerBotActionBase.Descriptor desc)
@@ -61,28 +62,62 @@ namespace BotControl.CustomActions.CustomActions
                 //Should this action abort if desc is active?
                 return base.CheckCollision(desc);
             }
+            private void GetTargetPosition()
+            {
+                if (TargetPosition != null)
+                    return;
+                TargetPosition = Bot.transform.position;
+                if (Bot.SyncValues?.Leader != null)
+                    TargetPosition = Bot.SyncValues?.Leader.transform.position;
+            }
+            private void GetButton()
+            {
+                GetTargetPosition();
+                if (TargetButton != null)
+                {
+                    TargetDoor = TargetButton.m_door.Cast<LG_WeakDoor>();
+                    return;
+                }
+                if (TargetDoor == null)
+                    return;
+                float bestDot = float.MinValue;
+                LG_DoorButton bestButton = null; 
+                foreach (var button in TargetDoor.m_buttons)
+                {
+                    float dot = Vector3.Dot(button.transform.forward, (Vector3)TargetPosition - button.transform.position);
+                    if (dot > bestDot)
+                    {
+                        bestDot = dot;
+                        bestButton = button;
+                    }
+                }
+                TargetButton = bestButton;
+            }
             public override void OnQueued()
             {
                 //This gets called when your action is added to the que.
+
+                //TargetButton might be null.
                 base.OnQueued();
+                GetButton();
                 if (this.m_posReservation == null)
                 {
                     this.m_posReservation = new PlayerManager.PositionReservation
                     {
                         CharacterID = this.Bot.Agent.CharacterID,
-                        Position = this.TargetContainer.transform.position,
+                        Position = this.TargetButton.transform.position,
                         Radius = 0.5f
                     };
                 }
                 else
                 {
-                    this.m_posReservation.Position = this.TargetContainer.transform.position;
+                    this.m_posReservation.Position = this.TargetButton.transform.position;
                 }
                 PlayerManager.Current.AddPositionReservation(this.m_posReservation);
                 GameObject gameObject = null;
-                if (this.TargetContainer != null && this.TargetContainer.gameObject != null)
+                if (this.TargetButton != null && this.TargetButton.gameObject != null)
                 {
-                    gameObject = this.TargetContainer.gameObject;
+                    gameObject = this.TargetButton.gameObject;
                 }
                 if (gameObject != null)
                 {
@@ -130,9 +165,8 @@ namespace BotControl.CustomActions.CustomActions
             Move,
             StartUnlock,
             Unlocking,
-            StartOpening,
-            Opening,
-            Open,
+            Press,
+            InteractTime,
             Finished,
             Failed,
         }
@@ -140,30 +174,36 @@ namespace BotControl.CustomActions.CustomActions
         private PlayerBotActionLook.Descriptor LookAction;
         private PlayerBotActionUnlock.Descriptor UnlockAction;
         private float Haste = 1f;
-        private LG_WeakResourceContainer TargetContainer;
+        private PlayerBotActionUnlock.Descriptor.MethodEnum Method;
+        private LG_DoorButton TargetButton;
+        private LG_WeakDoor TargetDoor;
+        private LG_WeakLock TargetLock;
         private Vector3 TargetLoction;
         private Descriptor m_desc;
         private State state;
-        private float openingTime = 1f;
-        private float startOpeningTimestamp = 0f;
-        public CustomBotActionOpenLocker() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionOpenLocker>())// Don't use this!  Needed for il2cpp nonsense.
+        private static float interactTime = 1f;
+        private float startInteractTimestamp = 0f;
+
+        public CustomBotActionInteractDoor() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionInteractDoor>())// Don't use this!  Needed for il2cpp nonsense.
         {
             ClassInjector.DerivedConstructorBody(this);
 
         }// Don't use this!  Needed for il2cpp nonsense.
-        public CustomBotActionOpenLocker(IntPtr ptr) : base(ptr) // Don't use this!  Needed for il2cpp nonsense.
+        public CustomBotActionInteractDoor(IntPtr ptr) : base(ptr) // Don't use this!  Needed for il2cpp nonsense.
         {
             ClassInjector.DerivedConstructorBody(this);
 
         }// Don't use this!  Needed for il2cpp nonsense.
-        public CustomBotActionOpenLocker(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<CustomBotActionOpenLocker>())
+        public CustomBotActionInteractDoor(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<CustomBotActionInteractDoor>())
         {
             ClassInjector.DerivedConstructorBody(this);
             InitFromDescriptor(desc);
             this.m_desc = desc;
             this.state = State.Idle;
-            this.TargetContainer = m_desc.TargetContainer;
+            this.TargetButton = m_desc.TargetButton;
+            this.TargetDoor = m_desc.TargetDoor;
             this.Haste = m_desc.Haste;
+            this.Method = m_desc.method;
             //Use this constructor.
             //This means your action is starting!
         }
@@ -171,16 +211,17 @@ namespace BotControl.CustomActions.CustomActions
         {
             //This is called when your action is told to stop.
             //Be sure to do any cleanup if you need to.
+            base.Stop();
             SafeStopAction(TravelAction);
             SafeStopAction(LookAction);
             SafeStopAction(UnlockAction);
-            base.Stop();
         }
         public override bool Update()
         {
             //This is called every frame when your action is active.
             if (base.Update())
                 return true;
+            //Your stuff goes here
             switch (state)
             {
                 case State.Idle:
@@ -195,14 +236,11 @@ namespace BotControl.CustomActions.CustomActions
                 case State.Unlocking:
                     UpdateStateUnlocking();
                     break;
-                case State.StartOpening:
-                    UpdateStateStartOpening();
+                case State.Press:
+                    UpdateStatePress();
                     break;
-                case State.Opening:
-                    UpdateStateOpening();
-                    break;
-                case State.Open:
-                    UpdateStateOpen();
+                case State.InteractTime:
+                    UpdateStateInteractTime();
                     break;
                 case State.Finished:
                     this.m_desc.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Successful);
@@ -213,6 +251,7 @@ namespace BotControl.CustomActions.CustomActions
             }
             return !base.IsActive();
         }
+
         private void UpdateStateIdle()
         {
             if (!VerifyTarget())
@@ -242,13 +281,46 @@ namespace BotControl.CustomActions.CustomActions
                 this.state = State.Failed;
             }
         }
+
+        private bool VerifyTarget()
+        {
+            if (TargetButton == null)
+                return false;
+            //if (!TargetButton.CanInteract())
+            //    return false;
+            if (TargetDoor == null)
+                return false;
+            if (!GetTargetLocation())
+                return false;
+            if (!zHelpers.CanBotReach(m_bot, TargetLoction))
+                return false;
+            return true;
+        }
+        private bool GetTargetLocation()
+        {
+            GameObject gobject = TargetButton.gameObject;
+            if (gobject == null)
+                return false;
+            Transform transform = gobject.transform;
+            Vector3 location = transform.position + transform.forward * 1.5f;
+            if (!SnapPositionToNav(location, out TargetLoction))
+                return false;
+            return true;
+        }
+        public void OnTravelCompleted(PlayerBotActionBase.Descriptor descBase)
+        {
+            if (this.state == State.Move && descBase.Status != PlayerBotActionBase.Descriptor.StatusType.Successful)
+                this.state = State.Failed;
+        }
+
         private void UpdateStateMove()
         {
             UpdateLookAction();
             if ((m_bot.transform.position - TargetLoction).magnitude < 0.1f)
             {
-                if (TargetContainer.m_weakLock == null)
-                    state = State.StartOpening;
+                GetLock();
+                if (TargetLock == null)
+                    state = State.Press;
                 else
                 {
                     state = State.StartUnlock;
@@ -256,14 +328,27 @@ namespace BotControl.CustomActions.CustomActions
                 }
             }
         }
+        public void GetLock()
+        {
+            LG_WeakDoor door = TargetButton.m_door.Cast<LG_WeakDoor>();
+            if (door.WeakLocks == null)
+                return;
+            if (door.WeakLocks.Count == 0)
+                return;
+            foreach (LG_WeakLock Lock in door.WeakLocks)
+            {
+                if (Lock.m_holder.Pointer == TargetButton.Pointer)
+                {
+                    TargetLock = Lock;
+                    return;
+                }
+            }
+        }
         private void UpdateStateStartUnlock()
         {
-            //UpdateLookAction();
             float Prop = m_desc.Prio;
-            PlayerBotActionUnlock.Descriptor.TargetTypeEnum targetType;
-            GameObject targetObject;
-            targetObject = TargetContainer.gameObject;
-            targetType = PlayerBotActionUnlock.Descriptor.TargetTypeEnum.Container;
+            GameObject targetObject = TargetButton.gameObject;
+            PlayerBotActionUnlock.Descriptor.TargetTypeEnum targetType = PlayerBotActionUnlock.Descriptor.TargetTypeEnum.Door;
             PlayerBotActionUnlock.Descriptor Desc = new(m_bot)
             {
                 TargetType = targetType,
@@ -271,10 +356,11 @@ namespace BotControl.CustomActions.CustomActions
                 Prio = 13,
                 ParentActionBase = this,
                 TargetPosition = targetObject.transform.position,
-                Method = m_desc.method,
-                Lock = TargetContainer.m_weakLock,
+                Method = Method,
+                Lock = TargetLock,
             };
             SafeStopAction(LookAction);
+            SafeStopAction(TravelAction);
             if (this.m_bot.RequestAction(Desc))
             {
                 this.UnlockAction = Desc;
@@ -289,44 +375,49 @@ namespace BotControl.CustomActions.CustomActions
         }
         private void UpdateStateUnlocking()
         {
-            //UpdateLookAction();
 
         }
-        private void UpdateStateStartOpening()
+
+        private void UpdateStatePress()
         {
-            UpdateLookAction();
-            startOpeningTimestamp = Time.time;
-            pGenericInteractAnimation.TypeEnum reachHeight = base.GetReachHeight(TargetContainer.transform.position.y);
-            this.m_agent.Sync.SendGenericInteract(reachHeight, true);
-            state = State.Opening;
-        }
-        private void UpdateStateOpening()
-        {
-            UpdateLookAction();
-            if (Time.time > startOpeningTimestamp + openingTime)
-                state = State.Open;
-        }
-        private void UpdateStateOpen()
-        {
-            TargetContainer.TriggerOpen();
-            m_bot.StopAction(TravelAction);
-            m_bot.StopAction(LookAction);
-            state = State.Finished;
-        }
-        public void OnTravelCompleted(PlayerBotActionBase.Descriptor descBase)
-        {
-            if (this.state == State.Move && descBase.Status != PlayerBotActionBase.Descriptor.StatusType.Successful)
-                this.state = State.Failed;
-        }
-        public void OnUnlockCompleted(PlayerBotActionBase.Descriptor descBase)
-        {
-            if (descBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
+            if (!TargetButton.Interact(m_bot.Agent))
             {
-                this.state = State.StartOpening;
+                state = State.Failed;
+                return;
+            }
+            startInteractTimestamp = Time.time;
+            PlayerBotActionTravel.Descriptor Desc = new(m_bot)
+            {
+                DestinationPos = TargetLoction,
+                DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.Position,
+                ParentActionBase = this,
+                Prio = m_desc.Prio,
+                Haste = Haste,
+                Persistent = true,
+            };
+            if (this.m_bot.RequestAction(Desc))
+            {
+                this.TravelAction = Desc;
+                this.state = State.Move;
+                FlexibleMethodDefinition callback = new(OnTravelCompleted, [TravelAction]);
+                zActionSub.addOnTerminated(TravelAction, callback);
             }
             else
             {
                 this.state = State.Failed;
+            }
+            state = State.InteractTime;
+        }
+
+        private void UpdateStateInteractTime()
+        {
+            UpdateLookAction();
+            if (Time.time > startInteractTimestamp + interactTime)
+            {
+                state = State.Finished;
+                SafeStopAction(TravelAction);
+                SafeStopAction(LookAction);
+                SafeStopAction(UnlockAction);
             }
         }
         private void UpdateLookAction()
@@ -341,9 +432,9 @@ namespace BotControl.CustomActions.CustomActions
                 Prio = this.m_desc.Prio,
                 Haste = 0.5f,
                 TargetType = PlayerBotActionLook.TargetTypeEnum.Object,
-                TargetObj = TargetContainer.transform
+                TargetObj = TargetButton.transform
             };
-            descriptor.EventDelegate = DelegateSupport.ConvertDelegate<PlayerBotActionBase.Descriptor.EventDelegateFunc>( new Action<PlayerBotActionBase.Descriptor>(OnLookActionEvent));
+            descriptor.EventDelegate = DelegateSupport.ConvertDelegate<PlayerBotActionBase.Descriptor.EventDelegateFunc>(new Action<PlayerBotActionBase.Descriptor>(OnLookActionEvent));
             descriptor.Turn.Prio = (descriptor.Turn.SoftPrio = descriptor.Prio);
             if (this.m_bot.RequestAction(descriptor))
             {
@@ -361,26 +452,16 @@ namespace BotControl.CustomActions.CustomActions
                 this.LookAction = null;
             }
         }
-        private bool VerifyTarget()
+        public void OnUnlockCompleted(PlayerBotActionBase.Descriptor descBase)
         {
-            if (TargetContainer == null)
-                return false;
-            if (!GetTargetLocation())
-                return false;
-            if (!zHelpers.CanBotReach(m_bot, TargetLoction))
-                return false;
-            return true;
-        }
-        private bool GetTargetLocation()
-        {
-            GameObject gobject = TargetContainer.gameObject;
-            if (gobject == null)
-                return false;
-            Transform transform = gobject.transform;
-            Vector3 location = transform.position - transform.up * 1.5f;
-            if (!SnapPositionToNav(location, out TargetLoction))
-                return false;
-            return true;
+            if (descBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
+            {
+                this.state = State.Press;
+            }
+            else
+            {
+                this.state = State.Failed;
+            }
         }
         public override bool IsActionAllowed(PlayerBotActionBase.Descriptor desc)
         {
