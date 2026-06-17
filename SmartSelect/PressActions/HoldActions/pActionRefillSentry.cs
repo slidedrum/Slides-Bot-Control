@@ -19,13 +19,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             if (Sentry == null) return false;
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
-            CustomBotActionRefillSentry.Descriptor desc = new CustomBotActionRefillSentry.Descriptor(BestBot)
-            {
-                TargetSentry = Sentry,
-                Haste = 1f,
-                Prio = 13
-            };
-            zBotActions.StartAction(BestBot, desc, zStaticRefrences.LocalPlayer, 0);
+            zBotActions.SendBotToRefillSentry(BestBot, Sentry, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

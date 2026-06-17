@@ -19,14 +19,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         {
             LG_WeakDoor Door = BestComponent.TryCast<LG_WeakDoor>();
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
-            CustomBotActionInteractDoor.Descriptor desc = new CustomBotActionInteractDoor.Descriptor(BestBot)
-            {
-                TargetDoor = Door,
-                method = PlayerBotActionUnlock.Descriptor.MethodEnum.Any,
-                TargetPosition = zStaticRefrences.LocalPlayer.transform.position,
-                Prio = 13
-            };
-            zBotActions.StartAction(BestBot, desc, zStaticRefrences.LocalPlayer, 0);
+            zBotActions.SendBotToInteractDoor(BestBot, Door, zStaticRefrences.LocalPlayer.transform.position, PlayerBotActionUnlock.Descriptor.MethodEnum.Any, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

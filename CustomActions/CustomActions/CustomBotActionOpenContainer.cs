@@ -7,7 +7,7 @@ using System;
 using UnityEngine;
 namespace BotControl.CustomActions.CustomActions
 {
-    public class CustomBotActionOpenLocker : CustomActionBase
+    public class CustomBotActionOpenContainer : CustomActionBase
     {
         //This is an example of how you can set up your own custom action!
         public static new bool Setup() //This will be called when your class is regestered, it should return true if your action will even activate on it's own, or false if it's an exclusively manual action.
@@ -47,7 +47,7 @@ namespace BotControl.CustomActions.CustomActions
                 //This converts your descriptor into an action instance.
                 //This means your action is starting!
                 //You probably won't need to do anything else here.
-                return new CustomBotActionOpenLocker(this);
+                return new CustomBotActionOpenContainer(this);
             }
             public override bool IsActionAllowed(PlayerBotActionBase.Descriptor desc)
             {
@@ -146,17 +146,17 @@ namespace BotControl.CustomActions.CustomActions
         private State state;
         private float openingTime = 1f;
         private float startOpeningTimestamp = 0f;
-        public CustomBotActionOpenLocker() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionOpenLocker>())// Don't use this!  Needed for il2cpp nonsense.
+        public CustomBotActionOpenContainer() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionOpenContainer>())// Don't use this!  Needed for il2cpp nonsense.
         {
             ClassInjector.DerivedConstructorBody(this);
 
         }// Don't use this!  Needed for il2cpp nonsense.
-        public CustomBotActionOpenLocker(IntPtr ptr) : base(ptr) // Don't use this!  Needed for il2cpp nonsense.
+        public CustomBotActionOpenContainer(IntPtr ptr) : base(ptr) // Don't use this!  Needed for il2cpp nonsense.
         {
             ClassInjector.DerivedConstructorBody(this);
 
         }// Don't use this!  Needed for il2cpp nonsense.
-        public CustomBotActionOpenLocker(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<CustomBotActionOpenLocker>())
+        public CustomBotActionOpenContainer(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<CustomBotActionOpenContainer>())
         {
             ClassInjector.DerivedConstructorBody(this);
             InitFromDescriptor(desc);

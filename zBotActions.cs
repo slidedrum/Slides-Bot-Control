@@ -1,4 +1,5 @@
 ﻿using BotControl.CustomActions;
+using BotControl.CustomActions.CustomActions;
 using BotControl.Networking;
 using Enemies;
 using GTFO.API;
@@ -7,6 +8,7 @@ using Player;
 using SlideMenu;
 using SNetwork;
 using System;
+using System.ComponentModel;
 using UnityEngine;
 using static BotControl.Networking.pStructs;
 
@@ -14,14 +16,12 @@ namespace BotControl
 {
     public static class zBotActions
     {
-        //public static Dictionary<int,PlayerBotActionBase.Descriptor> LastAction = new();
         public static float defaultPrio = 14f;
         public static void StartAction(ManualAction manualAction)
         {
             if (!zActions.manualActions.ContainsKey(manualAction.Commander.CharacterID))
                 zActions.manualActions[manualAction.Commander.CharacterID] = new();
-            zActions.manualActions[manualAction.Commander.CharacterID].Add(manualAction); // TODO keep track of the commander for the action.  and send the commander the status of their command once it's finished.
-            //LastAction[manualAction.Commander.CharacterID] = manualAction.ActionDescriptor;
+            zActions.manualActions[manualAction.Commander.CharacterID].Add(manualAction);
             if (SNet.IsMaster)
                 manualAction.Bot.StartAction(manualAction.ActionDescriptor);
         }
@@ -91,12 +91,12 @@ namespace BotControl
                 if (netsender != 0) //Is this request coming from a different client?
                     return;
                 //request host
-                pMoveToLocationInfo info = new pMoveToLocationInfo();                                                                      
+                pLocationInfo info = new pLocationInfo();                                                                      
                 info.Commander = pStructs.Get_pStructFromRefrence(Commander);
                 info.position = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos;
                 info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
                 info.ID = actionID;
-                NetworkAPI.InvokeEvent<pMoveToLocationInfo>("RequestToMoveToLocation", info);
+                NetworkAPI.InvokeEvent<pLocationInfo>("RequestToMoveToLocation", info);
                 return;
             }
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_IWILLDOIT, "I will do it.", 2f);
@@ -132,7 +132,6 @@ namespace BotControl
             }
             if (Mine?.Owner != null && !Mine.Owner.Owner.IsBot) return;
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
-
         }
         public static void SendBotToPickUpSentry(PlayerAIBot aiBot, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
@@ -321,12 +320,6 @@ namespace BotControl
             //ZiMain.sendChatMessage($"I would have revived {downedAgent.PlayerName}, but I'm stupid.", aiBot.Agent, commander);
             //todo
         }
-        [Obsolete("TODO: This method is not yet implemented and should not be used yet.")]
-        public static void SendBotToRefillSentry(PlayerAIBot aiBot, SentryGunInstance sentry, PlayerAgent commander = null, ulong netsender = 0)
-        {
-            zChatHandler.sendChatMessage($"I would have refilled the sentry, but I'm stupid.", "Refill" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, commander);
-            //todo
-        }
         public static void SendBotToCarryItem(PlayerAIBot aiBot, CarryItemPickup_Core item, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0)
@@ -507,38 +500,38 @@ namespace BotControl
         [Obsolete]
         public static PlayerBotActionAttack.Descriptor SendBotToKillEnemy(PlayerAIBot aiBot, EnemyAgent enemy, PlayerAgent Commander = null, ulong netsender = 0, PlayerBotActionAttack.StanceEnum stance = PlayerBotActionAttack.StanceEnum.All, PlayerBotActionAttack.AttackMeansEnum means = PlayerBotActionAttack.AttackMeansEnum.Melee, PlayerBotActionWalk.Descriptor.PostureEnum posture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch)
         {
-            //TODO REFACTOR
+            ////TODO REFACTOR
 
-            if (!SNet.IsMaster) //Are we a client?
-            {
-                if (netsender != 0) //Is this request coming from a different client?
-                    return null;
-                //request host
-                pAttackEnemyInfo info = new pAttackEnemyInfo();
-                info.enemy = pStructs.Get_pStructFromRefrence(enemy);
-                info.aiBot = pStructs.Get_pStructFromRefrence(aiBot.Agent);
-                info.commander = pStructs.Get_pStructFromRefrence(Commander); //This might be a problem in commander is null?  Not sure. TODO look into it.
-                NetworkAPI.InvokeEvent<pAttackEnemyInfo>("RequestToKillEnemy", info);
-                return null;
-            }
+            //if (!SNet.IsMaster) //Are we a client?
+            //{
+            //    if (netsender != 0) //Is this request coming from a different client?
+            //        return null;
+            //    //request host
+            //    pAttackEnemyInfo info = new pAttackEnemyInfo();
+            //    info.enemy = pStructs.Get_pStructFromRefrence(enemy);
+            //    info.aiBot = pStructs.Get_pStructFromRefrence(aiBot.Agent);
+            //    info.commander = pStructs.Get_pStructFromRefrence(Commander); //This might be a problem in commander is null?  Not sure. TODO look into it.
+            //    NetworkAPI.InvokeEvent<pAttackEnemyInfo>("RequestToKillEnemy", info);
+            //    return null;
+            //}
 
-            float attackPrio = defaultPrio;
-            float attackHaste = 1f;
-            var descriptor = new PlayerBotActionAttack.Descriptor(aiBot)
-            {
-                Prio = attackPrio,
-                Haste = attackHaste,
-                TargetAgent = enemy,
-                Means = means,
-                Posture = posture,
-                Stance = stance,
-            };
-            aiBot.Actions[0].Cast<RootPlayerBotAction>().m_followLeaderAction.Prio = attackPrio - 1;
-            zChatHandler.sendChatMessage($"Killing the {enemy.EnemyData.name}.", "Kill Enemy" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, Commander);
-            //TODO figure out how to make them crouch instead of stand.
-            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
-            aiBot.StartAction(descriptor);
-            return descriptor;
+            //float attackPrio = defaultPrio;
+            //float attackHaste = 1f;
+            //var descriptor = new PlayerBotActionAttack.Descriptor(aiBot)
+            //{
+            //    Prio = attackPrio,
+            //    Haste = attackHaste,
+            //    TargetAgent = enemy,
+            //    Means = means,
+            //    Posture = posture,
+            //    Stance = stance,
+            //};
+            //aiBot.Actions[0].Cast<RootPlayerBotAction>().m_followLeaderAction.Prio = attackPrio - 1;
+            //zChatHandler.sendChatMessage($"Killing the {enemy.EnemyData.name}.", "Kill Enemy" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, Commander);
+            ////TODO figure out how to make them crouch instead of stand.
+            //ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
+            //aiBot.StartAction(descriptor);
+            return null;
         }
         internal static void SendbotToBreakLock(PlayerAIBot aiBot, LG_WeakLock Lock, PlayerBotActionUnlock.Descriptor.MethodEnum method, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
@@ -621,6 +614,159 @@ namespace BotControl
                 if (found)
                     break;
             }
+        }
+        public static void SendBotToAttackSleeper(PlayerAIBot aiBot, EnemyAgent Enemy, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
+        {
+            if (actionID == 0)
+                actionID = zHelpers.HashString($"RequestToAttackSleeper{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            CustomBotActionManualAttack.Descriptor desc = new CustomBotActionManualAttack.Descriptor(aiBot)
+            {
+                TargetAgent = Enemy,
+                Haste = 0.5f,
+                Prio = defaultPrio
+            };
+            StartAction(aiBot, desc, Commander, actionID);
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                pAttackEnemyInfo info = new pAttackEnemyInfo();
+                info.Commander = pStructs.Get_pStructFromRefrence(Commander);
+                info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
+                info.Enemy = pStructs.Get_pStructFromRefrence(Enemy);
+                info.ID = actionID;
+                NetworkAPI.InvokeEvent<pAttackEnemyInfo>("RequestToAttackSleeper", info);
+                return;
+            }
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
+        }
+        public static void SendBotToDropHere(PlayerAIBot aiBot, Vector3 DropPosition, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
+        {
+            if (actionID == 0)
+                actionID = zHelpers.HashString($"RequestToDropHere{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            CustomBotActionDropHere.Descriptor desc = new CustomBotActionDropHere.Descriptor(aiBot)
+            {
+                DropPosition = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos,
+                Haste = 1f,
+                Prio = defaultPrio,
+            };
+            StartAction(aiBot, desc, Commander, actionID);
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                pLocationInfo info = new pLocationInfo();
+                info.Commander = pStructs.Get_pStructFromRefrence(Commander);
+                info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
+                info.position = DropPosition;
+                info.ID = actionID;
+                NetworkAPI.InvokeEvent<pLocationInfo>("RequestToDropHere", info);
+                return;
+            }
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
+        }
+        public static void SendBotToInsertCell(PlayerAIBot aiBot, LG_PowerGenerator_Core Generator, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
+        {
+            if (actionID == 0)
+                actionID = zHelpers.HashString($"RequestToInsertCell{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            CustomBotActionInsertPowerCell.Descriptor desc = new CustomBotActionInsertPowerCell.Descriptor(aiBot)
+            {
+                TargetGenerator = Generator,
+                Haste = 1f,
+                Prio = defaultPrio,
+            };
+            StartAction(aiBot, desc, Commander, actionID);
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                pLocationInfo info = new pLocationInfo();
+                info.Commander = pStructs.Get_pStructFromRefrence(Commander);
+                info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
+                info.position = Generator.transform.position;
+                info.ID = actionID;
+                NetworkAPI.InvokeEvent<pLocationInfo>("RequestToInsertCell", info);
+                return;
+            }
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
+        }
+        public static void SendBotToOpenContainer(PlayerAIBot aiBot, LG_WeakResourceContainer Container, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
+        {
+            if (actionID == 0)
+                actionID = zHelpers.HashString($"RequestToOpenContainer{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            CustomBotActionOpenContainer.Descriptor desc = new CustomBotActionOpenContainer.Descriptor(aiBot)
+            {
+                TargetContainer = Container,
+                Haste = 1f,
+                Prio = defaultPrio,
+            };
+            StartAction(aiBot, desc, Commander, actionID);
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                pLocationInfo info = new pLocationInfo();
+                info.Commander = pStructs.Get_pStructFromRefrence(Commander);
+                info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
+                info.position = Container.transform.position;
+                info.ID = actionID;
+                NetworkAPI.InvokeEvent<pLocationInfo>("RequestToOpenContainer", info);
+                return;
+            }
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
+        }
+        public static void SendBotToRefillSentry(PlayerAIBot aiBot, SentryGunInstance Sentry, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
+        {
+            if (actionID == 0)
+                actionID = zHelpers.HashString($"RequestToRefillSentry{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            CustomBotActionRefillSentry.Descriptor desc = new CustomBotActionRefillSentry.Descriptor(aiBot)
+            {
+                TargetSentry = Sentry,
+                Haste = 1f,
+                Prio = defaultPrio,
+            };
+            StartAction(aiBot, desc, Commander, actionID);
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                pLocationInfo info = new pLocationInfo();
+                info.Commander = pStructs.Get_pStructFromRefrence(Commander);
+                info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
+                info.position = Sentry.transform.position;
+                info.ID = actionID;
+                NetworkAPI.InvokeEvent<pLocationInfo>("RequestToRefillSentry", info);
+                return;
+            }
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
+        }
+        public static void SendBotToInteractDoor(PlayerAIBot aiBot, LG_WeakDoor Door, Vector3 TargetPosition, PlayerBotActionUnlock.Descriptor.MethodEnum method, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
+        {
+            if (actionID == 0)
+                actionID = zHelpers.HashString($"RequestToInteractDoor{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            CustomBotActionInteractDoor.Descriptor desc = new CustomBotActionInteractDoor.Descriptor(aiBot)
+            {
+                TargetDoor = Door,
+                method = method,
+                TargetPosition = TargetPosition,
+                Prio = defaultPrio,
+            };
+            StartAction(aiBot, desc, Commander, actionID);
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                pDoorInteractInfo info = new pDoorInteractInfo();
+                info.Commander = pStructs.Get_pStructFromRefrence(Commander);
+                info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
+                info.DoorPosition = Door.transform.position;
+                info.TargetPosition = TargetPosition;
+                info.Method = method;
+                info.ID = actionID;
+                NetworkAPI.InvokeEvent<pDoorInteractInfo>("RequestToInteractDoor", info);
+                return;
+            }
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
         }
     }
 }

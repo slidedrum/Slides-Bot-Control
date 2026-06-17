@@ -376,11 +376,11 @@ namespace BotControl
         }
         private static void TestReciveRequestSendBotToKillEnemyNetwork(ulong netSender, PlayerAgent aiBot, EnemyAgent enemy)
         {
-            pStructs.pAttackEnemyInfo info = new pStructs.pAttackEnemyInfo();
-            info.aiBot = pStructs.Get_pStructFromRefrence(aiBot);
-            info.enemy = pStructs.Get_pStructFromRefrence(enemy);
-            info.commander = pStructs.Get_pStructFromRefrence(PlayerManager.GetLocalPlayerAgent());
-            Networking.zNetworking.ReciveRequestToKillEnemy(netSender, info);
+            //pStructs.pAttackEnemyInfo info = new pStructs.pAttackEnemyInfo();
+            //info.aiBot = pStructs.Get_pStructFromRefrence(aiBot);
+            //info.enemy = pStructs.Get_pStructFromRefrence(enemy);
+            //info.commander = pStructs.Get_pStructFromRefrence(PlayerManager.GetLocalPlayerAgent());
+            //Networking.zNetworking.ReciveRequestToKillEnemy(netSender, info);
         }
         internal static void setCheckVizTarget()
         {

@@ -22,13 +22,8 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false; 
             if (BestBot.Agent.Alive == false) return false;
-            CustomBotActionInsertPowerCell.Descriptor desc = new CustomBotActionInsertPowerCell.Descriptor(BestBot)
-            {
-                TargetGenerator = Generator,
-                Prio = 13
-            };
-            zBotActions.StartAction(BestBot, desc, zStaticRefrences.LocalPlayer, 0); ;
-            return false;
+            zBotActions.SendBotToInsertCell(BestBot, Generator, zStaticRefrences.LocalPlayer);
+            return true;
         }
 
         public bool IsActionValid(Component candidate)
@@ -51,7 +46,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 return false;
             if (!zHelpers.CanBotReach(BestBot, (Vector3)TargetPosition))
                 return false;
-            return true; //todo
+            return true;
         }
         private Vector3? GetTargetPosition(LG_PowerGenerator_Core TargetGenerator)
         {

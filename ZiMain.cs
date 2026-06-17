@@ -172,14 +172,14 @@ public class ZiMain : BasePlugin
         ClassInjector.RegisterTypeInIl2Cpp<zUpdater>();
         ClassInjector.RegisterTypeInIl2Cpp<zCameraEvents>();
         CustomActionRegistry.RegisterIl2CppTypes();
-        //NetworkAPI.RegisterEvent<pItemPrioDisable>          ("SetItemPrioDisable",              zNetworking.ReciveSetItemPrioDisable);
-        //NetworkAPI.RegisterEvent<pItemPrio>                 ("SetItemPrio",                     zNetworking.ReciveSetItemPrio);
-        //NetworkAPI.RegisterEvent<pResourceThreshold>        ("SetResourceThreshold",            zNetworking.reciveSetResourceThreshold);
-        //NetworkAPI.RegisterEvent<pResourceThresholdDisable> ("SetResourceThresholdDisable",     zNetworking.ReciveSetResourceThresholdDisable);
-        //NetworkAPI.RegisterEvent<pGenericPermission>        ("SetActionPermission",             zNetworking.ReciveSetActionPermission);
         NetworkAPI.RegisterEvent<pPickupItemInfo>           ("RequestToPickupItem",               zNetworking.ReciveRequestToPickupItem);
         NetworkAPI.RegisterEvent<pBreakLockInfo>            ("RequestToBreakLock",                zNetworking.ReciveRequestToBreakLock);
-        NetworkAPI.RegisterEvent<pMoveToLocationInfo>       ("RequestToMoveToLocation",           zNetworking.ReciveRequestToMoveToLocation);
+        NetworkAPI.RegisterEvent<pLocationInfo>             ("RequestToMoveToLocation",           zNetworking.ReciveRequestToMoveToLocation);
+        NetworkAPI.RegisterEvent<pLocationInfo>             ("RequestToDropHere",                 zNetworking.ReciveRequestToDropHere);
+        NetworkAPI.RegisterEvent<pLocationInfo>             ("RequestToInsertCell",               zNetworking.ReciveRequestToInsertCell);
+        NetworkAPI.RegisterEvent<pLocationInfo>             ("RequestToOpenContainer",            zNetworking.ReciveRequestToOpenContainer);
+        NetworkAPI.RegisterEvent<pLocationInfo>             ("RequestToRefillSentry",             zNetworking.ReciveRequestToRefillSentry);
+        NetworkAPI.RegisterEvent<pDoorInteractInfo>         ("RequestToInteractDoor",             zNetworking.ReciveRequestToInteractDoor);
         NetworkAPI.RegisterEvent<pPickupMineInfo>           ("RequestToPickupMine",               zNetworking.ReciveRequestToPickupMine);
         NetworkAPI.RegisterEvent<pReviveAgentInfo>          ("RequestToReviveAgent",              zNetworking.ReciveRequestToReviveAgent);
         NetworkAPI.RegisterEvent<pPickupSentryInfo>         ("RequestToPickupSentry",             zNetworking.ReciveRequestToPickupSentry);
@@ -187,7 +187,7 @@ public class ZiMain : BasePlugin
         NetworkAPI.RegisterEvent<pUseCfoamInfo>             ("RequestToUseCfoamGun",              zNetworking.ReciveRequestToUseCfoam);
         NetworkAPI.RegisterEvent<pPlaceMineInfo>            ("RequestToPlaceMine",                zNetworking.ReciveRequestToPlaceMine);
         NetworkAPI.RegisterEvent<pShareResourceInfo>        ("RequestToShareResourcePack",        zNetworking.ReciveRequestToShareResource);
-        NetworkAPI.RegisterEvent<pAttackEnemyInfo>          ("RequestToKillEnemy",                zNetworking.ReciveRequestToKillEnemy);
+        NetworkAPI.RegisterEvent<pAttackEnemyInfo>          ("RequestToAttackSleeper",            zNetworking.ReciveRequestToKillSleeper);
         NetworkAPI.RegisterEvent<pThrowDataInfo>            ("RequestToThrowItem",                zNetworking.ReciveRequestToThrowItem);
         NetworkAPI.RegisterEvent<pBoolOverideTreeInfo>      ("SetBoolOverideTree",                zNetworking.ReciveSetBoolOverideTree);
         NetworkAPI.RegisterEvent<pIntOverideTreeInfo>       ("SetIntOverideTree",                 zNetworking.ReciveSetIntOverideTree);
@@ -399,19 +399,19 @@ public class ZiMain : BasePlugin
     }
     public static void CheckForWakeChance(PlayerAIBot aiBot, GameObject enemyGo, PlayerBotActionBase.Descriptor descriptor)
     {
-        if (enemyGo == null)
-            return;
-        if (rng.Next(0, approachWakeChance) != 0)
-            return;
-        wakeUpRoom(aiBot, enemyGo);
+        //if (enemyGo == null)
+        //    return;
+        //if (rng.Next(0, approachWakeChance) != 0)
+        //    return;
+        //wakeUpRoom(aiBot, enemyGo);
     }
     public static void wakeUpRoom(PlayerAIBot aiBot, GameObject enemyGo)
     {
-        var locomotionTarget = enemyGo.GetComponent<EnemyLocomotion>();
-        var enemy = enemyGo.GetComponent<EnemyAgent>();
+        //var locomotionTarget = enemyGo.GetComponent<EnemyLocomotion>();
+        //var enemy = enemyGo.GetComponent<EnemyAgent>();
         //locomotionTarget.ChangeState(ES_StateEnum.HibernateWakeUp); //Somehow this can cause an unkillable enemy??
-        enemy.PropagateTargetFull(enemy);
-        zBotActions.SendBotToKillEnemy(aiBot, enemy);
+        //enemy.PropagateTargetFull(enemy);
+        //zBotActions.SendBotToKillEnemy(aiBot, enemy);
     }
     public static void slowUpdate()
     {

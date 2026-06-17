@@ -18,13 +18,8 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         {
             LG_WeakResourceContainer container = BestComponent.TryCast<LG_WeakResourceContainer>();
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
-            CustomBotActionOpenLocker.Descriptor desc = new CustomBotActionOpenLocker.Descriptor(BestBot)
-            {
-                TargetContainer = container,
-                Prio = 13
-            };
-            zBotActions.StartAction(BestBot, desc, zStaticRefrences.LocalPlayer, 0);
-            return false;
+            zBotActions.SendBotToOpenContainer(BestBot, container, zStaticRefrences.LocalPlayer);
+            return true;
         }
 
         public bool IsActionValid(Component candidate)

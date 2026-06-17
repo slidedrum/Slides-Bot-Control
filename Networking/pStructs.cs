@@ -107,9 +107,10 @@ namespace BotControl.Networking
         }
         public struct pAttackEnemyInfo
         {
-            public pEnemyAgent enemy;
-            public pPlayerAgent aiBot;
-            public pPlayerAgent commander;
+            public pEnemyAgent Enemy;
+            public pPlayerAgent BotAgent;
+            public pPlayerAgent Commander;
+            internal uint ID;
         }
         public struct pLeaderInfo
         {
@@ -174,9 +175,18 @@ namespace BotControl.Networking
             public InventorySlot slot;
             internal uint ID;
         }
-        internal struct pMoveToLocationInfo
+        internal struct pLocationInfo
         {
             public Vector3 position;
+            public pPlayerAgent BotAgent;
+            public pPlayerAgent Commander;
+            public uint ID;
+        }
+        internal struct pDoorInteractInfo
+        {
+            public Vector3 DoorPosition;
+            public Vector3 TargetPosition;
+            public PlayerBotActionUnlock.Descriptor.MethodEnum Method;
             public pPlayerAgent BotAgent;
             public pPlayerAgent Commander;
             public uint ID;

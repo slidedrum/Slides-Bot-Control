@@ -29,6 +29,7 @@ namespace BotControl.CustomActions.CustomActions
         public new class Descriptor : CustomActionBase.Descriptor
         {
             public Vector3 DropPosition;
+            public float Haste;
             //public static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionBase.AccessLayers.Legs | PlayerBotActionBase.AccessLayers.Hip | PlayerBotActionBase.AccessLayers.Spine | PlayerBotActionBase.AccessLayers.LeftArm | PlayerBotActionBase.AccessLayers.RightArm | PlayerBotActionBase.AccessLayers.RootPosition | PlayerBotActionBase.AccessLayers.RootRotation | PlayerBotActionBase.AccessLayers.WieldPrimary;
             //This is an example of how you can set up your own custom descriptor!
             [Obsolete]
@@ -191,6 +192,7 @@ namespace BotControl.CustomActions.CustomActions
                 DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.Position,
                 ParentActionBase = this,
                 Prio = m_desc.Prio,
+                Haste = m_desc.Haste,
                 Persistent = false,
             };
             if (this.m_bot.RequestAction(Desc))

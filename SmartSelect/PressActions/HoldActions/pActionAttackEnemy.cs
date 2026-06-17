@@ -20,13 +20,8 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             if (Enemy == null || BestBot == null) return false;
             if (BestBot == null) return false;
             if (BestBot.Agent.Alive == false) return false;
-            CustomBotActionManualAttack.Descriptor desc = new CustomBotActionManualAttack.Descriptor(BestBot)
-            {
-                TargetAgent = Enemy,
-                Prio = 14
-            };
-            zBotActions.StartAction(BestBot, desc, zStaticRefrences.LocalPlayer, 0);
-            return false;
+            zBotActions.SendBotToAttackSleeper(BestBot, Enemy, zStaticRefrences.LocalPlayer);
+            return true;
         }
         public bool IsActionValid(Component candidate)
         {

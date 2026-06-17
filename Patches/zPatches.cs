@@ -459,24 +459,24 @@ public class ZombifiedPatches
                 }
             }
         }
-        if (targetObject != null && targetObject.transform != null && zActions.isManualAction(__instance.m_descBase))
-        {
-            if (!lastTimeCheckedForWakeUp.ContainsKey(__instance.m_bot.GetInstanceID()))
-            {
-                lastTimeCheckedForWakeUp[__instance.m_bot.GetInstanceID()] = Time.time;
-                return false;
-            }
-            if (Time.time - lastTimeCheckedForWakeUp[__instance.m_bot.GetInstanceID()] > 1f)
-            {
-                lastTimeCheckedForWakeUp[__instance.m_bot.GetInstanceID()] = Time.time;
-                if (rng.Next(0, wakeChancePerSecond) == 0)
-                {
-                    wakeUpRoom(__instance.m_bot, targetObject);
-                    __instance.DescBase.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Failed);
-                }
-            }
-
-        }
+        // TODO replace this with the sound chance from manual attack action.
+        //if (targetObject != null && targetObject.transform != null && zActions.isManualAction(__instance.m_descBase))
+        //{
+        //    if (!lastTimeCheckedForWakeUp.ContainsKey(__instance.m_bot.GetInstanceID()))
+        //    {
+        //        lastTimeCheckedForWakeUp[__instance.m_bot.GetInstanceID()] = Time.time;
+        //        return false;
+        //    }
+        //    if (Time.time - lastTimeCheckedForWakeUp[__instance.m_bot.GetInstanceID()] > 1f)
+        //    {
+        //        lastTimeCheckedForWakeUp[__instance.m_bot.GetInstanceID()] = Time.time;
+        //        if (rng.Next(0, wakeChancePerSecond) == 0)
+        //        {
+        //            wakeUpRoom(__instance.m_bot, targetObject);
+        //            __instance.DescBase.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Failed);
+        //        }
+        //    }
+        //}
         return false;
     }
 
@@ -486,6 +486,7 @@ public class ZombifiedPatches
     private static void UpdateMeleeAttack(PlayerBotActionAttack __instance, bool push)
     {
         //Why am I hooking into this?? What did I change??  Was this just for debugging?  I don't remember!
+        //TODO remove this entirely???
 
         // 1) Stop any firing / nanoswarm actions (SafeStopAction used in decomp)
         __instance.SafeStopAction(__instance.m_fireAction);
@@ -582,8 +583,8 @@ public class ZombifiedPatches
                 __instance.m_meleeAction = descriptor;
                 if (zActions.isManualAction(descriptor))
                 {
-                    FlexibleMethodDefinition callback = new FlexibleMethodDefinition(CheckForWakeChance, [__instance.m_bot, descriptor.TargetAgent.gameObject]);
-                    zActionSub.addOnTerminated(descriptor, callback);
+                    //FlexibleMethodDefinition callback = new FlexibleMethodDefinition(CheckForWakeChance, [__instance.m_bot, descriptor.TargetAgent.gameObject]);
+                    //zActionSub.addOnTerminated(descriptor, callback);
                 }
             }
             return;

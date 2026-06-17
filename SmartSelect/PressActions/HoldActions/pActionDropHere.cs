@@ -24,12 +24,7 @@ namespace BotControl.SmartSelect.PressActions
             if (item == null) return false;
             //PlayerBackpackManager.WantToDropItem(BestBot.Agent.Owner, item.Instance.Get_pItemData(), zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, BestBot.Agent.Rotation, true);
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CANCELTHAT);
-            CustomBotActionDropHere.Descriptor desc = new CustomBotActionDropHere.Descriptor(BestBot)
-            {
-                DropPosition = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos,
-                Prio = 13
-            };
-            zBotActions.StartAction(BestBot, desc, zStaticRefrences.LocalPlayer, 0);
+            zBotActions.SendBotToDropHere(BestBot, zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)
