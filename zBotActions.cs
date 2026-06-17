@@ -7,9 +7,7 @@ using Player;
 using SlideMenu;
 using SNetwork;
 using System;
-using TMPro;
 using UnityEngine;
-using UnityEngine.AI;
 using static BotControl.Networking.pStructs;
 
 namespace BotControl
