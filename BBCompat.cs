@@ -1,5 +1,6 @@
 ﻿using BetterBots.Components;
 using BetterBots.Managers;
+using BotControl.CustomActions;
 using HarmonyLib;
 using Player;
 using System;
@@ -54,6 +55,29 @@ namespace BotControl
             if (recorder != null)
                 return !recorder.Brain.ReviveRestricted;
             return true;
+        }
+    }
+    [HarmonyPatch]
+    public static class BBPatches
+    {
+        [HarmonyPatch(typeof(PlayerBotManagerExtended), "IsBotCurrentlyBusyWithAction")]
+        [HarmonyPostfix]
+        public static void PostIsBotCurrentlyBusyWithAction(PlayerAIBot bot, ref bool __result)
+        {
+            if (__result)
+                return;
+            var key = bot.Agent.CharacterID;
+            foreach(var kvp in zActions.manualActions)
+            {
+                foreach (var action in kvp.Value)
+                {
+                    if (action.Bot.Pointer == bot.Pointer)
+                    {
+                        __result = true;
+                        return;
+                    }
+                }
+            }
         }
     }
 }
