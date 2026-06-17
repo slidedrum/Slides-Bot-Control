@@ -31,14 +31,23 @@ namespace BotControl.SmartSelect.PressActions
         public bool IsActionValid(Component candidate)
         {
             ItemInLevel Item = candidate.TryCast<ItemInLevel>();
-            if (Item == null) return false;
+            if (Item == null) 
+                return false;
             var status = Item?.GetSyncComponent()?.GetCurrentState().status;
-            if (status == null) return false;
-            if (status != ePickupItemStatus.PlacedInLevel) return false;
+            if (status == null) 
+                return false;
+            if (status != ePickupItemStatus.PlacedInLevel) 
+                return false;
+            CarryItemPickup_Core pickupCore = Item.TryCast<CarryItemPickup_Core>();
+            if (pickupCore != null && !pickupCore.IsInteractable)
+                return false;
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
-            if (BestBot == null) return false;
-            if (!BestBot.Agent.Alive) return false;
-            if (!zHelpers.CanBotReach(BestBot, Item.transform.position)) return false;
+            if (BestBot == null) 
+                return false;
+            if (!BestBot.Agent.Alive) 
+                return false;
+            if (!zHelpers.CanBotReach(BestBot, Item.transform.position)) 
+                return false;
             return true;
         }
     }
