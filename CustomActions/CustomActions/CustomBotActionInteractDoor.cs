@@ -298,11 +298,11 @@ namespace BotControl.CustomActions.CustomActions
         }
         private bool GetTargetLocation()
         {
-            GameObject gobject = TargetButton.gameObject;
+            GameObject gobject = TargetButton?.gameObject;
             if (gobject == null)
                 return false;
             Transform transform = gobject.transform;
-            Vector3 location = transform.position + transform.forward * 1.5f;
+            Vector3 location = transform.position + transform.forward * RootPlayerBotAction.s_unlockStandDistance;
             if (!SnapPositionToNav(location, out TargetLoction))
                 return false;
             return true;
@@ -312,11 +312,10 @@ namespace BotControl.CustomActions.CustomActions
             if (this.state == State.Move && descBase.Status != PlayerBotActionBase.Descriptor.StatusType.Successful)
                 this.state = State.Failed;
         }
-
         private void UpdateStateMove()
         {
             UpdateLookAction();
-            if ((m_bot.transform.position - TargetLoction).magnitude < 0.1f)
+            if ((m_bot.transform.position - TargetLoction).magnitude < 1.5f)
             {
                 GetLock();
                 if (TargetLock == null)
