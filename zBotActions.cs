@@ -255,7 +255,8 @@ namespace BotControl
                 actionID = zHelpers.HashString($"RequestToPickupItem{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             float prio = defaultPrio;
             float standDist = RootPlayerBotAction.s_collectItemStandDistance; // 1.0f
-            Vector3 standCandidate = item.transform.position - item.transform.up * standDist;
+            var Container = item.GetComponentInParent<LG_ResourceContainer_Storage>();
+            Vector3 standCandidate = Container.transform.position - Container.transform.up * standDist;
             zHelpers.SnapPositionToNav(standCandidate, out Vector3 TargetPosition);
             float haste = 1f;
             PlayerBotActionCollectItem.Descriptor desc = new(aiBot)

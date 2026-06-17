@@ -17,7 +17,8 @@ One of the major features of this mod is letting you change the priority of diff
 
 ## Current features: 
  - Directly tell a bot to pick up a specific item with smart select.
- - Directly tell a bot to use their item on a specific player with smart select.
+ - Directly tell a bot to use their item on a specific player with smart select
+ - Allow bots to do brand new actions like open lockers/doors, insert cells, and more!
  - Control if and how closely bots follow you.
  - Control if and when bots are allowed to pick up items
    - You can choose what items they do or don't pick up, or even change the priority of different items.
@@ -68,7 +69,7 @@ One of the major features of this mod is letting you change the priority of diff
  
 ## Known issues:
  - Changing attack means mid combat can cause some jank.  TODO look into what's actually going on.
- - Known bug: bots will have trouble reaching some containers, mostly ones that exist above or below another part of the level.
+ - Bots will have trouble reaching some containers, FIXED?  Let me know if you still find a spot where this happens.
 
 ## Features I'd like to add:
  - Option to dynamically ignore specific lockers, or lockers in a specific room, or prioritize/deprioritize lockers near a point.
