@@ -48,7 +48,7 @@ One of the major features of this mod is letting you change the priority of diff
   Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- ) 
  - Items surrounded by * mean that it's not in the current version, but coming eventually.
  - When you tell a bot to move to a location, they will no longer follow you.  You must double tap them to tell them to follow you again, they will never come back untill you do. I plan to make some sort of option to have they return to you if you go some distnace away, or if they get attacked.  That will come eventually.
- - Known bug: bots will have trouble reaching some containers, mostly ones that exist above or below another part of the level.
+
 ### Important note about how Smart Select works under the hood.
  - This system may seem to be inconsistant or not pick up on things you think you're looking at, here's why:
  - The system checks a sphere arround the point you're looking at, NOT a cone infront of you.  This allows the system to run faster and perform better.
@@ -68,6 +68,7 @@ One of the major features of this mod is letting you change the priority of diff
  
 ## Known issues:
  - Changing attack means mid combat can cause some jank.  TODO look into what's actually going on.
+ - Known bug: bots will have trouble reaching some containers, mostly ones that exist above or below another part of the level.
 
 ## Features I'd like to add:
  - Option to dynamically ignore specific lockers, or lockers in a specific room, or prioritize/deprioritize lockers near a point.
@@ -87,9 +88,12 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
 
 
 ### Changelog
+V1.2.0 - The Custom Actions update!
+ - Added completely modded actions the bots can do, things like opening doors, or inserting cells.
+ - This lays the groundwork for huge potential in the future!
+ - Currently limited to smart select only.  Will look into making them trigger automatically eventually.
 
-
-V1.1.0
+V1.1.0 - The Smart Select Update.
  - Completely overhauled the smart select system!  
  - Added (possibly too many) options to control when the bots talk in chat.
 
