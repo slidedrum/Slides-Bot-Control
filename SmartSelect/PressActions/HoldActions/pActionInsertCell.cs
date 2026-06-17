@@ -27,7 +27,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 TargetGenerator = Generator,
                 Prio = 13
             };
-            BestBot.StartAction(desc);
+            zBotActions.StartAction(BestBot, desc, zStaticRefrences.LocalPlayer, 0); ;
             return false;
         }
 

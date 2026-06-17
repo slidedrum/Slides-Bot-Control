@@ -26,7 +26,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
                 TargetPosition = zStaticRefrences.LocalPlayer.transform.position,
                 Prio = 13
             };
-            BestBot.StartAction(desc);
+            zBotActions.StartAction(BestBot, desc, zStaticRefrences.LocalPlayer, 0);
             return true;
         }
         public bool IsActionValid(Component candidate)

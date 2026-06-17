@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterBots", "..\..\BB\Bett
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrioritySet", "W:\Documents\PrioritySet\src\PrioritySet\PrioritySet.csproj", "{165CB9D3-9E6E-B270-1160-EA312C2B6481}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Il2CppInteropFix.Hooks", "W:\AI Stuff\Workspace A\Il2CppInteropFix\Il2CppInteropFix.Hooks.csproj", "{FB19D945-91EB-1CFB-CE4F-36950A895522}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Il2CppInteropFix.Patcher", "W:\AI Stuff\Workspace A\Il2CppInteropFix\Il2CppInteropFix.Patcher.csproj", "{8A23DD29-8F26-A1ED-CFB8-4079D746D3C2}"
 EndProject
 Global
@@ -31,10 +29,6 @@ Global
 		{165CB9D3-9E6E-B270-1160-EA312C2B6481}.Debug|x64.Build.0 = Debug|Any CPU
 		{165CB9D3-9E6E-B270-1160-EA312C2B6481}.Release|x64.ActiveCfg = Release|Any CPU
 		{165CB9D3-9E6E-B270-1160-EA312C2B6481}.Release|x64.Build.0 = Release|Any CPU
-		{FB19D945-91EB-1CFB-CE4F-36950A895522}.Debug|x64.ActiveCfg = Debug|x64
-		{FB19D945-91EB-1CFB-CE4F-36950A895522}.Debug|x64.Build.0 = Debug|x64
-		{FB19D945-91EB-1CFB-CE4F-36950A895522}.Release|x64.ActiveCfg = Release|x64
-		{FB19D945-91EB-1CFB-CE4F-36950A895522}.Release|x64.Build.0 = Release|x64
 		{8A23DD29-8F26-A1ED-CFB8-4079D746D3C2}.Debug|x64.ActiveCfg = Debug|x64
 		{8A23DD29-8F26-A1ED-CFB8-4079D746D3C2}.Debug|x64.Build.0 = Debug|x64
 		{8A23DD29-8F26-A1ED-CFB8-4079D746D3C2}.Release|x64.ActiveCfg = Release|x64

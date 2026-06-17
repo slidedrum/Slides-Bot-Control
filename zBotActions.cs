@@ -528,12 +528,12 @@ namespace BotControl
             float attackHaste = 1f;
             var descriptor = new PlayerBotActionAttack.Descriptor(aiBot)
             {
-                Stance = stance,
-                Means = means,
-                Posture = posture,
-                TargetAgent = enemy,
                 Prio = attackPrio,
                 Haste = attackHaste,
+                TargetAgent = enemy,
+                Means = means,
+                Posture = posture,
+                Stance = stance,
             };
             aiBot.Actions[0].Cast<RootPlayerBotAction>().m_followLeaderAction.Prio = attackPrio - 1;
             zChatHandler.sendChatMessage($"Killing the {enemy.EnemyData.name}.", "Kill Enemy" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, Commander);

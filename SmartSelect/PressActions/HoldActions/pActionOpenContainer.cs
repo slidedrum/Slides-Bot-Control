@@ -23,7 +23,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 TargetContainer = container,
                 Prio = 13
             };
-            BestBot.StartAction(desc);
+            zBotActions.StartAction(BestBot, desc, zStaticRefrences.LocalPlayer, 0);
             return false;
         }
 

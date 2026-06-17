@@ -133,7 +133,7 @@ namespace BotControl;
 [BepInDependency("com.east.bb", BepInDependency.DependencyFlags.SoftDependency)]
 public class ZiMain : BasePlugin
 { //this class should contain all methods to call actions, any helpers to faciliate that, and inital setup,
-    public const string version = "1.1.0";
+    public const string version = "1.2.0";
     public static ManualLogSource log;
     internal static bool newRootBotPlayerAction = true;
     public static Dictionary<string, PlayerAIBot> BotTable = new();
@@ -423,7 +423,7 @@ public class ZiMain : BasePlugin
             UpdateBotList();
         else if (_botList == null)
             UpdateBotList();
-        else if (_botList.Contains(null))
+        else if (_botList.Any(x => x == null))
             UpdateBotList();
         return _botList;
     }

@@ -25,7 +25,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 Haste = 1f,
                 Prio = 13
             };
-            BestBot.StartAction(desc);
+            zBotActions.StartAction(BestBot, desc, zStaticRefrences.LocalPlayer, 0);
             return true;
         }
         public bool IsActionValid(Component candidate)

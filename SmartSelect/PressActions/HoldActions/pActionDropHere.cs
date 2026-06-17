@@ -29,7 +29,7 @@ namespace BotControl.SmartSelect.PressActions
                 DropPosition = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos,
                 Prio = 13
             };
-            BestBot.StartAction(desc);
+            zBotActions.StartAction(BestBot, desc, zStaticRefrences.LocalPlayer, 0);
             return true;
         }
         public bool IsActionValid(Component candidate)

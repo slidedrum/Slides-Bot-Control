@@ -13,20 +13,21 @@ namespace BotControl.SmartSelect
 //
 //            (      TAP     /     HOLD      /   DOUBLE TAP  /  TAP & HOLD   ) 
 //            ( ------------------------------------------------------------ ) 
-// Player/Bot ( ---Select--- / ----Share---- / Follow/Cancel / ---Send To--- ) PlayerAgent
-//       Item ( ------------ / ---Pickup---- / ------------- / ------------- ) ItemInLevel
-//  Equipment ( ---Pickup--- / ---Refill---- / -Pickup All-- / ------------- ) SentryGunInstance
-//  Container ( ----Open---- / ------------- / --*Place?*--- / ------------- ) LG_WeakResourceContainer
-// Floor/Wall ( ------------ / -Consumable-- / --Equipment-- / ----Move----- ) Raycast normal
-//    Holding ( ------------ / -*Drop Here*- / --Drop Now--- / ------------- ) Raycast normal
-//       Door ( -Open/Close- / -Throw cFoam- / --*Break?*--- / ------------- ) LG_WeakDoor
-//       Lock ( ---Unlock--- / -Lock Melter- / ------------- / ------------- ) LG_WeakLock
-//      Enemy ( ------------ / --*Attack*--- / -*Countdown*- / *Syncronize*- ) EnemyAgent //use voiceline PLAY_CL_THREETWOONEGO
-//  Generator ( ------------ / -Place Cell-- / ------------- / ------------- ) LG_PowerGenerator_Core 
+// Player/Bot ( ---Select--- / ----Share---- / Follow/Cancel / ---Send To--- )
+//       Item ( ------------ / ---Pickup---- / ------------- / ------------- )
+//  Equipment ( ---Pickup--- / ---Refill---- / -Pickup All-- / ------------- )
+//  Container ( ----Open---- / ------------- / --*Place?*--- / ------------- )
+// Floor/Wall ( ------------ / -Consumable-- / --Equipment-- / ----Move----- )
+//    Holding ( ------------ / -*Drop Here*- / --Drop Now--- / ------------- )
+//       Door ( -Open/Close- / -Throw cFoam- / --*Break?*--- / ------------- )
+//       Lock ( ---Unlock--- / -Lock Melter- / ------------- / ------------- )
+// Enemy/Quiet( ------------ / Sneak Attack- / -*All Sync*-- / ---*Sync*---- )
+// Enemy/Loud ( ---Target--- / ------------- / ------------- / -All Target-- )
+//  Generator ( ------------ / -Place Cell-- / ------------- / ------------- )
 //    Look Up ( Cancel Last- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
 //  Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- ) 
 
-        //TODO lock melter
+        // TODO lock melter
         // TODO cancel bot's last
         // TODO cancel client last
         // TODO cancel client all
