@@ -24,7 +24,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PICKUPYOURDEPLOYABLES);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Pick up your deployables.", 1);
             zBotActions.SendBotToPickUpMine(bot, null, zStaticRefrences.LocalPlayer);
-            zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", bot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Picking up all of my mines.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", bot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

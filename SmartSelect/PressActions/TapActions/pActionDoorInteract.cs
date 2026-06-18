@@ -20,6 +20,10 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             LG_WeakDoor Door = BestComponent.TryCast<LG_WeakDoor>();
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             zBotActions.SendBotToInteractDoor(BestBot, Door, zStaticRefrences.LocalPlayer.transform.position, PlayerBotActionUnlock.Descriptor.MethodEnum.Any, zStaticRefrences.LocalPlayer);
+            if (Door.Gate.IsTraversable)
+                zChatHandler.sendChatMessage("Closing the door.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
+            else
+                zChatHandler.sendChatMessage("Opening the door.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

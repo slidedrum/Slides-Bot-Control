@@ -40,7 +40,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Throw C-Foam here.",1f);
             zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, MovePosition, Door.transform.position, 0);
             //zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, Networking.pStructs.pThrowType.cFoam, MovePosition, Door.transform.position, 0);
-            zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Securing door.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return false;
         }
         public bool Evaluate(PlayerAgent agent, uint itemID)

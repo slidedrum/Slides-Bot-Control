@@ -638,6 +638,7 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pAttackEnemyInfo>("RequestToAttackSleeper", info);
                 return;
             }
+
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
         }
         public static void SendBotToDropHere(PlayerAIBot aiBot, Vector3 DropPosition, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)

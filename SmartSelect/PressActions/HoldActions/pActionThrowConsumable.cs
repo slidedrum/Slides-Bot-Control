@@ -1,7 +1,6 @@
 ﻿using Player;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions
 {
@@ -44,7 +43,7 @@ namespace BotControl.SmartSelect.PressActions
             }
             zBotActions.SendBotToThrowItem(LocalPlayer, BestBot.Agent, LocalPlayer.transform.position, LocalPlayer.FPSCamera.CameraRayPos);
             //zBotActions.SendBotToThrowItem(LocalPlayer, BestBot.Agent, ThrowType, LocalPlayer.transform.position, LocalPlayer.FPSCamera.CameraRayPos);
-            zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage($"Throwing my {Archatype}.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

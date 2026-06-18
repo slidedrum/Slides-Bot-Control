@@ -29,7 +29,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, voiceID);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Hey {botName}!", 1);
             ZiMain.BotBarkBack(botId, AK.EVENTS.PLAY_CL_YES, "Yes?");
-            zChatHandler.sendChatMessage("I'm ready", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("I'm ready.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

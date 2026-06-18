@@ -33,7 +33,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         {
             foreach (var bot in Bots)
             {
-                zChatHandler.sendChatMessage("Will do.", "Pickup Equipmenet" + "TalkInChatNotifyActionAcknowlage", bot.Agent, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage("Picking up my sentry.", "Pickup Equipmenet" + "TalkInChatNotifyActionAcknowlage", bot.Agent, zStaticRefrences.LocalPlayer);
                 zBotActions.SendBotToPickUpSentry(bot, zStaticRefrences.LocalPlayer);
                 yield return new WaitForSeconds(0.25f);
             }

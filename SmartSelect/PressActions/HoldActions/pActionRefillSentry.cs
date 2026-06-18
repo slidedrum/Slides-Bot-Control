@@ -20,6 +20,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             zBotActions.SendBotToRefillSentry(BestBot, Sentry, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Refilling sentry.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

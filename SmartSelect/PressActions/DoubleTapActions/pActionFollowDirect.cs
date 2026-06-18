@@ -61,7 +61,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
                 zBotActions.SetLeader(Follower, Leader, zStaticRefrences.LocalPlayer, 0);
 
                 ZiMain.BotBarkBack(Bot.Agent.CharacterID, AK.EVENTS.PLAY_CL_ILLFOLLOWYOURLEAD, "I will follow your lead.", 2f);
-                zChatHandler.sendChatMessage($"On the way.", "Follow"+ "TalkInChatNotifyActionAcknowlage", Bot.Agent, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage($"On the way to {Leader.PlayerName}.", "Follow"+ "TalkInChatNotifyActionAcknowlage", Bot.Agent, zStaticRefrences.LocalPlayer);
             }
             else
             {

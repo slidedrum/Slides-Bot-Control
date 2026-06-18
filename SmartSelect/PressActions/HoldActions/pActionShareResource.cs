@@ -24,7 +24,8 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             var selection = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>();
             foreach (PlayerAIBot selectedBot in selection)
             {
-                uint resourcePackID = zHelpers.GetAgentBackpackItemId(selectedBot.Agent, InventorySlot.ResourcePack);
+                var item = zHelpers.GetAgentBackpackItem(selectedBot.Agent, InventorySlot.ResourcePack);
+                uint resourcePackID = item.ItemID;
                 bool needsResourceIhave = false;
                 switch (resourcePackID)
                 {
@@ -50,7 +51,12 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PLEASE);
                 zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Please", 1);
                 ZiMain.BotBarkBack(selectedBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f + offset);
-                zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", selectedBot.Agent, zStaticRefrences.LocalPlayer);
+                if (Agent.Pointer != selectedBot.Agent.Pointer)
+                    zChatHandler.sendChatMessage($"Sharing my {item.Instance.ArchetypeName} with {Agent.PlayerName}.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", selectedBot.Agent, zStaticRefrences.LocalPlayer);
+                else
+                {
+                    zChatHandler.sendChatMessage($"Using my {item.Instance.ArchetypeName}.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", selectedBot.Agent, zStaticRefrences.LocalPlayer);
+                }
                 offset += 0.25f;
             }
             return Success;

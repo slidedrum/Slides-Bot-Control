@@ -31,7 +31,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         {
             foreach (var bot in Bots)
             {
-                zChatHandler.sendChatMessage("Will do.", "Pickup Equipmenet" + "TalkInChatNotifyActionAcknowlage", bot.Agent, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage("Picking up mines.", "Pickup Equipmenet" + "TalkInChatNotifyActionAcknowlage", bot.Agent, zStaticRefrences.LocalPlayer);
                 zBotActions.SendBotToPickUpMine(bot, null, zStaticRefrences.LocalPlayer);
                 yield return new WaitForSeconds(0.25f);
             }

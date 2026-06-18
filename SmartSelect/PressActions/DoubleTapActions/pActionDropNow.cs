@@ -25,7 +25,7 @@ namespace BotControl.SmartSelect.PressActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CANCELTHAT);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Cancel that.", 1f);
             zStaticRefrences.CommsMenu.OnButtonPressedDrop(null, BestBot.Agent);
-            zChatHandler.sendChatMessage("Will do.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Dropping item.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)
