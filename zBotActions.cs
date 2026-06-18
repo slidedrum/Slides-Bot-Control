@@ -1,5 +1,4 @@
-﻿using Agents;
-using BotControl.CustomActions;
+﻿using BotControl.CustomActions;
 using BotControl.CustomActions.CustomActions;
 using BotControl.Networking;
 using BotControl.SmartSelect.PressActions;
@@ -10,10 +9,7 @@ using Player;
 using SlideMenu;
 using SNetwork;
 using System;
-using TMPro;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Rendering.PostProcessing;
 using static BotControl.Networking.pStructs;
 
 namespace BotControl
