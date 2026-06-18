@@ -4,7 +4,7 @@ using Enemies;
 using Il2CppInterop.Runtime;
 using LevelGeneration;
 using Player;
-using SlideDrum;
+using PrioritySet;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -556,7 +556,7 @@ namespace BotControl
         }
         public static float visiblityThreshold = 0.2f;
         public static float verticalOffset = 2f;
-        public static OrderedSet<(FindableObject,PlayerAgent)> findsQueue = new();
+        public static PrioritySet<(FindableObject,PlayerAgent)> findsQueue = new();
         public static int vizChecksPerFrame = 10;
         public static void FindsQueu()
         {

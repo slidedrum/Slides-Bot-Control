@@ -1,4 +1,5 @@
 ﻿using FlexMethodDefinition;
+using PrioritySet;
 using SlideDrum;
 using System;
 using System.Collections.Generic;
@@ -24,8 +25,8 @@ namespace SlideMenu
                 return new[] { centerNode }.Concat(nodes.Where(n => n != centerNode));
             }
         }
-        public OrderedSet<sMenuNode> nodes { get; private set; } = new();
-        public OrderedSet<sMenuNode> disabledNodes { get; private set; } = new();
+        public PrioritySet<sMenuNode> nodes { get; private set; } = new();
+        public PrioritySet<sMenuNode> disabledNodes { get; private set; } = new();
         public  sMenuNode centerNode { get; private set; }
         private sMenu _parrentMenu;
         internal int frameOpenedAt = Time.frameCount;

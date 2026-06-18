@@ -46,5 +46,8 @@
 	  <Reference Include="FlexibleMethodDefinition">
 	    <HintPath>W:\AI Stuff\Workspace A\FlexibleMethodDefinition\FlexibleMethodDefinition\bin\Debug\net6.0\FlexibleMethodDefinition.dll</HintPath>
 	  </Reference>
+	  <Reference Include="sInputSystem">
+	    <HintPath>W:\AI Stuff\Workspace A\InputSystem\sInputSystem\bin\Debug\net6.0\sInputSystem.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 </Project>

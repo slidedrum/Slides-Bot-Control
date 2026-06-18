@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Il2CppInteropFix.Patcher", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlexibleMethodDefinition", "W:\AI Stuff\Workspace A\FlexibleMethodDefinition\FlexibleMethodDefinition\FlexibleMethodDefinition.csproj", "{E46453C0-AEB7-25E2-EC87-33DE4B1B2EE4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sInputSystem", "W:\AI Stuff\Workspace A\InputSystem\sInputSystem\sInputSystem.csproj", "{BCF30DE3-2D2E-095D-4291-17420EA08875}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -39,6 +41,10 @@ Global
 		{E46453C0-AEB7-25E2-EC87-33DE4B1B2EE4}.Debug|x64.Build.0 = Debug|Any CPU
 		{E46453C0-AEB7-25E2-EC87-33DE4B1B2EE4}.Release|x64.ActiveCfg = Release|Any CPU
 		{E46453C0-AEB7-25E2-EC87-33DE4B1B2EE4}.Release|x64.Build.0 = Release|Any CPU
+		{BCF30DE3-2D2E-095D-4291-17420EA08875}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BCF30DE3-2D2E-095D-4291-17420EA08875}.Debug|x64.Build.0 = Debug|Any CPU
+		{BCF30DE3-2D2E-095D-4291-17420EA08875}.Release|x64.ActiveCfg = Release|Any CPU
+		{BCF30DE3-2D2E-095D-4291-17420EA08875}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

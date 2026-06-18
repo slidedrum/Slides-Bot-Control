@@ -3,7 +3,6 @@ using BotControl.SmartSelect.PressTypes;
 using FlexMethodDefinition;
 using Player;
 using SlideDrum.sInputSystem;
-using SlideMenu;
 using UnityEngine;
 
 namespace BotControl.SmartSelect

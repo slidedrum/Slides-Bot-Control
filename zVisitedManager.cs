@@ -1,14 +1,15 @@
 ﻿using AIGraph;
+using BotControl;
 using Enemies;
 using LevelGeneration;
 using Player;
+using PrioritySet;
+using SlideDrum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
-using BotControl;
-using SlideDrum;
 
 namespace BotControl
 {
@@ -25,8 +26,8 @@ namespace BotControl
         private static List<PlayerAgent> agents = new();
         private static List<PlayerAgent> botAgents = new();
         private const int areaMask = 1 << 0;
-        internal static OrderedSet<VisitNode> nodesThatNeedConnectionChecks = new();
-        internal static OrderedSet<nodeToCreate> nodesToCreate = new();
+        internal static PrioritySet<VisitNode> nodesThatNeedConnectionChecks = new();
+        internal static PrioritySet<nodeToCreate> nodesToCreate = new();
         private static int conectionCheckIndex = 0;
         internal static int connectionChecksPerFrame = 2;
         internal static int nodesCreatedPerFrame = 5;
@@ -40,7 +41,7 @@ namespace BotControl
         public static Vector3[] CapsuleCorners;
         public static HashSet<VisitNode> allnodes = new();
         public static Dictionary<AIG_CourseNode, List<VisitNode>> VisitNodeCourseNodeCache = new();
-        public static VisitNode GetUnexploredLocation(Vector3 position, int depth = 0,int maxDepth = 0, OrderedSet<VisitNode> searched = null) // TODO create an async version of this with a cache of unexplored locations
+        public static VisitNode GetUnexploredLocation(Vector3 position, int depth = 0,int maxDepth = 0, PrioritySet<VisitNode> searched = null) // TODO create an async version of this with a cache of unexplored locations
         {
             if (maxDepth == 0)
                 maxDepth = unexploredMaxDepth;
@@ -571,7 +572,7 @@ namespace BotControl
         public bool discovered = false;
         public int propigated = 0;
         public HashSet<VisitNode> nearbyNodes = new();
-        public OrderedSet<VisitNode> connectedNodes = new();
+        public PrioritySet<VisitNode> connectedNodes = new();
         public HashSet<VisitNode> nearbyNodesToCheckIfConnected = new();
         private Dictionary<VisitNode, LineRenderer> connectionLines = new();
         private AIG_CourseNode _courseNode;
@@ -622,9 +623,9 @@ namespace BotControl
                 }
             }
         }
-        public OrderedSet<VisitNode> getUnexploredNodes()
+        public PrioritySet<VisitNode> getUnexploredNodes()
         {
-            OrderedSet<VisitNode> unexploredNodes = new();
+            PrioritySet<VisitNode> unexploredNodes = new();
             foreach (var node in connectedNodes)
             {
                 if (!node.discovered)
@@ -850,13 +851,13 @@ namespace BotControl
             }
         }
 
-        internal VisitNode FindUnexplored(int depth = 0, int maxDepth = 0, OrderedSet<VisitNode> searched = null)
+        internal VisitNode FindUnexplored(int depth = 0, int maxDepth = 0, PrioritySet<VisitNode> searched = null)
         {
             if (maxDepth == 0)
                 maxDepth = zVisitedManager.unexploredMaxDepth;
             if (searched == null)
                 searched = new();
-            OrderedSet<VisitNode> unexploredConnections = getUnexploredNodes();
+            PrioritySet<VisitNode> unexploredConnections = getUnexploredNodes();
             if (unexploredConnections.Count > 0)
                 return unexploredConnections[UnityEngine.Random.Range(0, unexploredConnections.Count)];
             else if (depth < maxDepth)
