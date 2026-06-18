@@ -32,6 +32,7 @@ One of the major features of this mod is letting you change the priority of diff
  
 ## How to use Smart select!
  - Depending on what you're looking at and context, you can tell the bots to do one of 4 different actions at any given time.  Tap V while looking at a bot to select them, then you can see what they can do at any time on the bottom of your screen.  You can command them by (from left to right) Tapping V, Holding V, Double tapping V, and Tapping then holding V.  There are about 2 dozen different things you can tell them to do!  With more coming eventually.  Below is the full chart of what they can do and how to tell them to do it:
+```
             (      TAP     /     HOLD      /   DOUBLE TAP  /  TAP & HOLD   ) 
             ( ------------------------------------------------------------ ) 
  Player/Bot ( ---Select--- / ----Share---- / Follow/Cancel / ---Send To--- )
@@ -47,6 +48,7 @@ One of the major features of this mod is letting you change the priority of diff
   Generator ( ------------ / -Place Cell-- / ------------- / ------------- )
     Look Up ( Cancel Last- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
   Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- ) 
+```
  - Items surrounded by * mean that it's not in the current version, but coming eventually.
  - When you tell a bot to move to a location, they will no longer follow you.  You must double tap them to tell them to follow you again, they will never come back untill you do. I plan to make some sort of option to have they return to you if you go some distnace away, or if they get attacked.  That will come eventually.
 
@@ -89,6 +91,11 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
 
 
 ### Changelog
+V1.2.3
+ - Fixed readme chart
+V1.2.2
+ - Made it so you can no longer send bots to attack anything other than standard enemies. (other enemy types coming eventually)
+
 V1.2.0 - The Custom Actions update!
  - Added completely modded actions the bots can do, things like opening doors, or inserting cells.
  - This lays the groundwork for huge potential in the future!
