@@ -21,7 +21,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             if (BestBot == null) return false;
             if (BestBot.Agent.Alive == false) return false;
             zBotActions.SendBotToAttackSleeper(BestBot, Enemy, zStaticRefrences.LocalPlayer);
-            zChatHandler.sendChatMessage("Attacking sleeper.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Attacking sleeper.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

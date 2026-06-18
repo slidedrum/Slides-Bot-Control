@@ -15,11 +15,15 @@ namespace BotControl.Menus
         public static Color onColor = new Color(0, 0.2f, 0);
         public static sMenu Menu;
         public static List<(sMenu.sMenuNode Node,string ActionKey)> subNodes = new();
+        public static string chatPermsString = "TalkInChat";
+        public static string AcknowlageString = "NotifyActionAcknowlage";
+        public static string SuccessString = "NotifyActionSuccess";
+        public static string FailString = "NotifyActionFail";
         // NotifyActionFail
         // NotifyActionSuccess
         // NotifyActionAcknowlage
         // Append action name to the end for overrides.
-        public static void Setup(sMenu _Menu)
+        public static void Setup(sMenu _Menu) // TODO add a "manual only" option.  Where they only talk in chat if it's a manual action.
         {
             // TODO fix the network spam whenenever you do anything here.
             sMenu.sMenuNode FailNode = _Menu.AddNode("Fail");
@@ -32,24 +36,24 @@ namespace BotControl.Menus
             _Menu.AddNodeToCatagory("States", "Success");
             _Menu.AddNodeToCatagory("States", "Acknowlage");
 
-            FailNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: ["NotifyActionFail", FailNode]);
-            FailNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: ["NotifyActionFail"]);
-            _Menu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetToDefault, args: [FailNode, "NotifyActionFail"]);
-            SuccessNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: ["NotifyActionSuccess", SuccessNode]);
-            SuccessNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: ["NotifyActionSuccess"]);
-            _Menu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetToDefault, args: [SuccessNode, "NotifyActionSuccess"]);
-            AcknowlageNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: ["NotifyActionAcknowlage", AcknowlageNode]);
-            AcknowlageNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: ["NotifyActionAcknowlage"]);
-            _Menu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetToDefault, args: [AcknowlageNode, "NotifyActionAcknowlage"]);
-            zSlideComputer.ActionPermissions.AddNode("NotifyActionFail", null, "TalkInChat", defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: ["NotifyActionFail", FailNode]);
-            zSlideComputer.ActionPermissions.GetNodeFromIdent("NotifyActionFail").onChanged.Listen(UpdateAllSubnodes);
-            zSlideComputer.ActionPermissions.GetNodeFromIdent("NotifyActionFail").onChanged.Listen(AutomaticActionMenuClass.ApplyTextEffectsToNode, args: [FailNode, "NotifyActionFail"]);
-            zSlideComputer.ActionPermissions.AddNode("NotifyActionSuccess", null, "TalkInChat", defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: ["NotifyActionSuccess", SuccessNode]);
-            zSlideComputer.ActionPermissions.GetNodeFromIdent("NotifyActionSuccess").onChanged.Listen(UpdateAllSubnodes);
-            zSlideComputer.ActionPermissions.GetNodeFromIdent("NotifyActionSuccess").onChanged.Listen(AutomaticActionMenuClass.ApplyTextEffectsToNode, args: [SuccessNode, "NotifyActionSuccess"]);
-            zSlideComputer.ActionPermissions.AddNode("NotifyActionAcknowlage", null, "TalkInChat", defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: ["NotifyActionAcknowlage", AcknowlageNode]);
-            zSlideComputer.ActionPermissions.GetNodeFromIdent("NotifyActionAcknowlage").onChanged.Listen(UpdateAllSubnodes);
-            zSlideComputer.ActionPermissions.GetNodeFromIdent("NotifyActionAcknowlage").onChanged.Listen(AutomaticActionMenuClass.ApplyTextEffectsToNode, args: [AcknowlageNode, "NotifyActionAcknowlage"]);
+            FailNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [FailString, FailNode]);
+            FailNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: [FailString]);
+            _Menu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetToDefault, args: [FailNode, FailString]);
+            SuccessNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [SuccessString, SuccessNode]);
+            SuccessNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: [SuccessString]);
+            _Menu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetToDefault, args: [SuccessNode, SuccessString]);
+            AcknowlageNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [AcknowlageString, AcknowlageNode]);
+            AcknowlageNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: [AcknowlageString]);
+            _Menu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetToDefault, args: [AcknowlageNode, AcknowlageString]);
+            zSlideComputer.ActionPermissions.AddNode(FailString, null, chatPermsString, defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [FailString, FailNode]);
+            zSlideComputer.ActionPermissions.GetNodeFromIdent(FailString).onChanged.Listen(UpdateAllSubnodes);
+            zSlideComputer.ActionPermissions.GetNodeFromIdent(FailString).onChanged.Listen(AutomaticActionMenuClass.ApplyTextEffectsToNode, args: [FailNode, FailString]);
+            zSlideComputer.ActionPermissions.AddNode(SuccessString, null, chatPermsString, defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [SuccessString, SuccessNode]);
+            zSlideComputer.ActionPermissions.GetNodeFromIdent(SuccessString).onChanged.Listen(UpdateAllSubnodes);
+            zSlideComputer.ActionPermissions.GetNodeFromIdent(SuccessString).onChanged.Listen(AutomaticActionMenuClass.ApplyTextEffectsToNode, args: [SuccessNode, SuccessString]);
+            zSlideComputer.ActionPermissions.AddNode(AcknowlageString, null, chatPermsString, defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [AcknowlageString, AcknowlageNode]);
+            zSlideComputer.ActionPermissions.GetNodeFromIdent(AcknowlageString).onChanged.Listen(UpdateAllSubnodes);
+            zSlideComputer.ActionPermissions.GetNodeFromIdent(AcknowlageString).onChanged.Listen(AutomaticActionMenuClass.ApplyTextEffectsToNode, args: [AcknowlageNode, AcknowlageString]);
             //_Menu.centerNode.AddListener(nodeEvent.WhileSelected, _Menu.UpdateCatagoryByScroll);
 
             Menu = _Menu;
@@ -60,7 +64,8 @@ namespace BotControl.Menus
                 PrioritySet<IPressAction> PressActions = pressType.GetAllActions();
                 AllPressActions.UnionWith(PressActions);
             }
-            HashSet<string> uniqueNames = AllPressActions.Where(x => x.Enabled).Select(x => StripRichText(x.FriendlyIdentifier)).ToHashSet();
+            HashSet<string> uniqueNames = AllPressActions.Where(x => x.Enabled).Select(x => x.FriendlyIdentifier).ToHashSet();
+            //HashSet<string> uniqueNames = AllPressActions.Where(x => x.Enabled).Select(x => StripRichText(x.FriendlyIdentifier)).ToHashSet();
             foreach (string name in uniqueNames)
             {
                 SetupNode(_Menu, name);
@@ -87,38 +92,38 @@ namespace BotControl.Menus
         }
         private static void SetupNode(sMenu parentMenu, string nodeName)
         {
-            string actionKey = nodeName+"TalkInChat";
+            string actionKey = nodeName+ chatPermsString;
             sMenu.sMenuNode menuNode = parentMenu.AddNode(nodeName);
-            zSlideComputer.ActionPermissions.AddNode(actionKey, null, "TalkInChat", defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey, menuNode]);
+            zSlideComputer.ActionPermissions.AddNode(actionKey, null, chatPermsString, defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey, menuNode]);
             sMenu subMenu = sMenuManager.createMenu(nodeName, parentMenu, false);
             menuNode.AddListener(sMenuManager.nodeEvent.OnDoubleTapped, subMenu.Open);// TODO Why does opening this submenu not close when you look away?
             subMenu.centerNode.ClearListeners(sMenuManager.nodeEvent.OnUnpressedSelected);
             subMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnTapped, subMenu.parrentMenu.Open);
 
             sMenu.sMenuNode subFailNode = subMenu.AddNode("Fail");
-            subFailNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [actionKey + "NotifyActionFail", subFailNode]);
-            subFailNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey + "NotifyActionFail"]);
-            subMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetToDefault, args: [subFailNode, actionKey + "NotifyActionFail"]);
-            zSlideComputer.ActionPermissions.AddNode(actionKey + "NotifyActionFail", null, actionKey, defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey + "NotifyActionFail", subFailNode]);
-            subNodes.Add((subFailNode, actionKey + "NotifyActionFail"));
+            subFailNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [actionKey + FailString, subFailNode]);
+            subFailNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey + FailString]);
+            subMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetToDefault, args: [subFailNode, actionKey + FailString]);
+            zSlideComputer.ActionPermissions.AddNode(actionKey + FailString, null, actionKey, defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey + FailString, subFailNode]);
+            subNodes.Add((subFailNode, actionKey + FailString));
 
             sMenu.sMenuNode subSuccessNode = subMenu.AddNode("Success");
-            subSuccessNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [actionKey + "NotifyActionSuccess", subSuccessNode]);
-            subSuccessNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey + "NotifyActionSuccess"]);
-            subMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetToDefault, args: [subSuccessNode, actionKey + "NotifyActionSuccess"]);
-            zSlideComputer.ActionPermissions.AddNode(actionKey + "NotifyActionSuccess", null, actionKey, defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey + "NotifyActionSuccess", subSuccessNode]);
-            subNodes.Add((subSuccessNode, actionKey + "NotifyActionSuccess"));
+            subSuccessNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [actionKey + SuccessString, subSuccessNode]);
+            subSuccessNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey + SuccessString]);
+            subMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetToDefault, args: [subSuccessNode, actionKey + SuccessString]);
+            zSlideComputer.ActionPermissions.AddNode(actionKey + SuccessString, null, actionKey, defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey + SuccessString, subSuccessNode]);
+            subNodes.Add((subSuccessNode, actionKey + SuccessString));
 
             sMenu.sMenuNode subAcknowlageNode = subMenu.AddNode("Acknowlage");
-            subAcknowlageNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [actionKey + "NotifyActionAcknowlage", subAcknowlageNode]);
-            subAcknowlageNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey + "NotifyActionAcknowlage"]);
-            subMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetToDefault, args: [subAcknowlageNode, actionKey + "NotifyActionAcknowlage"]);
-            zSlideComputer.ActionPermissions.AddNode(actionKey + "NotifyActionAcknowlage", null, actionKey, defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey + "NotifyActionAcknowlage", subAcknowlageNode]);
-            subNodes.Add((subAcknowlageNode, actionKey + "NotifyActionAcknowlage"));
+            subAcknowlageNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [actionKey + AcknowlageString, subAcknowlageNode]);
+            subAcknowlageNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey + AcknowlageString]);
+            subMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetToDefault, args: [subAcknowlageNode, actionKey + AcknowlageString]);
+            zSlideComputer.ActionPermissions.AddNode(actionKey + AcknowlageString, null, actionKey, defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey + AcknowlageString, subAcknowlageNode]);
+            subNodes.Add((subAcknowlageNode, actionKey + AcknowlageString));
 
-            zSlideComputer.ActionPermissions.AddFallback(actionKey + "NotifyActionFail", "NotifyActionFail");
-            zSlideComputer.ActionPermissions.AddFallback(actionKey + "NotifyActionSuccess", "NotifyActionSuccess");
-            zSlideComputer.ActionPermissions.AddFallback(actionKey + "NotifyActionAcknowlage", "NotifyActionAcknowlage");
+            zSlideComputer.ActionPermissions.AddFallback(actionKey + FailString, FailString);
+            zSlideComputer.ActionPermissions.AddFallback(actionKey + SuccessString, SuccessString);
+            zSlideComputer.ActionPermissions.AddFallback(actionKey + AcknowlageString, AcknowlageString);
 
             menuNode.AddListener(sMenuManager.nodeEvent.OnTappedExclusive, zSlideComputer.GenericToggleAllowed, args: [actionKey, menuNode]);
             menuNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);

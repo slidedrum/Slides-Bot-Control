@@ -19,7 +19,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             LG_WeakResourceContainer container = BestComponent.TryCast<LG_WeakResourceContainer>();
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             zBotActions.SendBotToOpenContainer(BestBot, container, zStaticRefrences.LocalPlayer);
-            zChatHandler.sendChatMessage("Opening container.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Opening container.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
 

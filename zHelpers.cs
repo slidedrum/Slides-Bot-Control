@@ -10,6 +10,92 @@ namespace BotControl
 {
     public static class zHelpers
     {
+        private static readonly NavMeshPath s_path = new NavMeshPath();
+        private static readonly Vector3[] s_corners = new Vector3[20];
+        private static int s_cornerCount;
+
+        /// <summary>
+        /// Finds a navmesh position along the path from <paramref name="start"/> to <paramref name="end"/>
+        /// that is <paramref name="standoffDistance"/> path-units before the end.
+        /// </summary>
+        /// <returns>
+        /// False when no complete path exists. True when a standoff point was resolved
+        /// (including when the path is shorter than the standoff — then <paramref name="standoffPosition"/> is start).
+        /// </returns>
+        public static bool TryGetStandoffPosition(
+            Vector3 start,
+            Vector3 end,
+            float standoffDistance,
+            out Vector3 standoffPosition,
+            int areaMask = -1)
+        {
+            standoffPosition = end;
+
+            if (!NavMesh.CalculatePath(start, end, areaMask, s_path))
+            {
+                return false;
+            }
+
+            if (s_path.status != NavMeshPathStatus.PathComplete)
+            {
+                return false;
+            }
+
+            s_cornerCount = s_path.GetCornersNonAlloc(s_corners);
+            if (s_cornerCount == 0)
+            {
+                return false;
+            }
+
+            float totalLength = GetPathLength(s_cornerCount);
+            float stopAt = totalLength - standoffDistance;
+            if (stopAt <= 0f)
+            {
+                standoffPosition = s_corners[0];
+                return true;
+            }
+
+            GetPointOnPath(s_path, stopAt, out standoffPosition);
+            return true;
+        }
+
+        public static void GetPointOnPath(NavMeshPath path, float maxDistance, out Vector3 point)
+        {
+            s_cornerCount = path.GetCornersNonAlloc(s_corners);
+            if (s_cornerCount < 2)
+            {
+                point = s_corners[0];
+                return;
+            }
+
+            float accumulated = 0f;
+            Vector3 previousCorner = s_corners[0];
+            for (int i = 1; i < s_cornerCount; i++)
+            {
+                Vector3 corner = s_corners[i];
+                accumulated += Vector3.Distance(previousCorner, corner);
+                if (maxDistance < accumulated)
+                {
+                    point = corner;
+                    return;
+                }
+
+                previousCorner = corner;
+            }
+
+            point = previousCorner;
+        }
+
+        private static float GetPathLength(int cornerCount)
+        {
+            float length = 0f;
+            for (int i = 1; i < cornerCount; i++)
+            {
+                length += Vector3.Distance(s_corners[i - 1], s_corners[i]);
+            }
+
+            return length;
+        }
         public static float Round(float value, int decimalPlaces)
         {
             float multiplier = Mathf.Pow(10f, decimalPlaces);

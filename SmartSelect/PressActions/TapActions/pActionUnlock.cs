@@ -26,7 +26,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PLEASE);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Please.",1f);
             zBotActions.SendbotToBreakLock(BestBot, Lock, MethodEnum.Melee | MethodEnum.Hack, zStaticRefrences.LocalPlayer, 0);
-            zChatHandler.sendChatMessage($"Unlocking.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage($"Unlocking.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

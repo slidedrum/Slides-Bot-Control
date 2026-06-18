@@ -54,7 +54,7 @@ namespace BotControl.SmartSelect.PressActions
             if (BotToUse == null)
                 return false;
             zBotActions.SendBotToReviveAgent(BotToUse, zStaticRefrences.LocalPlayer, zStaticRefrences.LocalPlayer, 0);
-            zChatHandler.sendChatMessage($"Reviving {zStaticRefrences.LocalPlayer.PlayerName}.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BotToUse.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage($"Reviving {zStaticRefrences.LocalPlayer.PlayerName}.", FriendlyIdentifier + IPressAction.chatPermSuffix, BotToUse.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

@@ -30,10 +30,11 @@ namespace BotControl
     }
     internal static class zChatHandler
     {
-
         private static ChatMessage previousMessage = new();
         public static void sendChatMessage(string message, string PermissionString, PlayerAgent sender = null, PlayerAgent receiver = null)
         {
+            if (!(bool)zSlideComputer.ActionPermissions.ValueAt("TalkInChat"))
+                return;
             if (zSlideComputer.ActionPermissions.HasKey(PermissionString))
             {
                 if (!(bool)zSlideComputer.ActionPermissions.ValueAt(PermissionString, false))
@@ -46,9 +47,7 @@ namespace BotControl
                 };
                 bool same = ThisMessage.Hash == previousMessage.Hash;
                 previousMessage = ThisMessage;
-                if (same)
-                    return;
-                if ((bool)zSlideComputer.ActionPermissions.ValueAt("TalkInChat"))
+                if (!same)
                     PlayerChatManager.WantToSentTextMessage(sender != null ? sender : PlayerManager.GetLocalPlayerAgent(), message, receiver);
                 return;
             }

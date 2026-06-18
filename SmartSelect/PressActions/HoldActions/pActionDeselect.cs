@@ -20,7 +20,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             HashSet<PlayerAIBot> selectedBots = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>();
             foreach (PlayerAIBot selectedBot in selectedBots)
             {
-                zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", selectedBot.Agent, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + IPressAction.chatPermSuffix, selectedBot.Agent, zStaticRefrences.LocalPlayer);
             }
             zSmartSelect.MainSelection.Deselect<PlayerAIBot>();
             return true;

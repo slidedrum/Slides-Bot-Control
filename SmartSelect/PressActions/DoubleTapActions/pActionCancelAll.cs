@@ -27,7 +27,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             }
             foreach (var bot in BotsWithManualActions)
             {
-                zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", bot.Agent, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + IPressAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
             }
             return true;
         }

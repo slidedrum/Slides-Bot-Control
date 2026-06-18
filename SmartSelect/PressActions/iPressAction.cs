@@ -1,4 +1,5 @@
-﻿using BotControl.SmartSelect.PressTypes;
+﻿using BotControl.Menus;
+using BotControl.SmartSelect.PressTypes;
 using System;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ namespace BotControl.SmartSelect.PressActions
         public virtual string? pressTypeIdentifier => null; // Could be null if this action handles it's own registration.  Might want to do that if you're regestering to multiple types, or something else funky.
         public virtual int? Priority => null;
         public virtual bool Enabled => true;
+        public static string chatPermSuffix = ChatSettingsMenu.chatPermsString + ChatSettingsMenu.AcknowlageString;
         public virtual void Register() // Used to register this action to its press type.  Will be called automatically if pressTypeIdentifier is null, the implementing class MUST overide this mehtod.
         {
             if (pressTypeIdentifier.ToLower().Contains("example"))

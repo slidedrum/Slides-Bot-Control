@@ -13,6 +13,7 @@ using BotControl.Menus;
 using BotControl.Networking;
 using BotControl;
 using static BotControl.Networking.pStructs;
+using BotControl.SmartSelect.PressActions;
 
 namespace BotControl
 {
@@ -457,7 +458,7 @@ namespace BotControl
             }
             if (bot == null)
                 return;
-            zChatHandler.sendChatMessage("Okay here I go exploring!", "Explore" + "TalkInChatNotifyActionAcknowlage", botAgent, playerAgent);
+            zChatHandler.sendChatMessage("Okay here I go exploring!", "Explore" + IPressAction.chatPermSuffix, botAgent, playerAgent);
             SendBotToExplore(bot);
         }
 

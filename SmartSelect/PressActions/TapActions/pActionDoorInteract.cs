@@ -21,9 +21,9 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             zBotActions.SendBotToInteractDoor(BestBot, Door, zStaticRefrences.LocalPlayer.transform.position, PlayerBotActionUnlock.Descriptor.MethodEnum.Any, zStaticRefrences.LocalPlayer);
             if (Door.Gate.IsTraversable)
-                zChatHandler.sendChatMessage("Closing the door.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage("Closing the door.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             else
-                zChatHandler.sendChatMessage("Opening the door.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage("Opening the door.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

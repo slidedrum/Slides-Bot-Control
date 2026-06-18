@@ -9,7 +9,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
     {
         public string FriendlyName => "Refill Sentry";
         public string FriendlyNameShort => "Refill";
-        public string FriendlyIdentifier => "Deploy Equipment";
+        public string FriendlyIdentifier => "Share Resources";
         public Il2CppSystem.Type Type => Il2CppType.Of<SentryGunInstance>();
         public string pressTypeIdentifier => "Hold";
         public bool Enabled => false;
@@ -20,7 +20,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             zBotActions.SendBotToRefillSentry(BestBot, Sentry, zStaticRefrences.LocalPlayer);
-            zChatHandler.sendChatMessage("Refilling sentry.", FriendlyIdentifier + "TalkInChatNotifyActionAcknowlage", BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Refilling sentry.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

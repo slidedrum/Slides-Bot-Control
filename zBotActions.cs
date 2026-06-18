@@ -1,6 +1,8 @@
-﻿using BotControl.CustomActions;
+﻿using Agents;
+using BotControl.CustomActions;
 using BotControl.CustomActions.CustomActions;
 using BotControl.Networking;
+using BotControl.SmartSelect.PressActions;
 using Enemies;
 using GTFO.API;
 using LevelGeneration;
@@ -8,7 +10,10 @@ using Player;
 using SlideMenu;
 using SNetwork;
 using System;
+using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.Rendering.PostProcessing;
 using static BotControl.Networking.pStructs;
 
 namespace BotControl
@@ -255,8 +260,18 @@ namespace BotControl
             float prio = defaultPrio;
             float standDist = RootPlayerBotAction.s_collectItemStandDistance; // 1.0f
             var Container = item.GetComponentInParent<LG_ResourceContainer_Storage>();
-            Vector3 standCandidate = Container.transform.position - Container.transform.up * standDist;
-            zHelpers.SnapPositionToNav(standCandidate, out Vector3 TargetPosition);
+            Vector3 standCandidate = item.transform.position;
+            Vector3 TargetPosition;
+            if (Container != null)
+            {
+                standCandidate = Container.transform.position - Container.transform.up * standDist;
+                zHelpers.SnapPositionToNav(standCandidate, out TargetPosition);
+            }
+            else
+            {
+                zHelpers.TryGetStandoffPosition(aiBot.transform.position, item.transform.position, 1f, out TargetPosition);
+            }
+
             float haste = 1f;
             PlayerBotActionCollectItem.Descriptor desc = new(aiBot)
             {
@@ -290,12 +305,12 @@ namespace BotControl
             ZiMain.log.LogInfo($"{Commander.PlayerName} is sending {aiBot.Agent.PlayerName} to pick up {item.PublicName}");
 
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
-            zChatHandler.sendChatMessage($"Picking up {item.PublicName}", "Pickup Item" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, Commander);
+            zChatHandler.sendChatMessage($"Picking up {item.PublicName}", PressActionManager.GetAction("Pickup Item").FriendlyIdentifier + IPressAction.chatPermSuffix, aiBot.Agent, Commander);
         }
         public static void SendBotToReviveAgent(PlayerAIBot Reviver, PlayerAgent Downed, PlayerAgent Commander = null, ulong netsender  = 0, uint actionID = 0)
         {
             if (actionID == 0)
-                actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{Reviver.Agent.PlayerName}{Time.time}");
+                actionID = zHelpers.HashString($"RequestToReviveAgent{Commander.PlayerName}{Reviver.Agent.PlayerName}{Time.time}");
             PlayerBotActionRevive.Descriptor desc = new(Reviver)
             {
                 Client = Downed,
@@ -314,7 +329,7 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pReviveAgentInfo>("RequestToReviveAgent", info);
                 return;
             }
-            zChatHandler.sendChatMessage($"Reving {Downed.PlayerName}", "Revive" + "TalkInChatNotifyActionAcknowlage", Reviver.Agent, Commander);
+            zChatHandler.sendChatMessage($"Reving {Downed.PlayerName}", PressActionManager.GetAction("Revive Agent").FriendlyIdentifier + IPressAction.chatPermSuffix, Reviver.Agent, Commander);
 
             ZiMain.BotBarkBack(Reviver.Agent.CharacterID, AK.EVENTS.PLAY_CL_IWILLDOIT, "I will do it.", 1f);
             //ZiMain.sendChatMessage($"I would have revived {downedAgent.PlayerName}, but I'm stupid.", aiBot.Agent, commander);
@@ -347,7 +362,7 @@ namespace BotControl
             }
             ZiMain.log.LogInfo($"{Commander.PlayerName} is sending {aiBot.Agent.PlayerName} to carry {item._PublicName_k__BackingField} with the new method");
 
-            zChatHandler.sendChatMessage($"Carrying {item._PublicName_k__BackingField}", "Pickup Item" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, Commander);
+            zChatHandler.sendChatMessage($"Carrying {item._PublicName_k__BackingField}", PressActionManager.GetAction("Pickup Item").FriendlyIdentifier + IPressAction.chatPermSuffix, aiBot.Agent, Commander);
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
 
         }
@@ -390,7 +405,7 @@ namespace BotControl
             }
             aiBot.Inventory.DoEquipItem(resourcePack);//is this needed?  Does the action not handle this?
             float ammoLeft = aiBot.Backpack.AmmoStorage.GetAmmoInPack(AmmoType.ResourcePackRel);
-            zChatHandler.sendChatMessage($"Sharing my {resourcePack.PublicName} ({ammoLeft}%) with {receiver.PlayerName}.", "Share Resources" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, Commander);
+            zChatHandler.sendChatMessage($"Sharing my {resourcePack.PublicName} ({ammoLeft}%) with {receiver.PlayerName}.", PressActionManager.GetAction("Share Resource").FriendlyIdentifier + IPressAction.chatPermSuffix, aiBot.Agent, Commander);
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
 
         }
@@ -442,9 +457,9 @@ namespace BotControl
                     closestEnemy = enemy;
                 }
             }
-            var descriptor = SendBotToKillEnemy(aiBot, closestEnemy, commander);
+            //var descriptor = SendBotToKillEnemy(aiBot, closestEnemy, commander);
             FlexibleMethodDefinition callback = new(SendBotToClearCurrentRoom, [aiBot, commander, netsender]);
-            zActionSub.addOnTerminated(descriptor, callback);
+            //zActionSub.addOnTerminated(descriptor, callback);
         }
         public static bool SendBotToThrowItem(PlayerAgent Commander, PlayerAgent botAgent, Vector3 MovePosition, Vector3 TargetPosition, ulong netSender = 0, uint actionID = 0)
         {
@@ -496,42 +511,6 @@ namespace BotControl
 
             ZiMain.BotBarkBack(botAgent.CharacterID, AK.EVENTS.PLAY_CL_IWILLDOIT, "I will do it.", 1f);
             return false;
-        }
-        [Obsolete]
-        public static PlayerBotActionAttack.Descriptor SendBotToKillEnemy(PlayerAIBot aiBot, EnemyAgent enemy, PlayerAgent Commander = null, ulong netsender = 0, PlayerBotActionAttack.StanceEnum stance = PlayerBotActionAttack.StanceEnum.All, PlayerBotActionAttack.AttackMeansEnum means = PlayerBotActionAttack.AttackMeansEnum.Melee, PlayerBotActionWalk.Descriptor.PostureEnum posture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch)
-        {
-            ////TODO REFACTOR
-
-            //if (!SNet.IsMaster) //Are we a client?
-            //{
-            //    if (netsender != 0) //Is this request coming from a different client?
-            //        return null;
-            //    //request host
-            //    pAttackEnemyInfo info = new pAttackEnemyInfo();
-            //    info.enemy = pStructs.Get_pStructFromRefrence(enemy);
-            //    info.aiBot = pStructs.Get_pStructFromRefrence(aiBot.Agent);
-            //    info.commander = pStructs.Get_pStructFromRefrence(Commander); //This might be a problem in commander is null?  Not sure. TODO look into it.
-            //    NetworkAPI.InvokeEvent<pAttackEnemyInfo>("RequestToKillEnemy", info);
-            //    return null;
-            //}
-
-            //float attackPrio = defaultPrio;
-            //float attackHaste = 1f;
-            //var descriptor = new PlayerBotActionAttack.Descriptor(aiBot)
-            //{
-            //    Prio = attackPrio,
-            //    Haste = attackHaste,
-            //    TargetAgent = enemy,
-            //    Means = means,
-            //    Posture = posture,
-            //    Stance = stance,
-            //};
-            //aiBot.Actions[0].Cast<RootPlayerBotAction>().m_followLeaderAction.Prio = attackPrio - 1;
-            //zChatHandler.sendChatMessage($"Killing the {enemy.EnemyData.name}.", "Kill Enemy" + "TalkInChatNotifyActionAcknowlage", aiBot.Agent, Commander);
-            ////TODO figure out how to make them crouch instead of stand.
-            //ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
-            //aiBot.StartAction(descriptor);
-            return null;
         }
         internal static void SendbotToBreakLock(PlayerAIBot aiBot, LG_WeakLock Lock, PlayerBotActionUnlock.Descriptor.MethodEnum method, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
