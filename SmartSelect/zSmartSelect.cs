@@ -22,7 +22,7 @@ namespace BotControl.SmartSelect
 //       Door ( -Open/Close- / -Throw cFoam- / --*Break?*--- / ------------- )
 //       Lock ( ---Unlock--- / -Lock Melter- / ------------- / ------------- )
 // Enemy/Quiet( ------------ / Sneak Attack- / -*All Sync*-- / ---*Sync*---- )
-// Enemy/Loud ( ---Target--- / ------------- / ------------- / -All Target-- )
+// Enemy/Loud ( --*Target*-- / ------------- / ------------- / *All Target*- )
 //  Generator ( ------------ / -Place Cell-- / ------------- / ------------- )
 //    Look Up ( Cancel Last- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
 //  Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- ) 
