@@ -55,6 +55,8 @@ using BotControl.Menus;
  -- TODO -- DONE -- Remove zlogger enterly.
  -- TODO -- DONE -- Add external list of manual actions.  be sure to clean it when actions are terminated.  add them from SendBotTo- methods.
  -- TODO -- DONE -- When perms removed, remove any current actions that are no longer allowed
+ -- TODO -- DONE -- want to make "go here" command
+ -- TODO -- DONE -- Figure out why I can't add new struct types for network api events.  When I create a new struct, then the last arg of RegisterEvent gets treated as a method group, instead of a unity action. 
  -- TODO -- PARTIALLY DONE -- Add sounds
  -- TODO -- Investigate if using playerslotindex as an ID is problematic when number of bots changes.  Swtich to some other ID if needed.
  -- TODO -- Replace selected bots system with global settings, and then bot spesific overides.
@@ -108,7 +110,7 @@ using BotControl.Menus;
  -- TODO -- share with placed turrets
  -- TODO -- BUG -- When holding a node then look away, when you re-open menu node still highlighted.
  -- TODO -- Make "don't pick up this item" context command that lets bots pick up things, but not this spesific item/locker.
- -- TODO -- Figure out why I can't add new struct types for network api events.  When I create a new struct, then the last arg of RegisterEvent gets treated as a method group, instead of a unity action.
+
 
 Want to make combine resource mod
 PreLitVolume.GetFogDensity(Vector3) could be useful
@@ -117,7 +119,7 @@ PreLitVolume.GetFogDensity(Vector3) could be useful
 want to completely re-write collection logic, not just priority logic
 want to add chat commands for people who don't have the mod.
 want to add new bot actions like hold position, look for resource type (in nearby rooms), ping item (go to term, then run ping command)
-want to make "go here" command
+
 want to make "home" location function where they "follow" a set location but aren't strickly stuck to it if they get into combat, similar to following a player.
 want to make it so bots will open doors to get back to the person they are folling if they have to.
 want to rework collection logic so it collects all reachable items for all bots, then picks the "best" set of items for the bots to carry, and then has the bots pick those up.  No more hot potato!
@@ -302,20 +304,20 @@ public class ZiMain : BasePlugin
                 string ammocount = "";
                 if (ammoLeft > 0)
                     ammocount = " (" + ammoLeft + typeUsesPercent + ")";
-                zChatHandler.sendChatMessage($"I {actionName} {article} {publicName}{ammocount}.", frinedlyIdent + ChatSettingsMenu.SuccessString, bot.Agent);
+                zChatHandler.sendChatMessage($"I {actionName} {article} {publicName}{ammocount}.", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.SuccessString, bot.Agent);
             }
             else
             {
                 if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Failed)
-                    zChatHandler.sendChatMessage($"I couldn't get {article} {publicName}.", frinedlyIdent + ChatSettingsMenu.FailString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I couldn't get {article} {publicName}.", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.FailString, bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Interrupted)
-                    zChatHandler.sendChatMessage($"I can't get {article} {publicName} right now.", frinedlyIdent + ChatSettingsMenu.FailString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't get {article} {publicName} right now.", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.FailString, bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Aborted)
-                    zChatHandler.sendChatMessage($"I can't get {article} {publicName} right now.", frinedlyIdent + ChatSettingsMenu.FailString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't get {article} {publicName} right now.", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.FailString, bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Stopped)
-                    zChatHandler.sendChatMessage($"I can't get {article} {publicName} right now.", frinedlyIdent + ChatSettingsMenu.FailString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't get {article} {publicName} right now.", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.FailString, bot.Agent);
                 else if (!(action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Active))
-                    zChatHandler.sendChatMessage($"I can't get {article} {publicName} status {action.DescBase.Status}.", frinedlyIdent + ChatSettingsMenu.FailString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't get {article} {publicName} status {action.DescBase.Status}.", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.FailString, bot.Agent);
             }
 
         }
@@ -335,19 +337,19 @@ public class ZiMain : BasePlugin
             string receverOrMyslef = descriptor.Receiver == bot.Agent ? "myself" : descriptor.Receiver.PlayerName;
             log.LogInfo($"Got receiver or myself {receverOrMyslef}");
             if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
-                zChatHandler.sendChatMessage($"I gave {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%).", frinedlyIdent + ChatSettingsMenu.SuccessString, bot.Agent);
+                zChatHandler.sendChatMessage($"I gave {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%).", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.SuccessString, bot.Agent);
             else
             {
                 if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Failed)
-                    zChatHandler.sendChatMessage($"I coul't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%).", frinedlyIdent + ChatSettingsMenu.FailString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I coul't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%).", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.FailString, bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Interrupted)
-                    zChatHandler.sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) right now.", frinedlyIdent + ChatSettingsMenu.FailString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) right now.", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.FailString, bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Aborted)
-                    zChatHandler.sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) right now.", frinedlyIdent + ChatSettingsMenu.FailString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) right now.", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.FailString, bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Stopped)
-                    zChatHandler.sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) right now.", frinedlyIdent + ChatSettingsMenu.FailString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) right now.", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.FailString, bot.Agent);
                 else
-                    zChatHandler.sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) status {action.DescBase.Status}.", frinedlyIdent + ChatSettingsMenu.FailString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) status {action.DescBase.Status}.", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.FailString, bot.Agent);
             }
 
         }
@@ -355,11 +357,14 @@ public class ZiMain : BasePlugin
         {
             if (manualAction)
             {
-                string frinedlyIdent = PressActionManager.GetAction("Move To").FriendlyIdentifier;
-                if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
-                    zChatHandler.sendChatMessage($"I arrived at the location.", frinedlyIdent + ChatSettingsMenu.SuccessString, bot.Agent);
-                else
-                    zChatHandler.sendChatMessage($"I could't make it to the location.", frinedlyIdent + ChatSettingsMenu.FailString, bot.Agent);
+                if (action.DescBase.ParentActionBase == null)
+                {
+                    string frinedlyIdent = PressActionManager.GetAction("Move To").FriendlyIdentifier;
+                    if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
+                        zChatHandler.sendChatMessage($"I arrived at the location.", frinedlyIdent + IPressAction.chatPermSuffix +IPressAction.chatPermSuffix + ChatSettingsMenu.SuccessString, bot.Agent);
+                    else
+                        zChatHandler.sendChatMessage($"I could't make it to the location.", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.FailString, bot.Agent);
+                }
             }
         }
         else if (typeName == "PlayerBotActionAttack")
@@ -368,9 +373,9 @@ public class ZiMain : BasePlugin
             {
                 string frinedlyIdent = PressActionManager.GetAction("Attack Enemy").FriendlyIdentifier;
                 if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
-                    zChatHandler.sendChatMessage($"I killed the {action?.Cast<PlayerBotActionAttack>()?.m_desc?.TargetAgent?.Cast<EnemyAgent>()?.EnemyData?.name ?? "enemy"}.", frinedlyIdent + ChatSettingsMenu.SuccessString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I killed the {action?.Cast<PlayerBotActionAttack>()?.m_desc?.TargetAgent?.Cast<EnemyAgent>()?.EnemyData?.name ?? "enemy"}.", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.SuccessString, bot.Agent);
                 else
-                    zChatHandler.sendChatMessage($"I could't kill the {action?.Cast<PlayerBotActionAttack>()?.m_desc?.TargetAgent?.Cast<EnemyAgent>()?.EnemyData?.name ?? "enemy"}.", frinedlyIdent + ChatSettingsMenu.FailString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I could't kill the {action?.Cast<PlayerBotActionAttack>()?.m_desc?.TargetAgent?.Cast<EnemyAgent>()?.EnemyData?.name ?? "enemy"}.", frinedlyIdent + IPressAction.chatPermSuffix +ChatSettingsMenu.FailString, bot.Agent);
             }
         }
     }

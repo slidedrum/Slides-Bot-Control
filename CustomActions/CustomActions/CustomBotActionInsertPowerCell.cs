@@ -163,6 +163,7 @@ namespace BotControl.CustomActions.CustomActions
             if (!VerifyTarget())
             {
                 state = State.Failed;
+                return;
             }
             PlayerBotActionTravel.Descriptor Desc = new(m_bot)
             {

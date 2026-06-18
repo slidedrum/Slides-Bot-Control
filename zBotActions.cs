@@ -647,6 +647,11 @@ namespace BotControl
         }
         public static void SendBotToInsertCell(PlayerAIBot aiBot, LG_PowerGenerator_Core Generator, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
+            var m_powerCellInteractionObject = Generator?.m_powerCellInteraction?.Cast<LG_GenericCarryItemInteractionTarget>()?.gameObject; // TODO make the bot walk up to the generator THEN say they can't do it.
+            if (m_powerCellInteractionObject == null || !m_powerCellInteractionObject.activeInHierarchy)
+                ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_ICANTDOTHAT, "I can't do that.", 1f);
+            else
+                ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
             if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToInsertCell{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             CustomBotActionInsertPowerCell.Descriptor desc = new CustomBotActionInsertPowerCell.Descriptor(aiBot)
@@ -668,7 +673,6 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pLocationInfo>("RequestToInsertCell", info);
                 return;
             }
-            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
         }
         public static void SendBotToOpenContainer(PlayerAIBot aiBot, LG_WeakResourceContainer Container, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {

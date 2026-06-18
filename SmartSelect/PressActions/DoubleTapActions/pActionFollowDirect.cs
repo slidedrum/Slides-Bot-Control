@@ -41,7 +41,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         {
             if (Leader == null)
                 Leader = zStaticRefrences.LocalPlayer;
-            uint voidID = zSmartSelect.GetVoiceId(Follower);
+            uint voiceID = zSmartSelect.GetVoiceId(Follower);
             if (Follower.Owner.IsBot)
             {
                 PlayerAIBot Bot = Follower?.GetComponent<PlayerAIBot>();
@@ -52,7 +52,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
                 if (voicelines)
                 {
                     zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Hey {botname}, Follow {followName}!", 2);
-                    PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, voidID);
+                    PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, voiceID);
                     yield return new WaitForSeconds(1f);
                     PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_FOLLOWME);
                 }
@@ -65,7 +65,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             }
             else
             {
-                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, voidID);
+                PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, voiceID);
                 yield return new WaitForSeconds(1f);
                 PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_FOLLOWME);
             }
