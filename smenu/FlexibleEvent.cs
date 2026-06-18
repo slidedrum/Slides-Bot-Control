@@ -77,12 +77,10 @@ namespace SlideMenu
 
             for (int i = 0; i < parameters.Length; i++)
             {
-                if (i < args.Length && args[i] != Default.Value)
+                if (i < args.Length && args[i] != new object())
                     finalArgs[i] = args[i];
                 else if (parameters[i].IsOptional)
-#pragma warning disable CS8601 // Possible null reference assignment.
                     finalArgs[i] = parameters[i].DefaultValue;
-#pragma warning restore CS8601 // Possible null reference assignment.
                 else
                     throw new ArgumentException($"Missing required argument '{parameters[i].Name}'");
             }
@@ -128,10 +126,10 @@ namespace SlideMenu
             }
         }
     }
-    public static class Default
-    {
-        //This was added by an AI, not 100% sure why it's needed. ¯\_(ツ)_/¯
-        //but I don't understand it enough to get rid of it (yet).
-        public static readonly object Value = new object();
-    }
+    //public static class Default
+    //{
+    //    //This was added by an AI, not 100% sure why it's needed. ¯\_(ツ)_/¯
+    //    //but I don't understand it enough to get rid of it (yet).
+    //    public static readonly object Value = new object();
+    //}
 }
