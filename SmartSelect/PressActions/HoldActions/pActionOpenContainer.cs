@@ -1,5 +1,4 @@
-﻿using BotControl.CustomActions.CustomActions;
-using Il2CppInterop.Runtime;
+﻿using Il2CppInterop.Runtime;
 using LevelGeneration;
 using Player;
 using UnityEngine;
@@ -18,6 +17,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             LG_WeakResourceContainer container = BestComponent.TryCast<LG_WeakResourceContainer>();
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             zBotActions.SendBotToOpenContainer(BestBot, container, zStaticRefrences.LocalPlayer);
+            PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PLEASE);
             zChatHandler.sendChatMessage("Opening container.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
