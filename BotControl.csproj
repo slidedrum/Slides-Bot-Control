@@ -43,5 +43,8 @@
 	  <Reference Include="BetterBots">
 	    <HintPath>..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\GTFO\profiles\Pancake\BetterBots.dll</HintPath>
 	  </Reference>
+	  <Reference Include="FlexibleMethodDefinition">
+	    <HintPath>W:\AI Stuff\Workspace A\FlexibleMethodDefinition\FlexibleMethodDefinition\bin\Debug\net6.0\FlexibleMethodDefinition.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 </Project>

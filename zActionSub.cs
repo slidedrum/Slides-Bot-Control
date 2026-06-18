@@ -1,5 +1,5 @@
-﻿using Player;
-using SlideMenu;
+﻿using FlexMethodDefinition;
+using Player;
 using System;
 using System.Collections.Generic;
 using System.Linq;

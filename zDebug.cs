@@ -1,5 +1,8 @@
 ﻿using Agents;
+using BotControl.Networking;
+using BotControl.SmartSelect.PressActions;
 using Enemies;
+using FlexMethodDefinition;
 using GameData;
 using GTFO.API;
 using LevelGeneration;
@@ -9,11 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using BotControl.Menus;
-using BotControl.Networking;
-using BotControl;
 using static BotControl.Networking.pStructs;
-using BotControl.SmartSelect.PressActions;
 
 namespace BotControl
 {

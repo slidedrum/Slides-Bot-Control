@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrioritySet", "W:\Documents
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Il2CppInteropFix.Patcher", "W:\AI Stuff\Workspace A\Il2CppInteropFix\Il2CppInteropFix.Patcher.csproj", "{8A23DD29-8F26-A1ED-CFB8-4079D746D3C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlexibleMethodDefinition", "W:\AI Stuff\Workspace A\FlexibleMethodDefinition\FlexibleMethodDefinition\FlexibleMethodDefinition.csproj", "{E46453C0-AEB7-25E2-EC87-33DE4B1B2EE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -33,6 +35,10 @@ Global
 		{8A23DD29-8F26-A1ED-CFB8-4079D746D3C2}.Debug|x64.Build.0 = Debug|x64
 		{8A23DD29-8F26-A1ED-CFB8-4079D746D3C2}.Release|x64.ActiveCfg = Release|x64
 		{8A23DD29-8F26-A1ED-CFB8-4079D746D3C2}.Release|x64.Build.0 = Release|x64
+		{E46453C0-AEB7-25E2-EC87-33DE4B1B2EE4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E46453C0-AEB7-25E2-EC87-33DE4B1B2EE4}.Debug|x64.Build.0 = Debug|Any CPU
+		{E46453C0-AEB7-25E2-EC87-33DE4B1B2EE4}.Release|x64.ActiveCfg = Release|Any CPU
+		{E46453C0-AEB7-25E2-EC87-33DE4B1B2EE4}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
