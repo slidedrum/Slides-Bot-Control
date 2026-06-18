@@ -93,6 +93,7 @@ V1.2.0 - The Custom Actions update!
  - Added completely modded actions the bots can do, things like opening doors, or inserting cells.
  - This lays the groundwork for huge potential in the future!
  - Currently limited to smart select only.  Will look into making them trigger automatically eventually.
+ - Updated what the bots say in chat to be more spesific.
 
 V1.1.0 - The Smart Select Update.
  - Completely overhauled the smart select system!  
