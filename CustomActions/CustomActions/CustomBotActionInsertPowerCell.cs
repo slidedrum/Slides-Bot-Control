@@ -127,6 +127,8 @@ namespace BotControl.CustomActions.CustomActions
             //This is called when your action is told to stop.
             //Be sure to do any cleanup if you need to.
             base.Stop();
+            SafeStopAction(TravelAction);
+            SafeStopAction(LookAction);
         }
         public override bool Update()
         {
