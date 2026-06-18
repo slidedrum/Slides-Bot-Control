@@ -36,6 +36,8 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 return false;
             if (!Enemy.Alive) 
                 return false;
+            if (Enemy.EnemyData.EnemyType != eEnemyType.Standard)
+                return false;
             if (!zHelpers.CanBotReach(BestBot, Enemy.transform.position)) 
                 return false;
             return true;

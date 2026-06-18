@@ -112,9 +112,6 @@ namespace BotControl.CustomActions.CustomActions
         private static float nextWalkNoiseCheckTimestamp = 0;
         private static float walkNoiseChance = 1f / 50f;
         private static float hitNoiseChance = 1f / 10f;
-        private Vector3 m_lastSleeperCheckPosition = Vector3.zero;
-        private PlayerBotActionAttack AttackBase;
-        private static INM_NoiseMaker noisemaker;
         private bool wasCooldownState = false;
 
         public CustomBotActionManualAttack() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionManualAttack>())// Don't use this!  Needed for il2cpp nonsense.
