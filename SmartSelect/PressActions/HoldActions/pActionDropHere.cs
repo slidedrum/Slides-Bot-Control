@@ -13,7 +13,6 @@ namespace BotControl.SmartSelect.PressActions
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Hold";
         public string FriendlyIdentifier => "Drop Objective";
-        public bool Enabled => false;
         public int? Priority => 10;
         public bool Invoke(Component BestComponent)
         {

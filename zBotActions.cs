@@ -693,7 +693,7 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pLocationInfo>("RequestToOpenContainer", info);
                 return;
             }
-            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_OPENING, "Opening.", 1f);
         }
         public static void SendBotToRefillSentry(PlayerAIBot aiBot, SentryGunInstance Sentry, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {

@@ -274,6 +274,14 @@ namespace BotControl.CustomActions.CustomActions
             {
                 state = State.Finished;
                 TargetGenerator.AttemptPowerCellInsert(m_agent.Owner, item.Instance);
+                foreach (var action in m_bot.Actions)
+                {
+                    if (action.TryCast<PlayerBotActionCarryExpeditionItem>() == null)
+                        continue;
+                    m_bot.StopAction(action.DescBase);
+                    break;
+                }
+                SafeStopAction(TravelAction);
             }
         }
 

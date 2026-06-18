@@ -447,7 +447,7 @@ namespace BotControl.Networking
             
             if (!BotAgent.Owner.IsBot)
             {
-                ZiMain.log.LogWarning("Invalid request to drop here, You can't tell a player what to do.");
+                ZiMain.log.LogWarning("Invalid request to insert cell, You can't tell a player what to do.");
                 return;
             }
             zBotActions.SendBotToInsertCell(BotAgent.GetComponent<PlayerAIBot>(), Generator, Commander, netSender, info.ID);
@@ -470,7 +470,7 @@ namespace BotControl.Networking
 
             if (!BotAgent.Owner.IsBot)
             {
-                ZiMain.log.LogWarning("Invalid request to drop here, You can't tell a player what to do.");
+                ZiMain.log.LogWarning("Invalid request to open container, You can't tell a player what to do.");
                 return;
             }
             zBotActions.SendBotToOpenContainer(BotAgent.GetComponent<PlayerAIBot>(), Container, Commander, netSender, info.ID);
@@ -492,14 +492,14 @@ namespace BotControl.Networking
             }
             if (!BotAgent.Owner.IsBot)
             {
-                ZiMain.log.LogWarning("Invalid request to drop here, You can't tell a player what to do.");
+                ZiMain.log.LogWarning("Invalid request to refill sentry, You can't tell a player what to do.");
                 return;
             }
             zBotActions.SendBotToRefillSentry(BotAgent.GetComponent<PlayerAIBot>(), Sentry, Commander, netSender, info.ID);
         }
         internal static void ReciveRequestToInteractDoor(ulong netSender, pStructs.pDoorInteractInfo info)
         {
-            ZiMain.log.LogInfo("Recived request to refill sentry!");
+            ZiMain.log.LogInfo("Recived request to interact with door!");
             if (!SNet.IsMaster)
                 return;
             PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.Commander);
@@ -511,12 +511,12 @@ namespace BotControl.Networking
             ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to refill the sentry at {DoorPosition}");
             if (Door == null)
             {
-                ZiMain.log.LogError($"Failed to find sentry at {DoorPosition}");
+                ZiMain.log.LogError($"Failed to find door at {DoorPosition}");
                 return;
             }
             if (!BotAgent.Owner.IsBot)
             {
-                ZiMain.log.LogWarning("Invalid request to drop here, You can't tell a player what to do.");
+                ZiMain.log.LogWarning("Invalid request to interact with door, You can't tell a player what to do.");
                 return;
             }
             zBotActions.SendBotToInteractDoor(BotAgent.GetComponent<PlayerAIBot>(), Door, TargetPosition, Method, Commander, netSender, info.ID);

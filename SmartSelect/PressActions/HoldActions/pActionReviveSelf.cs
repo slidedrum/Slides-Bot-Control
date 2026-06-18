@@ -1,4 +1,5 @@
-﻿using BotControl.SmartSelect.PressTypes;
+﻿using AK;
+using BotControl.SmartSelect.PressTypes;
 using Il2CppInterop.Runtime;
 using Player;
 using System;
@@ -54,6 +55,7 @@ namespace BotControl.SmartSelect.PressActions
             if (BotToUse == null)
                 return false;
             zBotActions.SendBotToReviveAgent(BotToUse, zStaticRefrences.LocalPlayer, zStaticRefrences.LocalPlayer, 0);
+            PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_DOWNEDNEEDINGHELP01);
             zChatHandler.sendChatMessage($"Reviving {zStaticRefrences.LocalPlayer.PlayerName}.", FriendlyIdentifier + IPressAction.chatPermSuffix, BotToUse.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }

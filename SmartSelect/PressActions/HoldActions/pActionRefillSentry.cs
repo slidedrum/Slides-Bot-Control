@@ -12,7 +12,6 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         public string FriendlyIdentifier => "Share Resources";
         public Il2CppSystem.Type Type => Il2CppType.Of<SentryGunInstance>();
         public string pressTypeIdentifier => "Hold";
-        public bool Enabled => false;
         public bool Invoke(Component BestComponent)
         {
             SentryGunInstance Sentry = BestComponent.TryCast<SentryGunInstance>();

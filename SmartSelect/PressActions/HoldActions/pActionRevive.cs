@@ -1,4 +1,5 @@
-﻿using Il2CppInterop.Runtime;
+﻿using AK;
+using Il2CppInterop.Runtime;
 using Player;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ namespace BotControl.SmartSelect.PressActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             zBotActions.SendBotToReviveAgent(BestBot, Agent, zStaticRefrences.LocalPlayer, 0);
+            PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, EVENTS.PLAY_CL_INEEDHELP);
             zChatHandler.sendChatMessage($"Reving {Agent.PlayerName}.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
