@@ -1,6 +1,6 @@
-﻿//using BotControl.Networking;
+﻿using BotControl.Networking;
 using FlexMethodDefinition;
-//using GTFO.API;
+using GTFO.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +22,6 @@ namespace SlideDrum
         public uint treeID { get; }
         public string identifier { get; }
         public bool AllDefault(IEnumerable<string> keys);
-
-
     }
 
     public class OverrideTree<T> : IOverrideTree
@@ -421,86 +419,85 @@ namespace SlideDrum
             Node node = nodes[key];
             Debug.Log($"Setting value of node by key '{node.GetNodeTreeString()}' ({node.nodeID}) in tree {treeID} ({identifier}) to '{value}' (netSender: {netSender})");
             node.SetValue(value);
-            //if (netSender == 0) // We need to sync these values between clients.
-            //{
-            //    Type type = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
-            //    switch (Type.GetTypeCode(type))
-            //    {
-            //        case TypeCode.Boolean:
-            //            {
-            //                pStructs.pBoolOverideTreeInfo info = new pStructs.pBoolOverideTreeInfo();
-            //                info.treeID = treeID;
-            //                info.keyId = node.nodeID;
-            //                if (value is null)
-            //                {
-            //                    info.value = false;
-            //                    info.isNull = true;
-            //                }
-            //                else if (value is bool v)
-            //                {
-            //                    info.value = v;
-            //                    info.isNull = false;
-            //                }
-            //                else
-            //                {
-            //                    throw new InvalidCastException($"Expected bool value for key '{key}', but got {value.GetType().Name}.");
-            //                }
-            //                NetworkAPI.InvokeEvent<pStructs.pBoolOverideTreeInfo>("SetBoolOverideTree", info);
-            //                break;
-            //            }
-            //        case TypeCode.Int32:
-            //            {
-            //                pStructs.pIntOverideTreeInfo info = new pStructs.pIntOverideTreeInfo();
-            //                info.treeID = treeID;
-            //                info.keyId = node.nodeID;
-            //                if (value is null)
-            //                {
-            //                    info.value = 0;
-            //                    info.isNull = true;
-            //                }
-            //                else if (value is int v)
-            //                {
-            //                    info.value = v;
-            //                    info.isNull = false;
-            //                }
-            //                else
-            //                {
-            //                    throw new InvalidCastException($"Expected int value for key '{key}', but got {value.GetType().Name}.");
-            //                }
-            //                NetworkAPI.InvokeEvent<pStructs.pIntOverideTreeInfo>("SetIntOverideTree", info);
-            //                break;
-            //            }
-            //        case TypeCode.Single:
-            //            {
-            //                pStructs.pFloatOverideTreeInfo info = new pStructs.pFloatOverideTreeInfo();
-            //                info.treeID = treeID;
-            //                info.keyId = node.nodeID;
-            //                if (value is null)
-            //                {
-            //                    info.value = 0f;
-            //                    info.isNull = true;
-            //                }
-            //                else if (value is float v)
-            //                {
-            //                    info.value = v;
-            //                    info.isNull = false;
-            //                }
-            //                else
-            //                {
-            //                    throw new InvalidCastException($"Expected float value for key '{key}', but got {value.GetType().Name}.");
-            //                }
-            //                NetworkAPI.InvokeEvent<pStructs.pFloatOverideTreeInfo>("SetFloatOverideTree", info);
-            //                break;
-            //            }
-            //        default:
-            //            {
-            //                Debug.Log($"set unusual type ({value?.GetType().Name ?? "null"}) in override tree.");
-            //                break;
-            //            }
+            if (netSender == 0) // We need to sync these values between clients.
+            {
+                Type type = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+                switch (Type.GetTypeCode(type))
+                {
+                    case TypeCode.Boolean:
+                        {
+                            pStructs.pBoolOverideTreeInfo info = new pStructs.pBoolOverideTreeInfo();
+                            info.treeID = treeID;
+                            info.keyId = node.nodeID;
+                            if (value is null)
+                            {
+                                info.value = false;
+                                info.isNull = true;
+                            }
+                            else if (value is bool v)
+                            {
+                                info.value = v;
+                                info.isNull = false;
+                            }
+                            else
+                            {
+                                throw new InvalidCastException($"Expected bool value for key '{key}', but got {value.GetType().Name}.");
+                            }
+                            NetworkAPI.InvokeEvent<pStructs.pBoolOverideTreeInfo>("SetBoolOverideTree", info);
+                            break;
+                        }
+                    case TypeCode.Int32:
+                        {
+                            pStructs.pIntOverideTreeInfo info = new pStructs.pIntOverideTreeInfo();
+                            info.treeID = treeID;
+                            info.keyId = node.nodeID;
+                            if (value is null)
+                            {
+                                info.value = 0;
+                                info.isNull = true;
+                            }
+                            else if (value is int v)
+                            {
+                                info.value = v;
+                                info.isNull = false;
+                            }
+                            else
+                            {
+                                throw new InvalidCastException($"Expected int value for key '{key}', but got {value.GetType().Name}.");
+                            }
+                            NetworkAPI.InvokeEvent<pStructs.pIntOverideTreeInfo>("SetIntOverideTree", info);
+                            break;
+                        }
+                    case TypeCode.Single:
+                        {
+                            pStructs.pFloatOverideTreeInfo info = new pStructs.pFloatOverideTreeInfo();
+                            info.treeID = treeID;
+                            info.keyId = node.nodeID;
+                            if (value is null)
+                            {
+                                info.value = 0f;
+                                info.isNull = true;
+                            }
+                            else if (value is float v)
+                            {
+                                info.value = v;
+                                info.isNull = false;
+                            }
+                            else
+                            {
+                                throw new InvalidCastException($"Expected float value for key '{key}', but got {value.GetType().Name}.");
+                            }
+                            NetworkAPI.InvokeEvent<pStructs.pFloatOverideTreeInfo>("SetFloatOverideTree", info);
+                            break;
+                        }
+                    default:
+                        {
+                            Debug.Log($"set unusual type ({value?.GetType().Name ?? "null"}) in override tree.");
+                            break;
+                        }
 
-            //    }
-            //}
-            //node.menuNode?.UpdateNode();
+                }
+            }
             OnValueSet?.Invoke(this, node.nodeID, key, value, netSender);
             return ValueAt(key);
         }
