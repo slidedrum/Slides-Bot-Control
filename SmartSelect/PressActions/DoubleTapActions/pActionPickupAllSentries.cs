@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
-    public class pActionPickupAllSentries : IPressAction
+    public class pActionPickupAllSentries : IInputAction
     {
         public string FriendlyName => "Pickup all Sentries";
         public string _FriendlyNameShort => "Pickup-A";
@@ -33,7 +33,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         {
             foreach (var bot in Bots)
             {
-                zChatHandler.sendChatMessage("Picking up my sentry.", "Pickup Equipmenet" + IPressAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage("Picking up my sentry.", "Pickup Equipmenet" + IInputAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
                 zBotActions.SendBotToPickUpSentry(bot, zStaticRefrences.LocalPlayer);
                 yield return new WaitForSeconds(0.25f);
             }

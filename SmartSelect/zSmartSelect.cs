@@ -78,9 +78,9 @@ namespace BotControl.SmartSelect
         private static void SetUp()
         {
             PressActionManager.Initialize();
-            foreach (IPressType pressType in PressTypeManager.TypeMap.Values)
+            foreach (IInputType InputType in PressTypeManager.TypeMap.Values)
             {
-                InputSystem.AddListener(pressType.PressSequence, KeyCode.V, new FlexibleMethodDefinition(pressType.Invoke));
+                InputSystem.AddListener(InputType.InputSequence, KeyCode.V, new FlexibleMethodDefinition(InputType.Invoke));
             }
             //sInputSystem.AddListener(sInputSystemDefaults.OnTappedExclusive, new FlexibleMethodDefinition(OnKeyTap), KeyCode.V);
             //sInputSystem.AddListener(sInputSystemDefaults.OnHoldImmediateExclusive, new FlexibleMethodDefinition(OnKeyHold), KeyCode.V);

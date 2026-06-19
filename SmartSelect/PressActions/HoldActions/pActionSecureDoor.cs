@@ -8,7 +8,7 @@ using UnityEngine.AI;
 
 namespace BotControl.SmartSelect.PressActions.HoldActions
 {
-    public class pActionSecureDoor : IPressAction
+    public class pActionSecureDoor : IInputAction
     {
         public string FriendlyName => "Secure Door";
         public string _FriendlyNameShort => "Secure";
@@ -40,7 +40,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Throw C-Foam here.",1f);
             zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, MovePosition, Door.transform.position, 0);
             //zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, Networking.pStructs.pThrowType.cFoam, MovePosition, Door.transform.position, 0);
-            zChatHandler.sendChatMessage("Securing door.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Securing door.", FriendlyIdentifier + IInputAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return false;
         }
         public bool Evaluate(PlayerAgent agent, uint itemID)

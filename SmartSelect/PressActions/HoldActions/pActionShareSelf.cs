@@ -3,7 +3,7 @@ using Player;
 using UnityEngine;
 namespace BotControl.SmartSelect.PressActions.HoldActions
 {
-    internal class pActionShareSelf : IPressAction
+    internal class pActionShareSelf : IInputAction
     {
         public string FriendlyName => "Share Self";
         public string FriendlyNameShort => "Share";

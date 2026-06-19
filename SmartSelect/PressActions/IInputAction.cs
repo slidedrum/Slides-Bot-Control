@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions
 {
-    public interface IPressAction
+    public interface IInputAction
     {
         public abstract string FriendlyIdentifier { get; } // Used for the settings catagory
         public abstract string FriendlyName { get; } // Used for logs and confuguration.

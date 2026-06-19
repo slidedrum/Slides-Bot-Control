@@ -7,8 +7,8 @@ namespace BotControl.SmartSelect.PressTypes
 {
     public static class PressTypeManager
     {
-        private static Dictionary<string, IPressType> _TypeMap = null;
-        public static Dictionary<string, IPressType> TypeMap 
+        private static Dictionary<string, IInputType> _TypeMap = null;
+        public static Dictionary<string, IInputType> TypeMap 
         { 
             get 
             {
@@ -18,15 +18,15 @@ namespace BotControl.SmartSelect.PressTypes
             } 
         } // used to get lookup instances.
         public static bool initalized => _TypeMap != null; // Does Typemap need to be created?
-        public static IPressType GetPressType(string FriendlyName) // Used to get a press type by its friendly name, returns null if not found
+        public static IInputType GetPressType(string FriendlyName) // Used to get a press type by its friendly name, returns null if not found
         {
             if (TypeMap == null)
                 Initalize();
-            if (TypeMap.TryGetValue(FriendlyName, out IPressType pressType))
+            if (TypeMap.TryGetValue(FriendlyName, out IInputType pressType))
                 return pressType;
             return null;
         }
-        public static HashSet<IPressType> GetAllPressTypes()
+        public static HashSet<IInputType> GetAllPressTypes()
         {
             return TypeMap.Values.ToHashSet();
         }
@@ -34,14 +34,14 @@ namespace BotControl.SmartSelect.PressTypes
         {
             if (initalized)
                 return;
-            _TypeMap = new Dictionary<string, IPressType>();
-            Type baseType = typeof(IPressType);
+            _TypeMap = new Dictionary<string, IInputType>();
+            Type baseType = typeof(IInputType);
             var types = Assembly.GetExecutingAssembly()
                 .GetTypes()
                 .Where(t => !t.IsAbstract && baseType.IsAssignableFrom(t));
             foreach (Type type in types)
             {
-                IPressType instance = (IPressType)Activator.CreateInstance(type, nonPublic: true);
+                IInputType instance = (IInputType)Activator.CreateInstance(type, nonPublic: true);
                 string key = instance.FriendlyName;
                 if (_TypeMap.ContainsKey(key))
                     throw new Exception($"Duplicate PressAction key: {key}");
@@ -53,7 +53,7 @@ namespace BotControl.SmartSelect.PressTypes
         {
             if (!initalized)
                 Initalize();
-            foreach (IPressType pressType in TypeMap.Values)
+            foreach (IInputType pressType in TypeMap.Values)
             {
                 pressType.Update();
             }

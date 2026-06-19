@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.HoldActions
 {
-    public class pActionOpenContainer : IPressAction
+    public class pActionOpenContainer : IInputAction
     {
         public string FriendlyName => "Open Container";
         public string FriendlyNameShort => "Open";
@@ -18,7 +18,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             zBotActions.SendBotToOpenContainer(BestBot, container, zStaticRefrences.LocalPlayer);
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PLEASE);
-            zChatHandler.sendChatMessage("Opening container.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Opening container.", FriendlyIdentifier + IInputAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
 

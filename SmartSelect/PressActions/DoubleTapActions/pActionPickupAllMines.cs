@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
 {
-    public class pActionPickupAllMines : IPressAction
+    public class pActionPickupAllMines : IInputAction
     {
         public string FriendlyName => "Pickup All Mines";
         public string _FriendlyNameShort => "A-Pickup-A";
@@ -31,7 +31,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         {
             foreach (var bot in Bots)
             {
-                zChatHandler.sendChatMessage("Picking up mines.", "Pickup Equipmenet" + IPressAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage("Picking up mines.", "Pickup Equipmenet" + IInputAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
                 zBotActions.SendBotToPickUpMine(bot, null, zStaticRefrences.LocalPlayer);
                 yield return new WaitForSeconds(0.25f);
             }

@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
-    public class pActionDeploySentry : IPressAction
+    public class pActionDeploySentry : IInputAction
     {
         public string FriendlyName => "Deploy Sentry";
         public string FriendlyNameShort => "Sentry";
@@ -39,7 +39,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PUTASENTRYGUNHERE);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Put a sentry here.", 1);
             ZiMain.BotBarkBack(BestBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
-            zChatHandler.sendChatMessage("Placing sentry.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Placing sentry.", FriendlyIdentifier + IInputAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool CanPlaceTurret(ref Pose pose)

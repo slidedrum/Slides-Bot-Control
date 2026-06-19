@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
-    public class pActionDestroyDoor : IPressAction
+    public class pActionDestroyDoor : IInputAction
     {
         public string FriendlyName => "Destroy Door";
         public string FriendlyIdentifier => "Destroy Door";

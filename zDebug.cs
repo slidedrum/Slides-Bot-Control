@@ -457,7 +457,7 @@ namespace BotControl
             }
             if (bot == null)
                 return;
-            zChatHandler.sendChatMessage("Okay here I go exploring!", "Explore" + IPressAction.chatPermSuffix, botAgent, playerAgent);
+            zChatHandler.sendChatMessage("Okay here I go exploring!", "Explore" + IInputAction.chatPermSuffix, botAgent, playerAgent);
             SendBotToExplore(bot);
         }
 

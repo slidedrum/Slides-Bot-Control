@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
-    public class pActionAttackCountdown : IPressAction
+    public class pActionAttackCountdown : IInputAction
     {
         public string FriendlyName => "Attack Countdown";
         public string FriendlyNameShort => "Countdown";

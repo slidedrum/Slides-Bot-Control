@@ -36,18 +36,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="W:\AI Stuff\Workspace A\FlexibleMethodDefinition\FlexibleMethodDefinition\FlexibleMethodDefinition.csproj" />
+	  <ProjectReference Include="W:\AI Stuff\Workspace A\InputSystem\sInputSystem\sInputSystem.csproj" />
 	  <ProjectReference Include="W:\Documents\PrioritySet\src\PrioritySet\PrioritySet.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Reference Include="BetterBots">
 	    <HintPath>..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\GTFO\profiles\Pancake\BetterBots.dll</HintPath>
-	  </Reference>
-	  <Reference Include="FlexibleMethodDefinition">
-	    <HintPath>W:\AI Stuff\Workspace A\FlexibleMethodDefinition\FlexibleMethodDefinition\bin\Debug\net6.0\FlexibleMethodDefinition.dll</HintPath>
-	  </Reference>
-	  <Reference Include="sInputSystem">
-	    <HintPath>W:\AI Stuff\Workspace A\InputSystem\sInputSystem\bin\Debug\net6.0\sInputSystem.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 </Project>

@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
 {
-    public class pActionCancelLast : IPressAction
+    public class pActionCancelLast : IInputAction
     {
         public string FriendlyName => "Cancel Last";
         public string FriendlyNameShort => "Cancel";
@@ -22,7 +22,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             if (zActions.manualActions.Count == 0) return false;
             ManualAction mAction = zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Last();
             zBotActions.CancelBotAction(mAction.ID);
-            zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + IPressAction.chatPermSuffix, mAction.Bot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + IInputAction.chatPermSuffix, mAction.Bot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

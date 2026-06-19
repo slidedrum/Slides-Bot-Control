@@ -302,7 +302,7 @@ namespace BotControl
             ZiMain.log.LogInfo($"{Commander.PlayerName} is sending {aiBot.Agent.PlayerName} to pick up {item.PublicName}");
 
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
-            zChatHandler.sendChatMessage($"Picking up {item.PublicName}", PressActionManager.GetAction("Pickup Item").FriendlyIdentifier + IPressAction.chatPermSuffix, aiBot.Agent, Commander);
+            zChatHandler.sendChatMessage($"Picking up {item.PublicName}", PressActionManager.GetAction("Pickup Item").FriendlyIdentifier + IInputAction.chatPermSuffix, aiBot.Agent, Commander);
         }
         public static void SendBotToReviveAgent(PlayerAIBot Reviver, PlayerAgent Downed, PlayerAgent Commander = null, ulong netsender  = 0, uint actionID = 0)
         {
@@ -326,7 +326,7 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pReviveAgentInfo>("RequestToReviveAgent", info);
                 return;
             }
-            zChatHandler.sendChatMessage($"Reving {Downed.PlayerName}", PressActionManager.GetAction("Revive Agent").FriendlyIdentifier + IPressAction.chatPermSuffix, Reviver.Agent, Commander);
+            zChatHandler.sendChatMessage($"Reving {Downed.PlayerName}", PressActionManager.GetAction("Revive Agent").FriendlyIdentifier + IInputAction.chatPermSuffix, Reviver.Agent, Commander);
 
             ZiMain.BotBarkBack(Reviver.Agent.CharacterID, AK.EVENTS.PLAY_CL_IWILLDOIT, "I will do it.", 1f);
             //ZiMain.sendChatMessage($"I would have revived {downedAgent.PlayerName}, but I'm stupid.", aiBot.Agent, commander);
@@ -359,7 +359,7 @@ namespace BotControl
             }
             ZiMain.log.LogInfo($"{Commander.PlayerName} is sending {aiBot.Agent.PlayerName} to carry {item._PublicName_k__BackingField} with the new method");
 
-            zChatHandler.sendChatMessage($"Carrying {item._PublicName_k__BackingField}", PressActionManager.GetAction("Pickup Item").FriendlyIdentifier + IPressAction.chatPermSuffix, aiBot.Agent, Commander);
+            zChatHandler.sendChatMessage($"Carrying {item._PublicName_k__BackingField}", PressActionManager.GetAction("Pickup Item").FriendlyIdentifier + IInputAction.chatPermSuffix, aiBot.Agent, Commander);
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
 
         }
@@ -402,7 +402,7 @@ namespace BotControl
             }
             aiBot.Inventory.DoEquipItem(resourcePack);//is this needed?  Does the action not handle this?
             float ammoLeft = aiBot.Backpack.AmmoStorage.GetAmmoInPack(AmmoType.ResourcePackRel);
-            zChatHandler.sendChatMessage($"Sharing my {resourcePack.PublicName} ({ammoLeft}%) with {receiver.PlayerName}.", PressActionManager.GetAction("Share Resource").FriendlyIdentifier + IPressAction.chatPermSuffix, aiBot.Agent, Commander);
+            zChatHandler.sendChatMessage($"Sharing my {resourcePack.PublicName} ({ammoLeft}%) with {receiver.PlayerName}.", PressActionManager.GetAction("Share Resource").FriendlyIdentifier + IInputAction.chatPermSuffix, aiBot.Agent, Commander);
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
 
         }

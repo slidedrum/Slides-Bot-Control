@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.HoldActions
 {
-    public class pActionShareResource : IPressAction
+    public class pActionShareResource : IInputAction
     {
         public string FriendlyName => "Share Resource";
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();

@@ -57,11 +57,11 @@ namespace BotControl.Menus
             //_Menu.centerNode.AddListener(nodeEvent.WhileSelected, _Menu.UpdateCatagoryByScroll);
 
             Menu = _Menu;
-            HashSet<IPressType> AllPressTypes = PressTypeManager.GetAllPressTypes();
-            PrioritySet<IPressAction> AllPressActions = new();
-            foreach (IPressType pressType in AllPressTypes)
+            HashSet<IInputType> AllPressTypes = PressTypeManager.GetAllPressTypes();
+            PrioritySet<IInputAction> AllPressActions = new();
+            foreach (IInputType pressType in AllPressTypes)
             {
-                PrioritySet<IPressAction> PressActions = pressType.GetAllActions();
+                PrioritySet<IInputAction> PressActions = pressType.GetAllActions();
                 AllPressActions.UnionWith(PressActions);
             }
             HashSet<string> uniqueNames = AllPressActions.Where(x => x.Enabled).Select(x => x.FriendlyIdentifier).ToHashSet();

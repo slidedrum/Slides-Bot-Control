@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
 {
-    public class pActionFollowSelf : IPressAction
+    public class pActionFollowSelf : IInputAction
     {
         public string FriendlyName => "Follow Self";
         private string _FriendlyNameShort = "Follow";

@@ -6,12 +6,12 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressTypes
 {
-    public class pTypeHoldPress : IPressType
+    public class pTypeHoldPress : IInputType
     {
         // ── Identity / Configuration ──────────────────────────────────────────────
         public string FriendlyName => "Hold";
         //public fallbackType FallbackType => fallbackType.Nothing;
-        public sSequenceDefinition PressSequence
+        public sSequenceDefinition InputSequence
         {
             get
             {
@@ -45,18 +45,18 @@ namespace BotControl.SmartSelect.PressTypes
 
         // ── Current State ─────────────────────────────────────────────────────────
         public Component CurrentComponent { get => _CurrentComponent; set { _CurrentComponent = value; } }
-        public IPressAction CurrentAction { get => _CurrentAction; set { _CurrentAction = value; } }
+        public IInputAction CurrentAction { get => _CurrentAction; set { _CurrentAction = value; } }
 
         // ── Action Maps ───────────────────────────────────────────────────────────
-        public PrioritySet<IPressAction> NullTypeActions { get { return _NullTypeActions; } set { _NullTypeActions = value; } }
-        public Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> TypeActionMap { get { return _TypeActionMap; } set { _TypeActionMap = value; } }
+        public PrioritySet<IInputAction> NullTypeActions { get { return _NullTypeActions; } set { _NullTypeActions = value; } }
+        public Dictionary<Il2CppSystem.Type, PrioritySet<IInputAction>> TypeActionMap { get { return _TypeActionMap; } set { _TypeActionMap = value; } }
 
         // ── Private Backing Fields ────────────────────────────────────────────────
         private Component _CurrentComponent = null;
-        private IPressAction _CurrentAction = null;
+        private IInputAction _CurrentAction = null;
         private sSequenceDefinition _PressSequences = null;
-        private PrioritySet<IPressAction> _NullTypeActions = new();
-        private Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> _TypeActionMap = new(new Il2CppTypePtrComparer());
+        private PrioritySet<IInputAction> _NullTypeActions = new();
+        private Dictionary<Il2CppSystem.Type, PrioritySet<IInputAction>> _TypeActionMap = new(new Il2CppTypePtrComparer());
         private HashSet<Il2CppSystem.Type> _SelectableTypes = null;
         //public bool SeCurrentComponent()
         //{

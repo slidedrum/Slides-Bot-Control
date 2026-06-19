@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
-    public class pActionPlaceItem : IPressAction
+    public class pActionPlaceItem : IInputAction
     {
         public string FriendlyName => "Place Item";
         public string FriendlyNameShort => "Place";

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
 {
-    public class pActionFollowOtherIndirect : IPressAction
+    public class pActionFollowOtherIndirect : IInputAction
     {
         public string FriendlyName => "Follow Other Indirect";
         private string _FriendlyNameShort = "Send";

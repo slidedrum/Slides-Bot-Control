@@ -8,22 +8,22 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressTypes
 {
-    public interface IPressType
+    public interface IInputType
     {
         // ── Current State ─────────────────────────────────────────────────────────
         public abstract Component CurrentComponent { get; set; } // Holds the componenet that the action will be performed on if invoked right now.s
-        public abstract IPressAction CurrentAction { get; set; } // Holds the current action that will be invoked if the press type is triggered right now.
+        public abstract IInputAction CurrentAction { get; set; } // Holds the current action that will be invoked if the press type is triggered right now.
 
         // ── Action Maps ───────────────────────────────────────────────────────────
-        public abstract PrioritySet<IPressAction> NullTypeActions { get; set; } // Backing field for Type action map of key null.
-        public abstract Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> TypeActionMap { get; set; } // What actions can be performed on each type?
+        public abstract PrioritySet<IInputAction> NullTypeActions { get; set; } // Backing field for Type action map of key null.
+        public abstract Dictionary<Il2CppSystem.Type, PrioritySet<IInputAction>> TypeActionMap { get; set; } // What actions can be performed on each type?
 
         // ── Identity / Configuration ──────────────────────────────────────────────
         public abstract string FriendlyName { get; } // Used for logging and configuration.
         public virtual string FriendlyNameShort => FriendlyName; // Used in the UI and hud.
         public virtual float SelectionAngle => 30f; // How wide of a angle is acceptable.  Remember that it does not search in a cone, it's a sphere arround the raycast point.
         public virtual fallbackType FallbackType => fallbackType.Default; // What to do if we don't find any valid actions from looking at selectable types.  See fallbackType enum for options.
-        public abstract sSequenceDefinition PressSequence { get; } // When should this press be triggered?
+        public abstract sSequenceDefinition InputSequence { get; } // When should this press be triggered?
         public HashSet<Il2CppSystem.Type> SelectableTypes { get; } // What types should we be looking for when trying to select a component to perform actions on?  Must be a Component.  Can be empty if FallbackType is not default, but if it is default then it should have at least one type.
 
         // ── Methods / Enums ───────────────────────────────────────────────────────
@@ -36,25 +36,25 @@ namespace BotControl.SmartSelect.PressTypes
             PlayerAgent, // Select a player agent through walls if we can't find anything else.
             PlayerAiBot, // Select a player ai bot through walls if we can't find anything else.
         }
-        public virtual PrioritySet<IPressAction> GetAllActions()
+        public virtual PrioritySet<IInputAction> GetAllActions()
         {
             if (TypeActionMap.Count == 0)
                 PressActionManager.Initialize();
-            PrioritySet<IPressAction> combined = new PrioritySet<IPressAction>();
-            foreach (PrioritySet<IPressAction> list in TypeActionMap.Values)
+            PrioritySet<IInputAction> combined = new PrioritySet<IInputAction>();
+            foreach (PrioritySet<IInputAction> list in TypeActionMap.Values)
             {
                 combined.UnionWith(list);
             }
             combined.UnionWith(NullTypeActions);
             return combined;
         }
-        public virtual void RegisterAction(IPressAction action, int? priority = null)
+        public virtual void RegisterAction(IInputAction action, int? priority = null)
         {
             RegisterAction(action, action.Type, priority);
         } // For adding an action to this press type
-        public virtual void RegisterAction(IPressAction action, Il2CppSystem.Type Type, int? priority = null)
+        public virtual void RegisterAction(IInputAction action, Il2CppSystem.Type Type, int? priority = null)
         {
-            PrioritySet<IPressAction> set = new();
+            PrioritySet<IInputAction> set = new();
             if (Type == null)
             {
                 if (NullTypeActions == null)
@@ -111,7 +111,7 @@ namespace BotControl.SmartSelect.PressTypes
 
                 if (!TypeActionMap.TryGetValue(candidateType, out var actionSet) || actionSet == null)
                     continue;
-                foreach (IPressAction action in actionSet) // loop through all of the actions for that type
+                foreach (IInputAction action in actionSet) // loop through all of the actions for that type
                 {
                     if (action.IsActionValid(candidate))
                     {
@@ -121,7 +121,7 @@ namespace BotControl.SmartSelect.PressTypes
                     }
                 }
             }
-            foreach (IPressAction action in NullTypeActions)
+            foreach (IInputAction action in NullTypeActions)
             {
                 if (action.IsActionValid(null))
                 {
@@ -130,7 +130,7 @@ namespace BotControl.SmartSelect.PressTypes
                     return true;
                 }
             }
-            PrioritySet<IPressAction> set = new(); // if we didn't find anything we need to check the fallback type.
+            PrioritySet<IInputAction> set = new(); // if we didn't find anything we need to check the fallback type.
             switch (FallbackType)
             {
                 case fallbackType.Default: // defaults to no fallback.
@@ -169,7 +169,7 @@ namespace BotControl.SmartSelect.PressTypes
                         return false;
                     break;
             }
-            foreach (IPressAction action in set)  // loop through actions in the set 
+            foreach (IInputAction action in set)  // loop through actions in the set 
             {
                 if (action.IsActionValid(candidate)) // TODO loop through all bots in order of closeness and see if any others are valid.  Should't be relvent for actiosn I have now, but would be good to check.
                 {

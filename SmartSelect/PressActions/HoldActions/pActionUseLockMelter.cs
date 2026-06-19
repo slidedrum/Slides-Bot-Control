@@ -7,7 +7,7 @@ using static Player.PlayerBotActionUnlock.Descriptor;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
 {
-    public class pActionUseLockMelter : IPressAction
+    public class pActionUseLockMelter : IInputAction
     {
         public string FriendlyName => "Lock Melter";
         public string FriendlyNameShort => "Melt";
@@ -26,7 +26,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PLEASE);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Please.", 1f);
             zBotActions.SendbotToBreakLock(BestBot, Lock, MethodEnum.Melt, zStaticRefrences.LocalPlayer, 0);
-            zChatHandler.sendChatMessage("Using my lock melter.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Using my lock melter.", FriendlyIdentifier + IInputAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

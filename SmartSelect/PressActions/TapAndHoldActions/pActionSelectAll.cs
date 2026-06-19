@@ -2,7 +2,7 @@
 
 namespace BotControl.SmartSelect.PressActions.TapActions
 {
-    public class pActionSelectAll : IPressAction
+    public class pActionSelectAll : IInputAction
     {
         public string FriendlyName => "Select All";
         public string _FriendlyNameShort => "Select-A";

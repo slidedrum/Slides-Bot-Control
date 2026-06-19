@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions
 {
-    public class pActionPickupItem : IPressAction
+    public class pActionPickupItem : IInputAction
     {
         public string FriendlyName => "Pickup Item";
         public string FriendlyNameShort => "Pickup";

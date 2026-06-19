@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
-    public class pActionDeployMine : IPressAction
+    public class pActionDeployMine : IInputAction
     {
         public string FriendlyName => "Deploy Mine";
         public string FriendlyNameShort => "Mine";
@@ -21,7 +21,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PUTATRIPMINEHERE);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Put a mine here.", 1);
             ZiMain.BotBarkBack(BestBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
-            zChatHandler.sendChatMessage("Deploying trip mine.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Deploying trip mine.", FriendlyIdentifier + IInputAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         

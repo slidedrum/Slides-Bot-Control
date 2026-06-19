@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.HoldActions
 {
-    public class pActionInsertCell : IPressAction
+    public class pActionInsertCell : IInputAction
     {
         public string FriendlyName => "Insert Cell";
         public string FriendlyNameShort => "Insert";
@@ -22,7 +22,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             if (BestBot == null) return false; 
             if (BestBot.Agent.Alive == false) return false;
             zBotActions.SendBotToInsertCell(BestBot, Generator, zStaticRefrences.LocalPlayer);
-            zChatHandler.sendChatMessage("Inserting cell.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Inserting cell.", FriendlyIdentifier + IInputAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
 

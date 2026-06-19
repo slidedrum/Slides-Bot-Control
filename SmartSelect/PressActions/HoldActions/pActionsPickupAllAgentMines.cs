@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
 {
-    public class pActionPickupMines : IPressAction
+    public class pActionPickupMines : IInputAction
     {
         public string FriendlyName => "Pickup All Agent Mines";
         public string _FriendlyNameShort => "Pickup-A";
@@ -24,7 +24,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PICKUPYOURDEPLOYABLES);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Pick up your deployables.", 1);
             zBotActions.SendBotToPickUpMine(bot, null, zStaticRefrences.LocalPlayer);
-            zChatHandler.sendChatMessage("Picking up all of my mines.", FriendlyIdentifier + IPressAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Picking up all of my mines.", FriendlyIdentifier + IInputAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

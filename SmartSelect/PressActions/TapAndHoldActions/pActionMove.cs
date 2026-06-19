@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
 {
-    public class pActionMove : IPressAction
+    public class pActionMove : IInputAction
     {
         public static int collisionLayer = LayerManager.MASK_ENEMY_PROJECTILE_COLLIDERS;
         public string FriendlyName => "Move To";
@@ -22,7 +22,7 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
             zBotActions.SendbotToMoveToLocation(BestBot, TaregetLocation, zStaticRefrences.LocalPlayer);
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_HURRY);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Hurry.", 1f);
-            zChatHandler.sendChatMessage("On the way.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("On the way.", FriendlyIdentifier + IInputAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
-    public class pActionShootCFoam : IPressAction
+    public class pActionShootCFoam : IInputAction
     {
         public string FriendlyName => "Shoot Cfoam";
         public string FriendlyNameShort => "cFoam";
@@ -19,7 +19,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CFOAMHERE);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Put foam here.", 1);
             ZiMain.BotBarkBack(BestBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 2f);
-            zChatHandler.sendChatMessage("Shooting c-foam.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Shooting c-foam.", FriendlyIdentifier + IInputAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool Evaluate(PlayerAgent ownerAgent)

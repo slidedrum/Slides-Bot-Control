@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions
 {
-    public class pActionRevive : IPressAction
+    public class pActionRevive : IInputAction
     {
         public string FriendlyName => "Revive Agent";
         public string FriendlyNameShort => "Revive";
@@ -21,7 +21,7 @@ namespace BotControl.SmartSelect.PressActions
             if (BestBot == null) return false;
             zBotActions.SendBotToReviveAgent(BestBot, Agent, zStaticRefrences.LocalPlayer, 0);
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, EVENTS.PLAY_CL_INEEDHELP);
-            zChatHandler.sendChatMessage($"Reving {Agent.PlayerName}.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage($"Reving {Agent.PlayerName}.", FriendlyIdentifier + IInputAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

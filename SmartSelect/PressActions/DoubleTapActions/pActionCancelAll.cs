@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
 {
-    public class pActionCancelAll : IPressAction
+    public class pActionCancelAll : IInputAction
     {
         public string FriendlyName => "Cancel All";
         public string FriendlyNameShort => "Cancel-A";
@@ -27,7 +27,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             }
             foreach (var bot in BotsWithManualActions)
             {
-                zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + IPressAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + IInputAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
             }
             return true;
         }

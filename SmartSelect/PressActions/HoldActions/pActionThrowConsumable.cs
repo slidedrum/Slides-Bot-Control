@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions
 {
-    internal class pActionThrowConsumable : IPressAction
+    internal class pActionThrowConsumable : IInputAction
     {
         private static List<string> ThrowableArchatipes = new() { "Glow Stick", "C-Foam Grenade" , "Fog Repeller" };
         public string FriendlyName => "Throw Consumable";
@@ -43,7 +43,7 @@ namespace BotControl.SmartSelect.PressActions
             }
             zBotActions.SendBotToThrowItem(LocalPlayer, BestBot.Agent, LocalPlayer.transform.position, LocalPlayer.FPSCamera.CameraRayPos);
             //zBotActions.SendBotToThrowItem(LocalPlayer, BestBot.Agent, ThrowType, LocalPlayer.transform.position, LocalPlayer.FPSCamera.CameraRayPos);
-            zChatHandler.sendChatMessage($"Throwing my {Archatype}.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage($"Throwing my {Archatype}.", FriendlyIdentifier + IInputAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

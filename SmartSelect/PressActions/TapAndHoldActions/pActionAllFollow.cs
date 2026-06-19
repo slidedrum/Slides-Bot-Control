@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
-    public class pActionAllFollow : IPressAction
+    public class pActionAllFollow : IInputAction
     {
         public string FriendlyName => "All Folow";
         private string _FriendlyNameShort = "A-Follow";

@@ -4,7 +4,7 @@ using System;
 
 namespace BotControl.SmartSelect.PressActions
 {
-    internal class pActionDropNow : IPressAction
+    internal class pActionDropNow : IInputAction
     {
         public string FriendlyName => "Drop Now";
         public string FriendlyNameShort => "Drop";
@@ -25,7 +25,7 @@ namespace BotControl.SmartSelect.PressActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CANCELTHAT);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Cancel that.", 1f);
             zStaticRefrences.CommsMenu.OnButtonPressedDrop(null, BestBot.Agent);
-            zChatHandler.sendChatMessage("Dropping item.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Dropping item.", FriendlyIdentifier + IInputAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions
 {
-    internal class pActionReviveSelf : IPressAction
+    internal class pActionReviveSelf : IInputAction
     {
         // TODO revert to closest bot if none selected.
         public string FriendlyName => "Revive Self";
@@ -24,7 +24,7 @@ namespace BotControl.SmartSelect.PressActions
         {
             foreach (string ident in PressTypeIdentifiers)
             {
-                IPressType PressType = PressTypeManager.GetPressType(ident);
+                IInputType PressType = PressTypeManager.GetPressType(ident);
                 if (PressType == null)
                     throw new Exception($"PressAction {FriendlyName} tried to register to non existant press type {ident}");
                 foreach (Il2CppSystem.Type Type in Types)
@@ -56,7 +56,7 @@ namespace BotControl.SmartSelect.PressActions
                 return false;
             zBotActions.SendBotToReviveAgent(BotToUse, zStaticRefrences.LocalPlayer, zStaticRefrences.LocalPlayer, 0);
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_DOWNEDNEEDINGHELP01);
-            zChatHandler.sendChatMessage($"Reviving {zStaticRefrences.LocalPlayer.PlayerName}.", FriendlyIdentifier + IPressAction.chatPermSuffix, BotToUse.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage($"Reviving {zStaticRefrences.LocalPlayer.PlayerName}.", FriendlyIdentifier + IInputAction.chatPermSuffix, BotToUse.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

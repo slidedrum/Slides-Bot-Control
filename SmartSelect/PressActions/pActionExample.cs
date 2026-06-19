@@ -4,7 +4,7 @@ using System;
 
 namespace BotControl.SmartSelect.PressActions
 {
-    internal class pActionExample : IPressAction
+    internal class pActionExample : IInputAction
     {
         public string FriendlyName => "EXAMPLE ACTION"; // MUST BE CHANGED
         public string FriendlyNameShort => "Exmpl"; // Can be changed

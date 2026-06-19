@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.HoldActions
 {
-    public class pActionDeselect : IPressAction
+    public class pActionDeselect : IInputAction
     {
         public string FriendlyName => "Deselect All Bots";
         public string FriendlyNameShort => "Deselect";
@@ -20,7 +20,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             HashSet<PlayerAIBot> selectedBots = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>();
             foreach (PlayerAIBot selectedBot in selectedBots)
             {
-                zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + IPressAction.chatPermSuffix, selectedBot.Agent, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + IInputAction.chatPermSuffix, selectedBot.Agent, zStaticRefrences.LocalPlayer);
             }
             zSmartSelect.MainSelection.Deselect<PlayerAIBot>();
             return true;

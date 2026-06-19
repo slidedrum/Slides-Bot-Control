@@ -3,25 +3,25 @@ using PrioritySet;
 using sInputSystem;
 using System.Collections.Generic;
 using UnityEngine;
-using static BotControl.SmartSelect.PressTypes.IPressType;
+using static BotControl.SmartSelect.PressTypes.IInputType;
 
 namespace BotControl.SmartSelect.PressTypes
 {
-    internal abstract class PressTypeExample : IPressType
+    internal abstract class PressTypeExample : IInputType
     {
         // ── Current State ─────────────────────────────────────────────────────────
         public Component CurrentComponent { get => _CurrentComponent; set { _CurrentComponent = value; } }
-        public IPressAction CurrentAction { get => _CurrentAction; set { _CurrentAction = value; } }
+        public IInputAction CurrentAction { get => _CurrentAction; set { _CurrentAction = value; } }
 
         // ── Action Maps ───────────────────────────────────────────────────────────
-        public PrioritySet<IPressAction> NullTypeActions { get { return _NullTypeActions; } set { _NullTypeActions = value; } }
-        public Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> TypeActionMap { get { return _TypeActionMap; } set { _TypeActionMap = value; } }
+        public PrioritySet<IInputAction> NullTypeActions { get { return _NullTypeActions; } set { _NullTypeActions = value; } }
+        public Dictionary<Il2CppSystem.Type, PrioritySet<IInputAction>> TypeActionMap { get { return _TypeActionMap; } set { _TypeActionMap = value; } }
 
         // ── Identity / Configuration ──────────────────────────────────────────────
         public string FriendlyName => "EXAMPLE PRESS"; // MUST BE CAHNGED
         //public string FriendlyNameShort => "Exmpl"; // MUST BE CAHNGED
         public fallbackType FallbackType => fallbackType.Default; // Can be changed.
-        public sSequenceDefinition PressSequence // MUST BE CHANGED
+        public sSequenceDefinition InputSequence // MUST BE CHANGED
         {
             get
             {
@@ -48,10 +48,10 @@ namespace BotControl.SmartSelect.PressTypes
 
         // ── Private Backing Fields ────────────────────────────────────────────────
         private Component _CurrentComponent = null;
-        private IPressAction _CurrentAction = null;
+        private IInputAction _CurrentAction = null;
         private sSequenceDefinition _PressSequences = null;
-        private PrioritySet<IPressAction> _NullTypeActions = new();
-        private Dictionary<Il2CppSystem.Type, PrioritySet<IPressAction>> _TypeActionMap = new(new Il2CppTypePtrComparer());
+        private PrioritySet<IInputAction> _NullTypeActions = new();
+        private Dictionary<Il2CppSystem.Type, PrioritySet<IInputAction>> _TypeActionMap = new(new Il2CppTypePtrComparer());
         private HashSet<Il2CppSystem.Type> _SelectableTypes = null;
     }
 }

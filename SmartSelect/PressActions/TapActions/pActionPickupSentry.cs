@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
 {
-    public class pActionPickupSentry : IPressAction
+    public class pActionPickupSentry : IInputAction
     {
         public string FriendlyName => "Pickup Sentry";
         public string _FriendlyNameShort => "Pickup";
@@ -24,7 +24,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PICKUPYOURDEPLOYABLES);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle($"Pick up your deployables.", 1);
             zBotActions.SendBotToPickUpSentry(bot, zStaticRefrences.LocalPlayer);
-            zChatHandler.sendChatMessage("Picking up my sentry.", FriendlyIdentifier + IPressAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Picking up my sentry.", FriendlyIdentifier + IInputAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)

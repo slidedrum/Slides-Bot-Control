@@ -22,10 +22,10 @@ namespace BotControl.SmartSelect
         public static float upperStaticSize = 15;
         public static Color defaultColor = new Color(1f, 1f, 1f, 0.25f);
 
-        private static IPressType Tap;
-        private static IPressType Hold;
-        private static IPressType DoubleTap;
-        private static IPressType TapAndHold;
+        private static IInputType Tap;
+        private static IInputType Hold;
+        private static IInputType DoubleTap;
+        private static IInputType TapAndHold;
         public static void Setup()
         {
             if (isSetup)

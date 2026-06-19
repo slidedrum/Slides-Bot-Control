@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.HoldActions
 {
-    public class pActionRefillSentry :  IPressAction
+    public class pActionRefillSentry :  IInputAction
     {
         public string FriendlyName => "Refill Sentry";
         public string FriendlyNameShort => "Refill";
@@ -19,7 +19,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             zBotActions.SendBotToRefillSentry(BestBot, Sentry, zStaticRefrences.LocalPlayer);
-            zChatHandler.sendChatMessage("Refilling sentry.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage("Refilling sentry.", FriendlyIdentifier + IInputAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate)
