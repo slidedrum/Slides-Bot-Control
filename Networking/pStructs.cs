@@ -1,6 +1,5 @@
 ﻿using Agents;
 using Enemies;
-using LevelGeneration;
 using Player;
 using SNetwork;
 using UnityEngine;
