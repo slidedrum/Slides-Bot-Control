@@ -2,7 +2,7 @@
 using BotControl.SmartSelect.PressTypes;
 using FlexMethodDefinition;
 using Player;
-using SlideDrum.sInputSystem;
+using sInputSystem;
 using UnityEngine;
 
 namespace BotControl.SmartSelect
@@ -65,7 +65,7 @@ namespace BotControl.SmartSelect
             bool ready = FocusStateManager.CurrentState == eFocusState.FPS || FocusStateManager.CurrentState == eFocusState.Dead;
             if (!ready) return;
             if (!IsSetUp) SetUp();
-            sInputSystem.Update();
+            InputSystem.Update();
             if (roundedTime > lastSlowUpdateTime)
                 SlowUpdate();
         }
@@ -80,7 +80,7 @@ namespace BotControl.SmartSelect
             PressActionManager.Initialize();
             foreach (IPressType pressType in PressTypeManager.TypeMap.Values)
             {
-                sInputSystem.AddListener(pressType.PressSequence, new FlexibleMethodDefinition(pressType.Invoke), KeyCode.V);
+                InputSystem.AddListener(pressType.PressSequence, KeyCode.V, new FlexibleMethodDefinition(pressType.Invoke));
             }
             //sInputSystem.AddListener(sInputSystemDefaults.OnTappedExclusive, new FlexibleMethodDefinition(OnKeyTap), KeyCode.V);
             //sInputSystem.AddListener(sInputSystemDefaults.OnHoldImmediateExclusive, new FlexibleMethodDefinition(OnKeyHold), KeyCode.V);

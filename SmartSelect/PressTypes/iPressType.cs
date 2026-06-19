@@ -2,7 +2,7 @@
 using Il2CppInterop.Runtime;
 using Player;
 using PrioritySet;
-using SlideDrum.sInputSystem;
+using sInputSystem;
 using System.Collections.Generic;
 using UnityEngine;
 

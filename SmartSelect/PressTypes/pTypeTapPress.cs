@@ -2,7 +2,7 @@
 using LevelGeneration;
 using Player;
 using PrioritySet;
-using SlideDrum.sInputSystem;
+using sInputSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;

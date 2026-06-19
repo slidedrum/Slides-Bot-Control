@@ -1,6 +1,6 @@
 ﻿using BotControl.SmartSelect.PressActions;
 using PrioritySet;
-using SlideDrum.sInputSystem;
+using sInputSystem;
 using System.Collections.Generic;
 using UnityEngine;
 using static BotControl.SmartSelect.PressTypes.IPressType;

@@ -59,22 +59,22 @@
 			DestinationFolder="W:\Games\steam\steamapps\common\GTFO\BepInEx\plugins"/>
 
 		<Copy SourceFiles="W:\AI Stuff\Workspace A\FlexibleMethodDefinition\FlexibleMethodDefinition\bin\$(Configuration)\net6.0\FlexibleMethodDefinition.dll"
-	  DestinationFolder="$(PluginsFolder)\Slide-Slides_Bot_Control"/>
+			DestinationFolder="$(PluginsFolder)\Slide-Slides_Bot_Control"/>
 		<Copy SourceFiles="W:\AI Stuff\Workspace A\FlexibleMethodDefinition\FlexibleMethodDefinition\bin\$(Configuration)\net6.0\FlexibleMethodDefinition.dll"
 			DestinationFolder="W:\Games\steam\steamapps\common\GTFO\BepInEx\plugins"/>
 
 		<Copy SourceFiles="W:\Documents\PrioritySet\src\PrioritySet\bin\$(Configuration)\net6.0\PrioritySet.dll"
-	  DestinationFolder="$(PluginsFolder)\Slide-Slides_Bot_Control"/>
+			DestinationFolder="$(PluginsFolder)\Slide-Slides_Bot_Control"/>
 		<Copy SourceFiles="W:\Documents\PrioritySet\src\PrioritySet\bin\$(Configuration)\net6.0\PrioritySet.dll"
 			DestinationFolder="W:\Games\steam\steamapps\common\GTFO\BepInEx\plugins"/>
 
 		<Copy SourceFiles="W:\AI Stuff\Workspace A\InputSystem\sInputSystem\bin\$(Configuration)\net6.0\sInputSystem.dll"
-	  DestinationFolder="$(PluginsFolder)\Slide-Slides_Bot_Control"/>
+			DestinationFolder="$(PluginsFolder)\Slide-Slides_Bot_Control"/>
 		<Copy SourceFiles="W:\AI Stuff\Workspace A\InputSystem\sInputSystem\bin\$(Configuration)\net6.0\sInputSystem.dll"
 			DestinationFolder="W:\Games\steam\steamapps\common\GTFO\BepInEx\plugins"/>
 		
 		<Copy SourceFiles="W:\AI Stuff\Workspace A\Il2CppInteropFix\bin\$(Configuration)\Il2CppInteropFix.Patcher.dll"
-	  DestinationFolder="$(GameFolder)\BepInEx\patchers\Slide-Slides_Bot_Control"/>
+			DestinationFolder="$(GameFolder)\BepInEx\patchers\Slide-Slides_Bot_Control"/>
 		<Copy SourceFiles="W:\AI Stuff\Workspace A\Il2CppInteropFix\bin\$(Configuration)\Il2CppInteropFix.Patcher.dll"
 			DestinationFolder="W:\Games\steam\steamapps\common\GTFO\BepInEx\patchers"/>
 	</Target>
