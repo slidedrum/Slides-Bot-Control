@@ -30,6 +30,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             // Candidate is irrelevant for this action, we just need to check if we have any bots selected
             bool facingUp = Vector3.Angle(zStaticRefrences.CameraTransform.forward, Vector3.up) < 15f;
             if (!facingUp) return false;
+            if (!zActions.manualActions.ContainsKey(zStaticRefrences.LocalPlayer.CharacterID)) return false;
             if (zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Count == 0) return false;
             //if (zActions.manualActions.Last().IsTerminated()) return false;
             return true;

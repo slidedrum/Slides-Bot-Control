@@ -1,6 +1,7 @@
 ﻿using BotControl.SmartSelect.PressActions;
 using BotControl.SmartSelect.PressTypes;
 using FlexMethodDefinition;
+using InControl;
 using Player;
 using sInputSystem;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace BotControl.SmartSelect
 //            (      TAP     /     HOLD      /   DOUBLE TAP  /  TAP & HOLD   ) 
 //            ( ------------------------------------------------------------ ) 
 // Player/Bot ( ---Select--- / ----Share---- / Follow/Cancel / ---Send To--- )
-//       Item ( ------------ / ---Pickup---- / ------------- / ------------- )
+//       Item ( ------------ / ---Picup---- / ------------- / ------------- )
 //  Equipment ( ---Pickup--- / ---Refill---- / -Pickup All-- / ------------- )
 //  Container ( ----Open---- / ------------- / --*Place?*--- / ------------- )
 // Floor/Wall ( ------------ / -Consumable-- / --Equipment-- / ----Move----- )
@@ -33,7 +34,7 @@ namespace BotControl.SmartSelect
         // TODO cancel client all
 
         public static Selection MainSelection = new();
-        private static bool IsSetUp = false;
+        internal static bool IsSetUp = false;
         public static uint InvalidSound = AK.EVENTS.MENU_HOST_EXPEDITION_BUTTON_RELEASE;
         public static uint CorrectSound = AK.EVENTS.MENU_HOST_EXPEDITION_BUTTON_FULL;
         private static float lastSlowUpdateTime = 0;
@@ -80,13 +81,15 @@ namespace BotControl.SmartSelect
             PressActionManager.Initialize();
             foreach (IInputType InputType in PressTypeManager.TypeMap.Values)
             {
-                InputSystem.AddListener(InputType.InputSequence, KeyCode.V, new FlexibleMethodDefinition(InputType.Invoke));
+                var seq = InputType.InputSequence;
+                seq.ResetMatchState();
+                InputSystem.AddListener(
+                    seq,
+                    (KeyCode?)zSlideComputer.SmartSelectButton.Value,
+                    new FlexibleMethodDefinition(InputType.Invoke)
+                    );
+                //InputSystem.AddListener(InputType.InputSequence, (KeyCode?)zSlideComputer.SmartSelectButton.Value, new FlexibleMethodDefinition(InputType.Invoke));
             }
-            //sInputSystem.AddListener(sInputSystemDefaults.OnTappedExclusive, new FlexibleMethodDefinition(OnKeyTap), KeyCode.V);
-            //sInputSystem.AddListener(sInputSystemDefaults.OnHoldImmediateExclusive, new FlexibleMethodDefinition(OnKeyHold), KeyCode.V);
-            //sInputSystem.AddListener(sInputSystemDefaults.OnDoubleTappedExclusive, new FlexibleMethodDefinition(OnKeyDoubleTap), KeyCode.V);
-            //sInputSystem.AddListener(sInputSystemDefaults.OnTapAndHoldImmediateExclusive, new FlexibleMethodDefinition(OnTapAndHold), KeyCode.V);
-            
             IsSetUp = true;
         }
         public static uint GetVoiceId(PlayerAgent Agent)

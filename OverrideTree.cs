@@ -1,4 +1,5 @@
-﻿using BotControl.Networking;
+﻿using BotControl;
+using BotControl.Networking;
 using FlexMethodDefinition;
 using GTFO.API;
 using System;
@@ -28,8 +29,9 @@ namespace SlideDrum
     {
         public static event Action<IOverrideTree, uint, string, object?, ulong> OnValueSet;
         internal static Dictionary<uint, OverrideTree<T>> Trees = new();
+        internal static Dictionary<string, uint> treeIdentToId = new();
         public uint treeID;
-        private string identifier = "DefaultIdent";
+        public string identifier = "DefaultIdent";
         public Type type;
         public Dictionary<uint, Node> nodesByID { get; private set; } = new(); //For O(1) lookup by ID, used for network syncing
         public Dictionary<string, Node> nodes { get; private set; } = new(StringComparer.Ordinal); //For O(1) lookup, starting search in the middle of a tree
@@ -280,11 +282,19 @@ namespace SlideDrum
         public static void ResetTrees()
         {
             Trees.Clear();
+            treeIdentToId.Clear();
         }
-        public string GetNodesSerialized()
+        public object GetNodesObject()
         {
-            return JsonSerializer.Serialize(nodes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Identity));
+            return nodes.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Identity
+            );
         }
+        //public string GetNodesSerialized()
+        //{
+        //    return JsonSerializer.Serialize(nodes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Identity), new JsonSerializerOptions{WriteIndented = true});
+        //}
         public void SetNodesSerialized(string json)
         {
             var dict = JsonSerializer.Deserialize<Dictionary<string, Node.NodeIdentity<T>>>(json);
@@ -305,8 +315,9 @@ namespace SlideDrum
         public OverrideTree(T rootValue, string identifier, string rootKey = "Default", FlexibleMethodDefinition OnChanged = null)
         {
             this.identifier = identifier;
-            treeID = HashString(identifier);
+            treeID = zHelpers.HashString(identifier);
             Trees[treeID] = this;
+            treeIdentToId[identifier] = treeID;
             if (rootValue == null)
                 throw new ArgumentNullException(nameof(rootValue), "Initial value can not be null");
             rootNode = new Node(rootKey, value: rootValue, defaultValue: rootValue);
@@ -316,9 +327,9 @@ namespace SlideDrum
                 rootNode.onChanged.Listen(OnChanged);
             type = typeof(T);
         }
-        public static OverrideTree<T> GetTreeFromID(uint ID)
+        public static OverrideTree<T> GetTreeFromID(uint identifier)
         {
-            return Trees[ID];
+            return Trees[identifier];
         }
         public Node GetNodeFromIdent(string ident)
         {
@@ -326,9 +337,9 @@ namespace SlideDrum
                 throw new KeyNotFoundException(nameof(ident));
             return nodes[ident];
         }
-        public Node GetNodeFromId(uint id)
+        public Node GetNodeFromId(uint treeID)
         {
-            return nodesByID[id];
+            return nodesByID[treeID];
         }
         public Node AddNode(string key, T? value, string? parent = null, Func<bool>? condition = null, FlexibleMethodDefinition onChanged = null, T? defaultValue = default, bool hasDefaultValue = false)
         {
@@ -390,19 +401,19 @@ namespace SlideDrum
         {
             if (!nodesByID.ContainsKey(nodeID))
             {
-                Debug.Log($"Tried to set unknown nodeID '{nodeID}' in '{treeID} ({identifier}) to '{value}' via netSender {netSender} ");
+                Debug.Log($"Tried to set unknown nodeID '{nodeID}' in '{identifier}' to '{value}' via netSender {netSender} ");
                 return default(T);
             }
             //throw new KeyNotFoundException(nameof(nodeID));
             var node = nodesByID[nodeID];
-            Debug.Log($"Setting value of node by ID '{nodeID}' ({node.GetNodeTreeString()}) in tree {treeID} ({identifier}) to '{value}' (netSender: {netSender})");
+            Debug.Log($"Setting value of node by ID '{nodeID}' ({node.GetNodeTreeString()}) in tree '{identifier}' to '{value}' (netSender: {netSender})");
             return SetValue(nodesByID[nodeID].nodeIdentity, value, netSender);
         }
         public T? ResetToDefault(string key, ulong netSender = 0)
         {
             if (!nodes.ContainsKey(key))
             {
-                Debug.Log($"Tried to reset unknown key '{key}' in '{treeID} ({identifier}) to default via netSender {netSender} ");
+                Debug.Log($"Tried to reset unknown key '{key}' in '{identifier}' to default via netSender {netSender} ");
                 return default(T);
             }
             Node node = nodes[key];
@@ -412,12 +423,12 @@ namespace SlideDrum
         {
             if (!nodes.ContainsKey(key))
             {
-                Debug.Log($"Tried to set unknown key '{key}' in '{treeID} ({identifier}) to '{value}' via netSender {netSender} ");
+                Debug.Log($"Tried to set unknown key '{key}' in '{identifier}' to '{value}' via netSender {netSender} ");
                 return default(T);
             }
             //throw new KeyNotFoundException(nameof(key));
             Node node = nodes[key];
-            Debug.Log($"Setting value of node by key '{node.GetNodeTreeString()}' ({node.nodeID}) in tree {treeID} ({identifier}) to '{value}' (netSender: {netSender})");
+            Debug.Log($"Setting value of node by key '{node.GetNodeTreeString()}' ({node.nodeID}) in tree '{identifier}' to '{value}' (netSender: {netSender})");
             node.SetValue(value);
             if (netSender == 0) // We need to sync these values between clients.
             {
@@ -616,5 +627,16 @@ namespace SlideDrum
         {
             return HasDefault(key);
         }
+    }
+    public class OverrideTreeDump
+    {
+        public List<TreeDump> Trees { get; set; } = new();
+    }
+
+    public class TreeDump
+    {
+        public string Identifier { get; set; }
+        public string ValueType { get; set; }
+        public object Nodes { get; set; }
     }
 }

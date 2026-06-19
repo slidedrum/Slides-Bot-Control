@@ -1,5 +1,10 @@
-﻿using SlideMenu;
+﻿using BepInEx;
+using SlideDrum;
+using SlideMenu;
 using System;
+using System.IO;
+using System.Text;
+using System.Text.Json;
 using UnityEngine;
 
 namespace BotControl.Menus
@@ -37,10 +42,56 @@ namespace BotControl.Menus
 
             ChatSettingsMenu.Setup(ChatPermsMenu);
 
+            SettingsMenu.AddNode("Set Default", SetDefault);
+
+
             UpdateScaleNodeSubtitle();
             SettingsMenu.AddPannel(sMenu.sMenuPannel.Side.top, "More settings coming 'soon'!");
         }
+        public static void SetDefault()
+        {
+            var dump = new OverrideTreeDump();
 
+            foreach (var tree in OverrideTree<int?>.Trees.Values)
+            {
+                dump.Trees.Add(new TreeDump
+                {
+                    Identifier = tree.identifier,
+                    ValueType = "int?",
+                    Nodes = tree.GetNodesObject()
+                });
+            }
+
+            foreach (var tree in OverrideTree<bool?>.Trees.Values)
+            {
+                dump.Trees.Add(new TreeDump
+                {
+                    Identifier = tree.identifier,
+                    ValueType = "bool?",
+                    Nodes = tree.GetNodesObject()
+                });
+            }
+
+            foreach (var tree in OverrideTree<float?>.Trees.Values)
+            {
+                dump.Trees.Add(new TreeDump
+                {
+                    Identifier = tree.identifier,
+                    ValueType = "float?",
+                    Nodes = tree.GetNodesObject()
+                });
+            }
+
+            var json = JsonSerializer.Serialize(dump, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            File.WriteAllText(
+                Path.Combine(Paths.ConfigPath, zSlideComputer.CustomConfigName),
+                json
+            );
+        }
         private static void toggleTalk()
         {
             bool allowed = !(bool)zSlideComputer.ActionPermissions.ValueAt("TalkInChat");

@@ -13,7 +13,7 @@ namespace SlideMenu
         public static GameObject menuParrent;
         private static bool playerInControll => FocusStateManager.CurrentState == eFocusState.FPS || FocusStateManager.CurrentState == eFocusState.Dead || FocusStateManager.CurrentState == eFocusState.FPS_CommunicationDialog;
         private static Texture2D _defaultBackgroundImage;
-        public static KeyCode keybinding = KeyCode.X;
+        //public static KeyCode keybinding = KeyCode.X;
         public static Texture2D DefaultBackgroundImage { 
             get 
             {
@@ -137,7 +137,7 @@ namespace SlideMenu
                         FocusStateManager.ChangeState(FocusStateManager.PreviousState);
                     menuWasOpenOnLastFrame = false;
                 }
-                if (Input.GetKey(keybinding))
+                if (Input.GetKey((KeyCode)zSlideComputer.MenuButton.Value))
                 {
                     if (pressable) //is this the first frame of holding the button?
                     {
