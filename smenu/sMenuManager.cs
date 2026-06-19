@@ -11,7 +11,7 @@ namespace SlideMenu
         //This is the big custom menu manager.  Handles all menu creation and shit.  More work to do, but pretty good so far.
         public static HashSet<sMenu> menus { get; private set; } = new();
         public static GameObject menuParrent;
-        private static bool playerInControll = false;
+        private static bool playerInControll => FocusStateManager.CurrentState == eFocusState.FPS || FocusStateManager.CurrentState == eFocusState.Dead || FocusStateManager.CurrentState == eFocusState.FPS_CommunicationDialog;
         private static Texture2D _defaultBackgroundImage;
         public static KeyCode keybinding = KeyCode.X;
         public static Texture2D DefaultBackgroundImage { 
@@ -82,6 +82,7 @@ namespace SlideMenu
         private static float angleTollerance = 45f;
         private static float nodeAngleTollerance = 10f;
         internal static float pannelBuffer = 1f;
+       
         
         private static bool menuWasOpenOnLastFrame = false;
         private static bool menuOpen { get { return currentMenu != null; } }
@@ -117,7 +118,7 @@ namespace SlideMenu
         }
         public static void Update()
         {
-            playerInControll = FocusStateManager.CurrentState == eFocusState.FPS || FocusStateManager.CurrentState == eFocusState.Dead || FocusStateManager.CurrentState == eFocusState.FPS_CommunicationDialog;
+            
             //playerInControll = true;
             if (playerInControll)
             {
