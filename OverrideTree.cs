@@ -1,12 +1,11 @@
-﻿using BotControl.Networking;
+﻿//using BotControl.Networking;
 using FlexMethodDefinition;
-using GTFO.API;
-using SlideMenu;
+//using GTFO.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using UnityEngine;
-
 namespace SlideDrum
 {
     public interface IOverrideTree
@@ -22,13 +21,16 @@ namespace SlideDrum
         public object? IGetDefaultValue(string key);
         public uint treeID { get; }
         public string identifier { get; }
-
         public bool AllDefault(IEnumerable<string> keys);
+
+
     }
+
     public class OverrideTree<T> : IOverrideTree
     {
+        public static event Action<IOverrideTree, uint, string, object?, ulong> OnValueSet;
         internal static Dictionary<uint, OverrideTree<T>> Trees = new();
-        private uint treeID;
+        public uint treeID;
         private string identifier = "DefaultIdent";
         public Type type;
         public Dictionary<uint, Node> nodesByID { get; private set; } = new(); //For O(1) lookup by ID, used for network syncing
@@ -37,7 +39,6 @@ namespace SlideDrum
 
         string IOverrideTree.identifier => identifier;
         uint IOverrideTree.treeID => treeID;
-
         public class FallbackLink
         {
             public Node Target { get; }
@@ -52,11 +53,25 @@ namespace SlideDrum
 
         public class Node
         {
+            public struct NodeIdentity<T>
+            {
+                public bool? hasValue { get; set; }
+                public bool? hasDefaultValue { get; set; }
+                public T Value { get; set; }
+                public T DefaultValue { get; set; }
+            }
+            public NodeIdentity<T> Identity => new()
+            {
+                hasValue = HasValue(),
+                hasDefaultValue = hasDefaultValue,
+                Value = Value,
+                DefaultValue = DefaultValue,
+            };
             public uint nodeID { get; private set; }
             public string nodeIdentity { get; private set; }
             public T? Value { get; set; }
-            private bool hasDefaultValue { get; }
-            private T? _DefaultValue { get; }
+            private bool hasDefaultValue { get; set; }
+            private T? _DefaultValue { get; set; }
             public T? DefaultValue
             {
                 get
@@ -190,6 +205,7 @@ namespace SlideDrum
                 var callList = OnChanged();
                 Value = newValue;
                 onThisNodeChanged.Invoke();
+
                 foreach (var call in callList)
                     call.Invoke();
             }
@@ -215,6 +231,15 @@ namespace SlideDrum
             public bool HasDefault()
             {
                 return hasDefaultValue;
+            }
+            public void SetDefaultValue(T? defaultValue)
+            {
+                _DefaultValue = defaultValue;
+                SetHasDefaultValue(true);
+            }
+            public void SetHasDefaultValue(bool hasDefaultValue)
+            {
+                this.hasDefaultValue = hasDefaultValue;
             }
             public bool MatchingDefaultValue()
             {
@@ -257,6 +282,27 @@ namespace SlideDrum
         public static void ResetTrees()
         {
             Trees.Clear();
+        }
+        public string GetNodesSerialized()
+        {
+            return JsonSerializer.Serialize(nodes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Identity));
+        }
+        public void SetNodesSerialized(string json)
+        {
+            var dict = JsonSerializer.Deserialize<Dictionary<string, Node.NodeIdentity<T>>>(json);
+            foreach (var kvp in dict)
+            {
+                string identifer = kvp.Key;
+                Node.NodeIdentity<T> identity = kvp.Value;
+                if (identity.hasValue != null && (bool)identity.hasValue)
+                {
+                    SetValue(identifer, identity.Value);
+                }
+                if (identity.hasDefaultValue != null && (bool)identity.hasDefaultValue)
+                {
+                    SetDefaultValue(identifer, identity.DefaultValue);
+                }
+            }
         }
         public OverrideTree(T rootValue, string identifier, string rootKey = "Default", FlexibleMethodDefinition OnChanged = null)
         {
@@ -375,86 +421,87 @@ namespace SlideDrum
             Node node = nodes[key];
             Debug.Log($"Setting value of node by key '{node.GetNodeTreeString()}' ({node.nodeID}) in tree {treeID} ({identifier}) to '{value}' (netSender: {netSender})");
             node.SetValue(value);
-            if (netSender == 0) // We need to sync these values between clients.
-            {
-                Type type = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
-                switch (Type.GetTypeCode(type))
-                {
-                    case TypeCode.Boolean:
-                        {
-                            pStructs.pBoolOverideTreeInfo info = new pStructs.pBoolOverideTreeInfo();
-                            info.treeID = treeID;
-                            info.keyId = node.nodeID;
-                            if (value is null)
-                            {
-                                info.value = false;
-                                info.isNull = true;
-                            }
-                            else if (value is bool v)
-                            {
-                                info.value = v;
-                                info.isNull = false;
-                            }
-                            else
-                            {
-                                throw new InvalidCastException($"Expected bool value for key '{key}', but got {value.GetType().Name}.");
-                            }
-                            NetworkAPI.InvokeEvent<pStructs.pBoolOverideTreeInfo>("SetBoolOverideTree", info);
-                            break;
-                        }
-                    case TypeCode.Int32:
-                        {
-                            pStructs.pIntOverideTreeInfo info = new pStructs.pIntOverideTreeInfo();
-                            info.treeID = treeID;
-                            info.keyId = node.nodeID;
-                            if (value is null)
-                            {
-                                info.value = 0;
-                                info.isNull = true;
-                            }
-                            else if (value is int v)
-                            {
-                                info.value = v;
-                                info.isNull = false;
-                            }
-                            else
-                            {
-                                throw new InvalidCastException($"Expected int value for key '{key}', but got {value.GetType().Name}.");
-                            }
-                            NetworkAPI.InvokeEvent<pStructs.pIntOverideTreeInfo>("SetIntOverideTree", info);
-                            break;
-                        }
-                    case TypeCode.Single:
-                        {
-                            pStructs.pFloatOverideTreeInfo info = new pStructs.pFloatOverideTreeInfo();
-                            info.treeID = treeID;
-                            info.keyId = node.nodeID;
-                            if (value is null)
-                            {
-                                info.value = 0f;
-                                info.isNull = true;
-                            }
-                            else if (value is float v)
-                            {
-                                info.value = v;
-                                info.isNull = false;
-                            }
-                            else
-                            {
-                                throw new InvalidCastException($"Expected float value for key '{key}', but got {value.GetType().Name}.");
-                            }
-                            NetworkAPI.InvokeEvent<pStructs.pFloatOverideTreeInfo>("SetFloatOverideTree", info);
-                            break;
-                        }
-                    default:
-                        {
-                            Debug.Log($"set unusual type ({value?.GetType().Name ?? "null"}) in override tree.");
-                            break;
-                        }
+            //if (netSender == 0) // We need to sync these values between clients.
+            //{
+            //    Type type = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+            //    switch (Type.GetTypeCode(type))
+            //    {
+            //        case TypeCode.Boolean:
+            //            {
+            //                pStructs.pBoolOverideTreeInfo info = new pStructs.pBoolOverideTreeInfo();
+            //                info.treeID = treeID;
+            //                info.keyId = node.nodeID;
+            //                if (value is null)
+            //                {
+            //                    info.value = false;
+            //                    info.isNull = true;
+            //                }
+            //                else if (value is bool v)
+            //                {
+            //                    info.value = v;
+            //                    info.isNull = false;
+            //                }
+            //                else
+            //                {
+            //                    throw new InvalidCastException($"Expected bool value for key '{key}', but got {value.GetType().Name}.");
+            //                }
+            //                NetworkAPI.InvokeEvent<pStructs.pBoolOverideTreeInfo>("SetBoolOverideTree", info);
+            //                break;
+            //            }
+            //        case TypeCode.Int32:
+            //            {
+            //                pStructs.pIntOverideTreeInfo info = new pStructs.pIntOverideTreeInfo();
+            //                info.treeID = treeID;
+            //                info.keyId = node.nodeID;
+            //                if (value is null)
+            //                {
+            //                    info.value = 0;
+            //                    info.isNull = true;
+            //                }
+            //                else if (value is int v)
+            //                {
+            //                    info.value = v;
+            //                    info.isNull = false;
+            //                }
+            //                else
+            //                {
+            //                    throw new InvalidCastException($"Expected int value for key '{key}', but got {value.GetType().Name}.");
+            //                }
+            //                NetworkAPI.InvokeEvent<pStructs.pIntOverideTreeInfo>("SetIntOverideTree", info);
+            //                break;
+            //            }
+            //        case TypeCode.Single:
+            //            {
+            //                pStructs.pFloatOverideTreeInfo info = new pStructs.pFloatOverideTreeInfo();
+            //                info.treeID = treeID;
+            //                info.keyId = node.nodeID;
+            //                if (value is null)
+            //                {
+            //                    info.value = 0f;
+            //                    info.isNull = true;
+            //                }
+            //                else if (value is float v)
+            //                {
+            //                    info.value = v;
+            //                    info.isNull = false;
+            //                }
+            //                else
+            //                {
+            //                    throw new InvalidCastException($"Expected float value for key '{key}', but got {value.GetType().Name}.");
+            //                }
+            //                NetworkAPI.InvokeEvent<pStructs.pFloatOverideTreeInfo>("SetFloatOverideTree", info);
+            //                break;
+            //            }
+            //        default:
+            //            {
+            //                Debug.Log($"set unusual type ({value?.GetType().Name ?? "null"}) in override tree.");
+            //                break;
+            //            }
 
-                }
-            }
+            //    }
+            //}
             //node.menuNode?.UpdateNode();
+            OnValueSet?.Invoke(this, node.nodeID, key, value, netSender);
             return ValueAt(key);
         }
         public T? GetValue()
@@ -504,6 +551,14 @@ namespace SlideDrum
         {
             Node node = NodeAt(key);
             return node.HasDefault();
+        }
+        public void SetDefaultValue(string key, T? defaultValue)
+        {
+            NodeAt(key).SetDefaultValue(defaultValue);
+        }
+        public void SetHasDefaultValue(string key, bool hasDefaultValue)
+        {
+            NodeAt(key).SetHasDefaultValue(hasDefaultValue);
         }
         private Node NodeAt(string key, bool shouldThrow = true)
         {
