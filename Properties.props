@@ -54,7 +54,7 @@
 	<Target Name="CustomAfterBuild" AfterTargets="Build" Condition="$(CopyBuildToPluginFolder) == 'true'">
 		<Message Text="Copying Output to Plugins Folder..." Importance="High"/>
 		<Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll"
-			  DestinationFolder="$(PluginsFolder)"/>
+			  DestinationFolder="$(PluginsFolder)\Slide-Slides_Bot_Control"/>
 		<Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll"
 			DestinationFolder="W:\Games\steam\steamapps\common\GTFO\BepInEx\plugins"/>
 		<Message Text="Output has copied to Plugins Folder!" Importance="High"/>
