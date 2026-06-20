@@ -1,9 +1,7 @@
 ﻿using BotControl.CustomActions;
 using Player;
-using SNetwork;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
 {
