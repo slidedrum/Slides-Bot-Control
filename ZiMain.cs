@@ -23,7 +23,6 @@ using static BotControl.Networking.pStructs;
 using System.Linq;
 using BotControl.SmartSelect.PressActions;
 using BotControl.Menus;
-using FlexMethodDefinition;
 using System.Reflection;
 
 /*
@@ -140,7 +139,7 @@ namespace BotControl;
 [BepInDependency("com.east.bb", BepInDependency.DependencyFlags.SoftDependency)]
 public class ZiMain : BasePlugin
 { //this class should contain all methods to call actions, any helpers to faciliate that, and inital setup,
-    public const string version = "1.2.3";
+    public const string version = "1.2.4";
     public static ManualLogSource log;
     internal static bool newRootBotPlayerAction = true;
     public static Dictionary<string, PlayerAIBot> BotTable = new();
