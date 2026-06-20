@@ -91,6 +91,9 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
 
 
 ### Changelog
+V1.2.5
+ - Temporarily removed misbehaving better bots compatability patch that was causing bots not to attack.
+
 V1.2.4
  - Fixed unintental better bots dependancy. 
 
