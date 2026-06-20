@@ -89,7 +89,8 @@ namespace BotControl.Patches
         {
             if ((__instance.m_desc.Means & PlayerBotActionAttack.AttackMeansEnum.Bullet) == 0)
             {
-                __result = Vector3.Distance(testPosition, __instance.m_bot.SyncValues.Leader.Position) < RootPlayerBotAction.s_followLeaderMaxDistance;
+                //__result = Vector3.Distance(testPosition, __instance.m_bot.SyncValues.Leader.Position) < RootPlayerBotAction.s_followLeaderMaxDistance;
+                __result = true;
                 return false;
             }
             return true;
