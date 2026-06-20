@@ -2,6 +2,7 @@
 using Player;
 using SlideDrum;
 using SlideMenu;
+using SNetwork;
 using System.Collections.Generic;
 
 namespace BotControl.Menus
@@ -40,7 +41,6 @@ namespace BotControl.Menus
                 menuNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
                 attackMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
             }
-
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.top, "This controls if the bots are allowed to atack");
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.top, "And what they are allowed to attack with");
             //attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "These settings are a bit janky atm.");
@@ -48,8 +48,11 @@ namespace BotControl.Menus
             //attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "I'm pretty sure that's not the fault of the mod.");
             //attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "I'd like to see if I can improve it anyway.");
         }
+
         public static void RemoveActions() // TODO when we have per bot permisions set up, this needs to change to accomidate that.
         {
+            if (!SNet.IsMaster)
+                return;
             var botlist = ZiMain.GetBotList();
             foreach (PlayerAIBot bot in botlist)
             {

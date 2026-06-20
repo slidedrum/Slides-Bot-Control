@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static Player.PlayerBotActionAttack;
 
 namespace BotControl.Patches
 {
@@ -59,8 +58,9 @@ namespace BotControl.Patches
         [HarmonyPrefix]
         public static bool PreIsWithinMeleeReach(PlayerBotActionAttack __instance, Vector3 testPosition, float reachMultiplier, ref bool __result)
         {
-            if ((__instance.m_desc.Means & AttackMeansEnum.Bullet) == 0)
+            if ((__instance.m_desc.Means & PlayerBotActionAttack.AttackMeansEnum.Bullet) == 0)
             {
+                //__result = Vector3.Distance(testPosition, __instance.m_bot.SyncValues.Leader.Position) < RootPlayerBotAction.s_followLeaderMaxDistance;
                 __result = true;
                 return false;
             }
