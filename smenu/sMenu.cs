@@ -1,5 +1,7 @@
-﻿using FlexMethodDefinition;
+﻿using BotControl;
+using FlexMethodDefinition;
 using PrioritySet;
+using sInputSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +17,15 @@ namespace SlideMenu
         // This class is the menu instance.
 
         private string name;
+        private string fullname
+        {
+            get 
+            {
+                if (parrentMenu == null)
+                    return name;
+                return name + " " + parrentMenu.name;
+            }
+        }
         public IEnumerable<sMenuNode> allNodes
         {
             get 
@@ -46,7 +57,23 @@ namespace SlideMenu
         private Canvas canvas;
         public Vector3 RelativePosition = Vector3.zero;
 
-        private Dictionary<sMenuManager.menuEvent, FlexibleEvent> eventMap;
+        //private Dictionary<sMenuManager.menuEvent, FlexibleEvent> eventMap;
+        //private Dictionary<sMenuManager.menuEvent, FlexibleEvent> _eventMap;
+        //private Dictionary<sMenuManager.menuEvent, FlexibleEvent> eventMap
+        //{
+        //    get
+        //    {
+        //        if (_eventMap == null)
+        //        {
+        //            _eventMap = new();
+        //            foreach (sMenuManager.menuEvent evt in Enum.GetValues<sMenuManager.menuEvent>())
+        //            {
+        //                _eventMap[evt] = new FlexibleEvent();
+        //            }
+        //        }
+        //        return _eventMap;
+        //    }
+        //}
         public Dictionary<string, List<sMenuNode>> catagories = new();
         public List<sMenuNode> currentCatagory 
         { 
@@ -56,23 +83,26 @@ namespace SlideMenu
             } 
         }
         private int catagoryIndex = 0;
-        public string currentCatagoryName
+        public string? currentCatagoryName
         { 
             get 
             {
-                return catagories.Keys.ToArray().ElementAt(catagoryIndex);
+                return catagories?.Keys?.ToArray()?.ElementAt(catagoryIndex);
             }
         }
 
-        private FlexibleEvent OnOpened = new();
-        private FlexibleEvent WhileOpened = new();
-        private FlexibleEvent OnClosed = new();
-        private FlexibleEvent WhileClosed = new();
-        private FlexibleEvent OnSelected = new();
-        private FlexibleEvent WhileSelected = new();
-        private FlexibleEvent OnDeselected = new();
-        private FlexibleEvent WhileDeselected = new();
-        private FlexibleEvent OnCatagoryChanged = new();
+        public bool isOpen => sMenuManager.currentMenu == this;
+        public bool isSelected => nodes.Any(x => x.Selected);
+
+        public FlexibleEvent OnOpened = new();
+        public FlexibleEvent WhileOpened = new();
+        public FlexibleEvent OnClosed = new();
+        public FlexibleEvent WhileClosed = new();
+        public FlexibleEvent OnSelected = new();
+        public FlexibleEvent WhileSelected = new();
+        public FlexibleEvent OnDeselected = new();
+        public FlexibleEvent WhileDeselected = new();
+        public FlexibleEvent OnCatagoryChanged = new();
 
         private int pannelPositionWorkaround = 0; //TODO fix this properly
 
@@ -85,18 +115,9 @@ namespace SlideMenu
         private RectTransform rect;
         Dictionary<sMenuPannel.Side, sMenuPannel> pannels = new();
 
+
         public sMenu(string arg_Name, sMenu arg_ParrentMenu = null)
         {
-            eventMap = new Dictionary<sMenuManager.menuEvent, FlexibleEvent>(){ //I think all invokes are covered?  Might be missing one.
-                                    { sMenuManager.menuEvent.OnOpened, OnOpened },
-                                    { sMenuManager.menuEvent.WhileOpened, WhileOpened },
-                                    { sMenuManager.menuEvent.OnClosed, OnClosed },
-                                    { sMenuManager.menuEvent.WhileClosed, WhileClosed },
-                                    { sMenuManager.menuEvent.OnSelected, OnSelected },
-                                    { sMenuManager.menuEvent.WhileSelected, WhileSelected },
-                                    { sMenuManager.menuEvent.OnDeselected, OnDeselected },
-                                    { sMenuManager.menuEvent.WhileDeselected, WhileDeselected },
-                                    { sMenuManager.menuEvent.OnCatagoryChanged, OnCatagoryChanged }};
             radius = sMenuManager.defaultRadius;
             name = arg_Name;
             gameObject = new GameObject($"sMenu {name}");
@@ -111,7 +132,19 @@ namespace SlideMenu
             parrentMenu = arg_ParrentMenu;
             //Open();
             //ArrangeNodes();
+            SetupInputs();
             Close();
+        }
+        private void SetupInputs()
+        {
+            InputSystem.AddListener(sInputSystemDefaults.WhileActive, fullname + "WhileOpened",     () => isOpen,      Event: WhileOpened);
+            InputSystem.AddListener(sInputSystemDefaults.OnActive,    fullname + "OnOpened",        () => isOpen,      Event: OnOpened);
+            InputSystem.AddListener(sInputSystemDefaults.WhileActive, fullname + "WhileClosed",     () => !isOpen,     Event: WhileClosed);
+            InputSystem.AddListener(sInputSystemDefaults.OnActive,    fullname + "OnClosed",        () => !isOpen,     Event: OnClosed);
+            InputSystem.AddListener(sInputSystemDefaults.WhileActive, fullname + "WhileSelected",   () => isSelected,  Event: WhileSelected);
+            InputSystem.AddListener(sInputSystemDefaults.OnActive,    fullname + "OnSelected",      () => isSelected,  Event: OnSelected);
+            InputSystem.AddListener(sInputSystemDefaults.WhileActive, fullname + "WhileDeselected", () => !isSelected, Event: WhileDeselected);
+            InputSystem.AddListener(sInputSystemDefaults.OnActive,    fullname + "OnDeselected",    () => !isSelected, Event: OnDeselected);
         }
         internal void UpdateCatagoryByScroll()
         {
@@ -207,19 +240,19 @@ namespace SlideMenu
         }
         public void Update()
         {
-            if (gameObject.activeInHierarchy)
-                WhileOpened.Invoke();
-            else
-                WhileClosed.Invoke();
+            //if (gameObject.activeInHierarchy)
+            //    WhileOpened.Invoke();
+            //else
+            //    WhileClosed.Invoke();
             selectedNode = null;
             foreach (var node in allNodes.Where(n => n.gameObject.activeInHierarchy).ToList())
             {
                 node.Update();
             }
-            if (selectedNode != null)
-                WhileSelected.Invoke();
-            else
-                WhileDeselected.Invoke();
+            //if (selectedNode != null)
+            //    WhileSelected.Invoke();
+            //else
+            //    WhileDeselected.Invoke();
             if (pannelPositionWorkaround < 2)
                 _UpdatePannelPositions();
         }
@@ -238,7 +271,7 @@ namespace SlideMenu
             setVisiblity(false);
             if (sMenuManager.currentMenu == this)
                 sMenuManager.currentMenu = null;
-            OnClosed.Invoke();
+            //OnClosed.Invoke();
             return this; 
         }
         public void Open()
@@ -264,7 +297,7 @@ namespace SlideMenu
             sMenuManager.currentMenu = this;
             if (sMenuManager.previousMenu != null && sMenuManager.previousMenu != this)
                 sMenuManager.previousMenu.Close();
-            OnOpened.Invoke();
+            //OnOpened.Invoke();
         }
         public sMenuPannel AddPannel(sMenuPannel.Side side, string initialText = "")
         {
@@ -436,55 +469,55 @@ namespace SlideMenu
             gameObject.transform.rotation = rot;
             return this;
         }
-        public sMenu AddListener(sMenuManager.menuEvent arg_event, Action arg_method)
-        {
-            return AddListener(arg_event, (FlexibleMethodDefinition)arg_method);
-        }
-        public sMenu AddListener(sMenuManager.menuEvent arg_event, Delegate method, params object[] args)
-        {
-            var flex = new FlexibleMethodDefinition(method, args);
-            return AddListener(arg_event, flex);
-        }
-        public sMenu AddListener(sMenuManager.menuEvent arg_event, FlexibleMethodDefinition arg_method)
-        {
-            if (eventMap.TryGetValue(arg_event, out var flexEvent))
-            {
-                flexEvent.Listen(arg_method);
-            }
-            return this;
-        }
-        public sMenu RemoveListener(sMenuManager.menuEvent arg_event, Action arg_method)
-        {
-            if (eventMap.TryGetValue(arg_event, out var flexEvent))
-            {
-                flexEvent.Unlisten(arg_method);
-            }
-            return this;
-        }
-        public sMenu RemoveListener(sMenuManager.menuEvent arg_event)
-        {
-            if (eventMap.TryGetValue(arg_event, out var flexEvent))
-            {
-                flexEvent.ClearListeners();
-            }
-            return this;
-        }
-        public sMenu RemoveListener(sMenuManager.menuEvent arg_event, FlexibleMethodDefinition arg_method)
-        {
-            if (eventMap.TryGetValue(arg_event, out var flexEvent))
-            {
-                flexEvent.Unlisten(arg_method);
-            }
-            return this;
-        }
-        public sMenu ClearListeners(sMenuManager.menuEvent arg_event)
-        {
-            if (eventMap.TryGetValue(arg_event, out var flexEvent))
-            {
-                flexEvent.ClearListeners();
-            }
-            return this;
-        }
+        //public sMenu AddListener(sMenuManager.menuEvent arg_event, Action arg_method)
+        //{
+        //    return AddListener(arg_event, (FlexibleMethodDefinition)arg_method);
+        //}
+        //public sMenu AddListener(sMenuManager.menuEvent arg_event, Delegate method, params object[] args)
+        //{
+        //    var flex = new FlexibleMethodDefinition(method, args);
+        //    return AddListener(arg_event, flex);
+        //}
+        //public sMenu AddListener(sMenuManager.menuEvent arg_event, FlexibleMethodDefinition arg_method)
+        //{
+        //    if (eventMap.TryGetValue(arg_event, out var flexEvent))
+        //    {
+        //        flexEvent.Listen(arg_method);
+        //    }
+        //    return this;
+        //}
+        //public sMenu RemoveListener(sMenuManager.menuEvent arg_event, Action arg_method)
+        //{
+        //    if (eventMap.TryGetValue(arg_event, out var flexEvent))
+        //    {
+        //        flexEvent.Unlisten(arg_method);
+        //    }
+        //    return this;
+        //}
+        //public sMenu RemoveListener(sMenuManager.menuEvent arg_event)
+        //{
+        //    if (eventMap.TryGetValue(arg_event, out var flexEvent))
+        //    {
+        //        flexEvent.ClearListeners();
+        //    }
+        //    return this;
+        //}
+        //public sMenu RemoveListener(sMenuManager.menuEvent arg_event, FlexibleMethodDefinition arg_method)
+        //{
+        //    if (eventMap.TryGetValue(arg_event, out var flexEvent))
+        //    {
+        //        flexEvent.Unlisten(arg_method);
+        //    }
+        //    return this;
+        //}
+        //public sMenu ClearListeners(sMenuManager.menuEvent arg_event)
+        //{
+        //    if (eventMap.TryGetValue(arg_event, out var flexEvent))
+        //    {
+        //        flexEvent.ClearListeners();
+        //    }
+        //    return this;
+        //}
         public void DisableNode(sMenuNode node)
         {
             if (!disabledNodes.Contains(node))

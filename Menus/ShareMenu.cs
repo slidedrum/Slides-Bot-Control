@@ -29,7 +29,7 @@ namespace BotControl.Menus
                 node.AddListener(sMenuManager.nodeEvent.OnTapped, updateNodeThresholdDisplay, node, itemName);
                 node.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetSettings, itemName, node);
                 node.AddListener(sMenuManager.nodeEvent.WhileSelected, ChangeThresholdBasedOnMouseWheel, itemName, node, 5);
-                shareMenu.AddListener(sMenuManager.menuEvent.OnOpened, updateNodeThresholdDisplay, node, itemName);
+                shareMenu.OnOpened.Listen(updateNodeThresholdDisplay, args: [node, itemName]);
                 shareMenu.centerNode.ClearListeners(sMenuManager.nodeEvent.OnUnpressedSelected);
                 shareMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetSettings, itemName, node);
                 node.fullTextPart.SetScale(1f, 1f);

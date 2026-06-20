@@ -118,9 +118,9 @@ namespace BotControl.Menus
                 followMenu.AddNodeToCatagory("Advanced", stateNode);
             }
 
-            followMenu.AddListener(sMenuManager.menuEvent.WhileOpened, UpdateHighlightedState);
-            followMenu.AddListener(sMenuManager.menuEvent.OnOpened, UpdateAllNodes);
-            followMenu.AddListener(sMenuManager.menuEvent.OnCatagoryChanged, UpdateAllNodes);
+            followMenu.WhileOpened.Listen((Delegate)UpdateHighlightedState);
+            followMenu.OnOpened.Listen(UpdateAllNodes);
+            followMenu.OnCatagoryChanged.Listen(UpdateAllNodes);
 
             followMenu.centerNode.ClearListeners(sMenuManager.nodeEvent.OnUnpressedSelected);
             followMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetAllLocalSettings);

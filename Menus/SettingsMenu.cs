@@ -38,7 +38,7 @@ namespace BotControl.Menus
             scaleNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetScale);
             ChatPermsMenu.centerNode.ClearListeners(sMenuManager.nodeEvent.OnUnpressedSelected);
             ChatPermsMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnTapped, ChatPermsMenu.parrentMenu.Open);
-            ChatPermsMenu.AddListener(sMenuManager.menuEvent.OnOpened, AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: ["TalkInChat", ChatPermsMenu.centerNode, onColor]);
+            ChatPermsMenu.OnOpened.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: ["TalkInChat", ChatPermsMenu.centerNode, onColor]);
 
             ChatSettingsMenu.Setup(ChatPermsMenu);
 

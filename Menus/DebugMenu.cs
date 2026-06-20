@@ -69,6 +69,12 @@ namespace BotControl.Menus
             CullingMenuClass.setupCullingMenu(debugCameraCullingMenu);
             debugCameraCullingMenu.radius = 140;
             debugCameraCullingMenu.setNodeSize(0.5f);
+            debugMenu.OnOpened.Listen(() => { debugmenuopen("First open"); });
+            debugMenu.WhileOpened.Listen(() => { debugmenuopen("open"); });
+        }
+        private static void debugmenuopen(string text)
+        {
+            ZiMain.log.LogInfo(text);
         }
 
         private static void toggleUsePickupAction()

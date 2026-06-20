@@ -1,5 +1,4 @@
-﻿using BotControl.CustomActions;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Player;
 using System;
 using System.Collections.Generic;
@@ -54,7 +53,7 @@ namespace BotControl.Patches
             if (newMeans == __instance.m_attackAction.Means)
                 return;
             __instance.m_attackAction.Means = newMeans;
-            zSlideComputer.RemoveActionsOfType(__instance.m_agent, typeof(PlayerBotActionAttack));
+            //zSlideComputer.RemoveActionsOfType(__instance.m_agent, typeof(PlayerBotActionAttack));
         }
         [HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.IsWithinMeleeReach))]
         [HarmonyPrefix]

@@ -81,9 +81,9 @@ namespace SlideMenu
             }
             public bool closeOnPress { get; private set; }
 
-            public bool selected = false;
-            public bool pressed = false;
-            public bool held = false;
+            public bool Selected = false;
+            public bool isPressed = false;
+            public bool isHeld = false;
             public int frameFirstPressedAt = Time.frameCount;
             public float timeFirstPressedAt = Time.time;
             public int frameLastPressedAt = Time.frameCount;
@@ -91,25 +91,27 @@ namespace SlideMenu
             public float lastTapTime = Time.time;
             public sMenu parrentMenu;
 
-            //private readonly FlexibleEvent OnPressed = new();
-            //private readonly FlexibleEvent WhilePressed = new();
-            //private readonly FlexibleEvent OnUnpressed = new();
-            //private readonly FlexibleEvent OnUnpressedSelected = new();
-            //private readonly FlexibleEvent WhileUnpressed = new();
-            //private readonly FlexibleEvent OnSelected = new();
-            //private readonly FlexibleEvent WhileSelected = new();
-            //private readonly FlexibleEvent OnDeselected = new();
-            //private readonly FlexibleEvent WhileDeselected = new();
-            //private readonly FlexibleEvent OnDoubleTapped = new();
-            //private readonly FlexibleEvent OnTappedExclusive = new();
-            //private readonly FlexibleEvent OnTappedThenHeld = new(); //TODO?
-            //private readonly FlexibleEvent OnTapped = new();
-            //private readonly FlexibleEvent OnHeld = new();
-            //private readonly FlexibleEvent WhileHeld = new();
-            //private readonly FlexibleEvent OnHeldSelected = new();
-            //private readonly FlexibleEvent WhileHeldSelected = new();
-            //private readonly FlexibleEvent OnHeldImmediate = new();
-            //private readonly FlexibleEvent OnHeldImmediateSelected = new();
+            public bool isSelected => sMenuManager.selectedNode == this;
+
+            private readonly FlexibleEvent OnPressed = new();
+            private readonly FlexibleEvent WhilePressed = new();
+            private readonly FlexibleEvent OnUnpressed = new();
+            private readonly FlexibleEvent OnUnpressedSelected = new();
+            private readonly FlexibleEvent WhileUnpressed = new();
+            private readonly FlexibleEvent OnSelected = new();
+            private readonly FlexibleEvent WhileSelected = new();
+            private readonly FlexibleEvent OnDeselected = new();
+            private readonly FlexibleEvent WhileDeselected = new();
+            private readonly FlexibleEvent OnDoubleTapped = new();
+            private readonly FlexibleEvent OnTappedExclusive = new();
+            private readonly FlexibleEvent OnTappedThenHeld = new(); //TODO?
+            private readonly FlexibleEvent OnTapped = new();
+            private readonly FlexibleEvent OnHeld = new();
+            private readonly FlexibleEvent WhileHeld = new();
+            private readonly FlexibleEvent OnHeldSelected = new();
+            private readonly FlexibleEvent WhileHeldSelected = new();
+            private readonly FlexibleEvent OnHeldImmediate = new();
+            private readonly FlexibleEvent OnHeldImmediateSelected = new();
 
             //private Dictionary<sMenuManager.nodeEvent, FlexibleEvent> eventMap;
             private Dictionary<sMenuManager.nodeEvent, FlexibleEvent> _eventMap;
@@ -219,18 +221,18 @@ namespace SlideMenu
                 AddListener(sMenuManager.nodeEvent.OnDeselected, selectionColorHandler.OnDeselected);
                 AddListener(sMenuManager.nodeEvent.OnPressed, selectionColorHandler.OnPressed);
                 AddListener(sMenuManager.nodeEvent.OnUnpressed, selectionColorHandler.OnUnpressed);
-                parrentMenu.AddListener(sMenuManager.menuEvent.OnClosed, selectionColorHandler.onClosed);
+                parrentMenu.OnClosed.Listen(selectionColorHandler.onClosed);
             }
             public sMenuNode Update()
             {
-                if (selected)
+                if (Selected)
                 {
                     eventMap[sMenuManager.nodeEvent.WhileSelected].Invoke();
                     parrentMenu.selectedNode = this;
                 }
                 else
                     eventMap[sMenuManager.nodeEvent.WhileDeselected].Invoke();
-                if (!pressed)
+                if (!isPressed)
                     eventMap[sMenuManager.nodeEvent.WhileUnpressed].Invoke();
                 //if (pressed && Time.frameCount - frameLastPressedAt > 2)
                 //    Unpress();
@@ -302,20 +304,20 @@ namespace SlideMenu
             public sMenuNode Select()
             {
 
-                if (selected) return this;
-                selected = true;
+                if (Selected) return this;
+                Selected = true;
                 SetSize(sMenuManager.selectedNodeSizeMultiplier);
                 eventMap[sMenuManager.nodeEvent.OnSelected].Invoke();
-                parrentMenu.OnSelected.Invoke();
+                //parrentMenu.OnSelected.Invoke();
                 return this;
             }
             public sMenuNode Deselect()
             {
-                if (!selected) return this;
-                selected = false;
+                if (!Selected) return this;
+                Selected = false;
                 SetSize(1f);
                 eventMap[sMenuManager.nodeEvent.OnDeselected].Invoke();
-                parrentMenu.OnDeselected.Invoke();
+                //parrentMenu.OnDeselected.Invoke();
                 return this;
             }
             public sMenuNode Pressing()
@@ -326,17 +328,17 @@ namespace SlideMenu
                 float heldTime = Time.time - timeFirstPressedAt;
                 if (heldTime > holdThreshold)
                 {
-                    if (held)
+                    if (isHeld)
                     {
-                        if (selected)
+                        if (Selected)
                             eventMap[sMenuManager.nodeEvent.WhileHeldSelected].Invoke();
                         else
                             eventMap[sMenuManager.nodeEvent.WhileHeld].Invoke();
                     }
                     else
                     {
-                        held = true;
-                        if (selected)
+                        isHeld = true;
+                        if (Selected)
                             eventMap[sMenuManager.nodeEvent.OnHeldImmediateSelected].Invoke();
                         eventMap[sMenuManager.nodeEvent.OnHeldImmediate].Invoke();
                     }
@@ -347,7 +349,7 @@ namespace SlideMenu
             {
                 frameFirstPressedAt = Time.frameCount;
                 timeFirstPressedAt = Time.time;
-                pressed = true;
+                isPressed = true;
                 eventMap[sMenuManager.nodeEvent.OnPressed].Invoke();
                 if (closeOnPress)
                 {
@@ -359,14 +361,14 @@ namespace SlideMenu
             public sMenuNode Unpress()
             {
 
-                if (pressed)
+                if (isPressed)
                 {
                     eventMap[sMenuManager.nodeEvent.OnUnpressed].Invoke();
-                    if (held)
+                    if (isHeld)
                         eventMap[sMenuManager.nodeEvent.OnHeld].Invoke();
-                    if (selected)
+                    if (Selected)
                         eventMap[sMenuManager.nodeEvent.OnUnpressedSelected].Invoke();
-                    if (held && selected)
+                    if (isHeld && Selected)
                         eventMap[sMenuManager.nodeEvent.OnHeldSelected].Invoke();
 
                     // If released quickly enough = tap
@@ -382,14 +384,14 @@ namespace SlideMenu
                         lastTapTime = Time.time;
                     }
                 }
-                held = false;
-                pressed = false;
+                isHeld = false;
+                isPressed = false;
                 return this;
             }
             private void InvokeTappedExclusive()
             {
                 // If no second tap happened (lastTapTime is still within threshold window)
-                if (Time.time - lastTapTime >= doubleTapThreshold - Time.deltaTime && !pressed)
+                if (Time.time - lastTapTime >= doubleTapThreshold - Time.deltaTime && !isPressed)
                     eventMap[sMenuManager.nodeEvent.OnTappedExclusive].Invoke();
             }
             //public sMenuNode AddListener<T>(sMenuManager.nodeEvent arg_event, Action<T> method, T arg)

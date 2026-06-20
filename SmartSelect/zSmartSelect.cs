@@ -66,7 +66,6 @@ namespace BotControl.SmartSelect
             bool ready = FocusStateManager.CurrentState == eFocusState.FPS || FocusStateManager.CurrentState == eFocusState.Dead;
             if (!ready) return;
             if (!IsSetUp) SetUp();
-            InputSystem.Update();
             if (roundedTime > lastSlowUpdateTime)
                 SlowUpdate();
         }
@@ -85,7 +84,7 @@ namespace BotControl.SmartSelect
                 seq.ResetMatchState();
                 InputSystem.AddListener(
                     seq,
-                    (KeyCode?)zSlideComputer.SmartSelectButton.Value,
+                    (KeyCode)zSlideComputer.SmartSelectButton.Value,
                     new FlexibleMethodDefinition(InputType.Invoke)
                     );
                 //InputSystem.AddListener(InputType.InputSequence, (KeyCode?)zSlideComputer.SmartSelectButton.Value, new FlexibleMethodDefinition(InputType.Invoke));

@@ -1,30 +1,31 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
+using BotControl.CustomActions;
+using BotControl.Menus;
 using BotControl.Networking;
 using BotControl.Patches;
 using BotControl.SmartSelect;
-using BotControl.CustomActions;
+using BotControl.SmartSelect.PressActions;
 using CellMenu;
 using Enemies;
+using FlexMethodDefinition;
 using GTFO.API;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using LevelGeneration;
 //using Patches.Native;
 using Player;
+using sInputSystem;
 using SlideMenu;
 using SNetwork;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static BotControl.Networking.pStructs;
-using System.Linq;
-using BotControl.SmartSelect.PressActions;
-using BotControl.Menus;
-using FlexMethodDefinition;
-using System.Reflection;
 
 /*
  == TODO == Priority: Clean up the mess I made creating custom actions.
@@ -221,6 +222,7 @@ public class ZiMain : BasePlugin
             //zUpdater.onUpdate.Listen(zDebug.debugUpdate);
             //zUpdater.onUpdate.Listen(zVisitedManager.Update);
             zUpdater.onUpdate.Listen(zSmartSelect.Update);
+            zUpdater.onUpdate.Listen(InputSystem.Update);
             zUpdater.onLateUpdate.Listen(sMenuManager.LateUpdate);
             OnLateLoad();
         };

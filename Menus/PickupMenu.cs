@@ -117,7 +117,7 @@ namespace BotControl.Menus
             pickupMenu.AddNodeToCatagory("Throwables", "C-Foam Grenade");
             pickupMenu.AddCatagory("Encountered");
             pickupMenu.SetCatagory("Default");
-            pickupMenu.AddListener(sMenuManager.menuEvent.OnOpened, pickupMenu.UpdateCatagoryNodes);
+            pickupMenu.OnOpened.Listen(pickupMenu.UpdateCatagoryNodes);
 
             pickupNode.ClearListeners(sMenuManager.nodeEvent.OnUnpressedSelected);
             pickupNode.ClearListeners(sMenuManager.nodeEvent.WhileSelected);

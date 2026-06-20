@@ -29,7 +29,7 @@ namespace SlideMenu
         public static sMenu mainMenu { get; private set; }
         public static sMenu currentMenu { get; internal set; }
         public static sMenu previousMenu { get; internal set; }
-        private static sMenu.sMenuNode selectedNode;
+        public static sMenu.sMenuNode selectedNode;
         public static Camera mainCamera;
         public static Color defaultColor { get; private set; } = new Color(0.2f, 0.2f, 0.2f, 1f);
         public static string defaultColorHex = ColorUtility.ToHtmlStringRGB(defaultColor);
@@ -209,11 +209,11 @@ namespace SlideMenu
                 }
                 foreach (sMenu.sMenuNode node in nodeDict.Values)
                 {
-                    if (node == selectedNode && !node.selected)
+                    if (node == selectedNode && !node.Selected)
                     {
                         node.Select();
                     }
-                    if (node != selectedNode && node.selected)
+                    if (node != selectedNode && node.Selected)
                     {
                         node.Deselect();
                     }
