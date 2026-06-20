@@ -1,9 +1,9 @@
-﻿using BotControl.CustomActions;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Player;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace BotControl.Patches
 {
@@ -81,6 +81,17 @@ namespace BotControl.Patches
                 return;
             __instance.m_attackAction.Means = newMeans;
             zSlideComputer.RemoveActionsOfType(__instance.m_agent, typeof(PlayerBotActionAttack));
+        }
+        [HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.IsWithinMeleeReach))]
+        [HarmonyPrefix]
+        public static bool PreIsWithinMeleeReach(PlayerBotActionAttack __instance, Vector3 testPosition, float reachMultiplier, ref bool __result)
+        {
+            if ((__instance.m_desc.Means & PlayerBotActionAttack.AttackMeansEnum.Bullet) == 0)
+            {
+                __result = true;
+                return false;
+            }
+            return true;
         }
     }
 }

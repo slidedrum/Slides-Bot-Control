@@ -1,7 +1,6 @@
 ﻿using BetterBots.Components;
 using BetterBots.Managers;
 using BotControl.CustomActions;
-using BotControl.Patches;
 using HarmonyLib;
 using Player;
 using System;
@@ -19,7 +18,14 @@ namespace BotControl
         {
             var original = AccessTools.Method(typeof(RootPlayerBotAction), nameof(RootPlayerBotAction.UpdateActionCollectItem));
             ZiMain.m_Harmony.Unpatch(original, HarmonyPatchType.Prefix, "com.east.bb");
+            var method = AccessTools.Method(
+                typeof(PlayerBotActionAttack),
+                nameof(PlayerBotActionAttack.ChooseAttackOption));
 
+            ZiMain.m_Harmony.Unpatch(
+                method,
+                HarmonyPatchType.Postfix,
+                "com.east.bb");
         }
         public static void SetBotsOpenContainersToFalse()
         {
@@ -80,33 +86,33 @@ namespace BotControl
                 }
             }
         }
-        [HarmonyPostfix]
-        [HarmonyAfter("com.east.bb")]
-        [HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.ChooseAttackOption))]
-        static void Post_ChooseAttackOption(PlayerBotActionAttack __instance, ref bool __result)
-        {
-            bool allowedToMele = (bool)zSlideComputer.ActionPermissions.ValueAt("attackMeansMelee");
-            bool allowedToShoot = (bool)zSlideComputer.ActionPermissions.ValueAt("attackMeansBullet");
-            if (!allowedToMele)
-            {
-                __instance.m_currentAttackOption.Means &=
-                    ~PlayerBotActionAttack.AttackMeansEnum.Melee;
-            }
-            if (!allowedToShoot)
-            {
-                __instance.m_currentAttackOption.Means &=
-                    ~PlayerBotActionAttack.AttackMeansEnum.Bullet;
-            }
-            if (allowedToMele &&
-                (__instance.m_currentAttackOption.Means &
-                 (PlayerBotActionAttack.AttackMeansEnum.Melee |
-                  PlayerBotActionAttack.AttackMeansEnum.Bullet)) == 0)
-            {
-                __instance.m_currentAttackOption.Means |=
-                    PlayerBotActionAttack.AttackMeansEnum.Melee;
-            }
-            //zSlideComputer.RemoveActionsOfType(__instance.m_agent, typeof(PlayerBotActionAttack));
-        }
+        //[HarmonyPostfix]
+        //[HarmonyAfter("com.east.bb")]
+        //[HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.ChooseAttackOption))]
+        //static void Post_ChooseAttackOption(PlayerBotActionAttack __instance, ref bool __result)
+        //{
+        //    bool allowedToMele = (bool)zSlideComputer.ActionPermissions.ValueAt("attackMeansMelee");
+        //    bool allowedToShoot = (bool)zSlideComputer.ActionPermissions.ValueAt("attackMeansBullet");
+        //    if (!allowedToMele)
+        //    {
+        //        __instance.m_currentAttackOption.Means &=
+        //            ~PlayerBotActionAttack.AttackMeansEnum.Melee;
+        //    }
+        //    if (!allowedToShoot)
+        //    {
+        //        __instance.m_currentAttackOption.Means &=
+        //            ~PlayerBotActionAttack.AttackMeansEnum.Bullet;
+        //    }
+        //    if (allowedToMele &&
+        //        (__instance.m_currentAttackOption.Means &
+        //         (PlayerBotActionAttack.AttackMeansEnum.Melee |
+        //          PlayerBotActionAttack.AttackMeansEnum.Bullet)) == 0)
+        //    {
+        //        __instance.m_currentAttackOption.Means |=
+        //            PlayerBotActionAttack.AttackMeansEnum.Melee;
+        //    }
+        //    //zSlideComputer.RemoveActionsOfType(__instance.m_agent, typeof(PlayerBotActionAttack));
+        //}
     }
 
 }
