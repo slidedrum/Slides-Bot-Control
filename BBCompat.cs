@@ -1,6 +1,7 @@
 ﻿using BetterBots.Components;
 using BetterBots.Managers;
 using BotControl.CustomActions;
+using BotControl.Patches;
 using HarmonyLib;
 using Player;
 using System;
@@ -79,5 +80,26 @@ namespace BotControl
                 }
             }
         }
+        [HarmonyPostfix]
+        [HarmonyAfter("com.east.bb")]
+        [HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.ChooseAttackOption))]
+        static void Post_ChooseAttackOption(PlayerBotActionAttack __instance, ref bool __result)
+        {
+            bool allowedToMele = (bool)zSlideComputer.ActionPermissions.ValueAt("attackMeansMelee");
+            bool allowedToShoot = (bool)zSlideComputer.ActionPermissions.ValueAt("attackMeansBullet");
+            var newMeans = PlayerBotActionAttack.AttackMeansEnum.None;
+            foreach (var means in AttackActionPatch.meansList)
+            {
+                string actionKey = "attackMeans" + means.ToString();
+                bool allowed = (bool)zSlideComputer.ActionPermissions.ValueAt(actionKey);
+                if (allowed)
+                    newMeans |= means;
+            }
+            if (newMeans == __instance.m_currentAttackOption.Means)
+                return;
+            __instance.m_currentAttackOption.Means = newMeans;
+            //zSlideComputer.RemoveActionsOfType(__instance.m_agent, typeof(PlayerBotActionAttack));
+        }
     }
+
 }
