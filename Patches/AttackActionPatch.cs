@@ -82,6 +82,5 @@ namespace BotControl.Patches
             __instance.m_attackAction.Means = newMeans;
             zSlideComputer.RemoveActionsOfType(__instance.m_agent, typeof(PlayerBotActionAttack));
         }
-
     }
 }
