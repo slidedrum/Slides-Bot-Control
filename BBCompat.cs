@@ -85,6 +85,20 @@ namespace BotControl
                     }
                 }
             }
+            foreach(var action in bot.Actions)
+            {
+                PlayerBotActionAttack attackAction = action.TryCast<PlayerBotActionAttack>();
+                if (attackAction == null)
+                    continue;
+                bool meleeOnly =
+                    (attackAction.m_currentAttackOption.Means & PlayerBotActionAttack.AttackMeansEnum.Melee) != 0 &&
+                    (attackAction.m_currentAttackOption.Means & PlayerBotActionAttack.AttackMeansEnum.Bullet) == 0;
+                if (meleeOnly)
+                {
+                    __result = true;
+                    return;
+                }
+            }
         }
         //[HarmonyPostfix]
         //[HarmonyAfter("com.east.bb")]

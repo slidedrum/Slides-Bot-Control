@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using BotControl.Menus;
+using HarmonyLib;
 using Player;
 using System;
 using System.Collections.Generic;
@@ -80,7 +81,7 @@ namespace BotControl.Patches
             if (newMeans == __instance.m_attackAction.Means)
                 return;
             __instance.m_attackAction.Means = newMeans;
-            zSlideComputer.RemoveActionsOfType(__instance.m_agent, typeof(PlayerBotActionAttack));
+            //zSlideComputer.RemoveActionsOfType(__instance.m_agent, typeof(PlayerBotActionAttack));
         }
         [HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.IsWithinMeleeReach))]
         [HarmonyPrefix]
@@ -88,7 +89,7 @@ namespace BotControl.Patches
         {
             if ((__instance.m_desc.Means & PlayerBotActionAttack.AttackMeansEnum.Bullet) == 0)
             {
-                __result = true;
+                __result = Vector3.Distance(testPosition, __instance.m_bot.SyncValues.Leader.Position) < RootPlayerBotAction.s_followLeaderMaxDistance;
                 return false;
             }
             return true;
