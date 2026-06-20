@@ -91,8 +91,12 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
 
 
 ### Changelog
+V1.2.4
+ - Fixed unintental better bots dependancy. 
+
 V1.2.3
  - Fixed readme chart
+
 V1.2.2
  - Made it so you can no longer send bots to attack anything other than standard enemies. (other enemy types coming eventually)
 
