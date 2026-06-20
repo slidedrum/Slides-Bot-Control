@@ -24,6 +24,7 @@ using System.Linq;
 using BotControl.SmartSelect.PressActions;
 using BotControl.Menus;
 using FlexMethodDefinition;
+using System.Reflection;
 
 /*
  == TODO == Priority: Clean up the mess I made creating custom actions.
@@ -174,7 +175,10 @@ public class ZiMain : BasePlugin
     {
         
         m_Harmony = new Harmony("BotControl");
-        m_Harmony.PatchAll();
+        if (HasBetterBots)
+            m_Harmony.PatchAll();
+        else
+            m_Harmony.PatchAllExceptBB(typeof(ZiMain).Assembly);
         ClassInjector.RegisterTypeInIl2Cpp<zUpdater>();
         ClassInjector.RegisterTypeInIl2Cpp<zCameraEvents>();
         CustomActionRegistry.RegisterIl2CppTypes();
@@ -445,5 +449,21 @@ public class ZiMain : BasePlugin
     {
         CM_PageBase.PostSound(e, "PlayUiSound");
     }
-    
+
 } // plugin
+public static class HarmonyExtensions
+{
+    public static void PatchAllExceptBB(this Harmony harmony, Assembly assembly)
+    {
+        foreach (var type in AccessTools.GetTypesFromAssembly(assembly))
+        {
+            if (type == typeof(BBPatches))
+                continue;
+
+            if (type.GetCustomAttributes(typeof(HarmonyPatch), false).Length == 0)
+                continue;
+
+            harmony.CreateClassProcessor(type).Patch();
+        }
+    }
+}
