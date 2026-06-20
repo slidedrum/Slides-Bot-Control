@@ -50,6 +50,7 @@ namespace BotControl.Patches
                 if (allowed)
                     newMeans |= means;
             }
+
             if (newMeans == __instance.m_attackAction.Means)
                 return;
             __instance.m_attackAction.Means = newMeans;
