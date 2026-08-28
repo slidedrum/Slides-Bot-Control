@@ -22,7 +22,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         public Il2CppSystem.Type Type => null;
         public int? Priority => 20;
         public string pressTypeIdentifier => "Tap and Hold";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             List<PlayerAIBot> AllBots = ZiMain.GetBotList();
             NonFollowingBots.Clear();
@@ -45,7 +45,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
                 yield return new WaitForSeconds(1f);
             }
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             bool LookingDown = Vector3.Angle(zStaticRefrences.CameraTransform.forward, Vector3.down) < 15f;
             if (!LookingDown)

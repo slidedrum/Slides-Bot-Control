@@ -8,15 +8,18 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
     {
         public static int collisionLayer = LayerManager.MASK_ENEMY_PROJECTILE_COLLIDERS;
         public string FriendlyName => "Move To";
-        public string FriendlyNameShort => "Move";
+        private string _FriendlyNameShort = "Move";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public string FriendlyIdentifier => "Move";
         public Il2CppSystem.Type Type => null;
         public int? Priority => 10;
         public string pressTypeIdentifier => "Tap and Hold";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             // NOTE BestComponent is null!
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             Vector3 TaregetLocation = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos;
             zBotActions.SendbotToMoveToLocation(BestBot, TaregetLocation, zStaticRefrences.LocalPlayer);
@@ -25,9 +28,9 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
             zChatHandler.sendChatMessage("On the way.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             //if (!Physics.Raycast(zStaticRefrences.LocalPlayer.Position, zStaticRefrences.CameraTransform.forward, out RaycastHit hit, 10000f, collisionLayer))
@@ -35,6 +38,7 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
             var destinationPosition = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos;
             if (!zHelpers.PositionIsValidForAgent(BestBot.Agent, ref destinationPosition)) return false;
             if (!zHelpers.CanBotReach(BestBot, destinationPosition)) return false;
+            Color = BestBot.Agent.Owner.PlayerColor;
             return true;
         }
     }

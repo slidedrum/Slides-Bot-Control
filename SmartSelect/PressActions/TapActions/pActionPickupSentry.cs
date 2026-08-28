@@ -15,7 +15,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public Il2CppSystem.Type Type => Il2CppType.Of<SentryGunInstance>();
         public string pressTypeIdentifier => "Tap";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             SentryGunInstance sentry = BestComponent.TryCast<SentryGunInstance>();
             PlayerAIBot bot = sentry?.Owner?.GetComponent<PlayerAIBot>();
@@ -27,7 +27,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             zChatHandler.sendChatMessage("Picking up my sentry.", FriendlyIdentifier + IPressAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             SentryGunInstance sentry = candidate.TryCast<SentryGunInstance>();
             if (sentry == null)

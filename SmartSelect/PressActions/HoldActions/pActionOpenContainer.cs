@@ -8,29 +8,33 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
     public class pActionOpenContainer : IPressAction
     {
         public string FriendlyName => "Open Container";
-        public string FriendlyNameShort => "Open";
+        private string _FriendlyNameShort = "Open";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public string FriendlyIdentifier => "Open";
         public Il2CppSystem.Type Type => Il2CppType.Of<LG_WeakResourceContainer>();
         public string pressTypeIdentifier => "Hold";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             LG_WeakResourceContainer container = BestComponent.TryCast<LG_WeakResourceContainer>();
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             zBotActions.SendBotToOpenContainer(BestBot, container, zStaticRefrences.LocalPlayer);
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PLEASE);
             zChatHandler.sendChatMessage("Opening container.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
 
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             LG_WeakResourceContainer container = candidate.TryCast<LG_WeakResourceContainer>();
             if (container == null) return false;
             if (container.ISOpen) return false;
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             if (!zHelpers.CanBotReach(BestBot, container.transform.position)) return false;
+            Color = BestBot.Agent.Owner.PlayerColor;
             return true;
 
         }

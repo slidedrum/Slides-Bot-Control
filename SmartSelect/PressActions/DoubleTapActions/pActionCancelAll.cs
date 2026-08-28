@@ -14,7 +14,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         public bool Enabled => true;
         public int? Priority => 20;
         public string pressTypeIdentifier => "Double Tap";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CANCELTHAT);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Cancel that.", 1);
@@ -31,7 +31,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             }
             return true;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             // Candidate is irrelevant for this action, we just need to check if we have any bots selected
             bool facingUp = Vector3.Angle(zStaticRefrences.CameraTransform.forward, Vector3.up) < 15f;

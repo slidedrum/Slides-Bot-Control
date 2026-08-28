@@ -15,7 +15,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public Il2CppSystem.Type Type => Il2CppType.Of<MineDeployerInstance>();
         public string pressTypeIdentifier => "Hold";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             MineDeployerInstance mine = BestComponent.TryCast<MineDeployerInstance>();
             PlayerAIBot bot = mine?.Owner?.GetComponent<PlayerAIBot>();
@@ -27,7 +27,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             zChatHandler.sendChatMessage("Picking up all of my mines.", FriendlyIdentifier + IPressAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             MineDeployerInstance mine = candidate.TryCast<MineDeployerInstance>();
             if (mine == null)

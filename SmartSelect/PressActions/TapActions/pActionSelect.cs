@@ -15,7 +15,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAIBot>();
         public string pressTypeIdentifier => "Tap";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             PlayerAIBot Bot = BestComponent.TryCast<PlayerAIBot>();
             if (Bot == null)
@@ -32,7 +32,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             zChatHandler.sendChatMessage("I'm ready.", FriendlyIdentifier + IPressAction.chatPermSuffix, Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             PlayerAIBot Bot = candidate.Cast<PlayerAIBot>();
             if (Bot == null)

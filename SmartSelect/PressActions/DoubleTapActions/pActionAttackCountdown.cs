@@ -1,6 +1,7 @@
 ﻿using Enemies;
 using Il2CppInterop.Runtime;
 using LevelGeneration;
+using Player;
 using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
@@ -13,7 +14,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         public string pressTypeIdentifier => "Double Tap";
         public string FriendlyIdentifier => "Attack";
         public bool Enabled => false;
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             EnemyAgent Enemy = BestComponent.TryCast<EnemyAgent>();
             //TODO
@@ -24,7 +25,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             return false;
         }
 
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             return false;
         }

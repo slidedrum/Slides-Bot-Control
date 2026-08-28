@@ -1,5 +1,6 @@
 ﻿using Il2CppInterop.Runtime;
 using LevelGeneration;
+using Player;
 using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
@@ -12,14 +13,14 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         public Il2CppSystem.Type Type => Il2CppType.Of<LG_WeakResourceContainer>();
         public string pressTypeIdentifier => "Double Tap";
         public bool Enabled => false;
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             LG_WeakResourceContainer Container = BestComponent.TryCast<LG_WeakResourceContainer>();
             // TODO
             return false;
         }
 
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             return false;
         }

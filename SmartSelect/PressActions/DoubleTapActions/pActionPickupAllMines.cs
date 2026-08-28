@@ -18,7 +18,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         public Il2CppSystem.Type Type => Il2CppType.Of<MineDeployerInstance>();
         public string pressTypeIdentifier => "Double Tap";
         public int cycleOffset = 0;
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             List<PlayerAIBot> BotsWithDeployedMines = GetBotsWithDeployedMines();
             if (BotsWithDeployedMines.Count == 0) return false;
@@ -36,7 +36,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
                 yield return new WaitForSeconds(0.25f);
             }
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             List<PlayerAIBot> BotsWithDeployedMines = GetBotsWithDeployedMines();
             if (BotsWithDeployedMines.Count <= 1)

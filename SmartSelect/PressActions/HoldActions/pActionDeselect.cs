@@ -11,7 +11,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         public string FriendlyIdentifier => "Select";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Hold";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             if (!zSmartSelect.MainSelection.Selected<PlayerAIBot>())
                 return false;
@@ -25,7 +25,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             zSmartSelect.MainSelection.Deselect<PlayerAIBot>();
             return true;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             // Candidate is irrelevant for this action, we just need to check if we have any bots selected
             if (!zSmartSelect.MainSelection.Selected<PlayerAIBot>())

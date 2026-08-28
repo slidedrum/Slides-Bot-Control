@@ -10,15 +10,18 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
     public class pActionInsertCell : IPressAction
     {
         public string FriendlyName => "Insert Cell";
-        public string FriendlyNameShort => "Insert";
+        private string _FriendlyNameShort = "Insert";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public string FriendlyIdentifier => "Insert";
         public Il2CppSystem.Type Type => Il2CppType.Of<LG_PowerGenerator_Core>();
         public string pressTypeIdentifier => "Hold";
         public int? Priority => 15;
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             LG_PowerGenerator_Core Generator = BestComponent.TryCast<LG_PowerGenerator_Core>();
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false; 
             if (BestBot.Agent.Alive == false) return false;
             zBotActions.SendBotToInsertCell(BestBot, Generator, zStaticRefrences.LocalPlayer);
@@ -26,9 +29,9 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             return true;
         }
 
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (BestBot.Agent.Alive == false) return false;
             LG_PowerGenerator_Core Generator = candidate.TryCast<LG_PowerGenerator_Core>();
@@ -46,6 +49,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 return false;
             if (!zHelpers.CanBotReach(BestBot, (Vector3)TargetPosition))
                 return false;
+            Color = BestBot.Agent.Owner.PlayerColor;
             return true;
         }
         private Vector3? GetTargetPosition(LG_PowerGenerator_Core TargetGenerator)

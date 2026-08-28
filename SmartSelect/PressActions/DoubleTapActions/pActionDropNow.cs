@@ -7,14 +7,17 @@ namespace BotControl.SmartSelect.PressActions
     internal class pActionDropNow : IPressAction
     {
         public string FriendlyName => "Drop Now";
-        public string FriendlyNameShort => "Drop";
+        private string _FriendlyNameShort = "Drop";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public string FriendlyIdentifier => "Drop Objective";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Double Tap";
         public int? Priority => 10;
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             BackpackItem item = zHelpers.GetAgentBackpackItem(BestBot.Agent, InventorySlot.InLevelCarry);
@@ -28,12 +31,13 @@ namespace BotControl.SmartSelect.PressActions
             zChatHandler.sendChatMessage("Dropping item.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             if (zHelpers.GetAgentBackpackItem(BestBot.Agent, InventorySlot.InLevelCarry) == null) return false;
+            Color = BestBot.Agent.Owner.PlayerColor;
             return true;
         }
     }

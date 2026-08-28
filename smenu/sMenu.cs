@@ -127,6 +127,15 @@ namespace SlideMenu
                 catagoryIndex = catagories.Count() - 1;
             SetCatagory(catagories.Keys.ElementAt(catagoryIndex));
         }
+        public bool HasNode(string nodeName)
+        {
+            foreach(sMenuNode Node in nodes)
+            {
+                if (Node.text == nodeName)
+                    return true;
+            }
+            return false;
+        }
         public void UpdateCatagoryNodes()
         {
             if (catagoryIndex >= catagories.Count())

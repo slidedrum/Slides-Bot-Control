@@ -10,17 +10,20 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     public class pActionUseLockMelter : IPressAction
     {
         public string FriendlyName => "Lock Melter";
-        public string FriendlyNameShort => "Melt";
+        private string _FriendlyNameShort = "Melt";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public string FriendlyIdentifier => "Interact";
         public Il2CppSystem.Type Type => Il2CppType.Of<LG_WeakLock>();
         public string pressTypeIdentifier => "Hold";
         public static bool strike = false;
         public static bool travel = true;
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             LG_WeakLock Lock = BestComponent.TryCast<LG_WeakLock>();
             if (Lock == null) return false;
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PLEASE);
@@ -29,11 +32,11 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             zChatHandler.sendChatMessage("Using my lock melter.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             LG_WeakLock Lock = candidate.TryCast<LG_WeakLock>();
             if (Lock == null) return false;
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             if (Lock == null) return false;
@@ -53,6 +56,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
                 }
             }
             if (!zHelpers.CanBotReach(BestBot, Lock.transform.position)) return false;
+            Color = BestBot.Agent.Owner.PlayerColor;
             return true;
         }
     }

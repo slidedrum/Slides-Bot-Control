@@ -7,14 +7,17 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
     public class pActionDeployMine : IPressAction
     {
         public string FriendlyName => "Deploy Mine";
-        public string FriendlyNameShort => "Mine";
+        private string _FriendlyNameShort = "Mine";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public string FriendlyIdentifier => "Deploy Equipmenet";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Double Tap";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         { // This logic should not be done on client, send to host over network.  Maybe works now?
 
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             Pose minePose = new Pose(zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, Quaternion.LookRotation(-zStaticRefrences.LocalPlayer.FPSCamera.CameraRayNormal));
             zBotActions.SendBotToPlaceMine(BestBot, minePose, InventorySlot.GearClass, zStaticRefrences.LocalPlayer, 0);
@@ -25,14 +28,15 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             return true;
         }
         
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             // candidate is null
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             if (!Evaluate(BestBot)) return false;
             if (!IsMineValid(BestBot)) return false;
+            Color = BestBot.Agent.Owner.PlayerColor;
             return true;
         }
         private bool Evaluate(PlayerAIBot bot)
@@ -46,7 +50,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             if (backpack.AmmoStorage.ConsumableAmmo.BulletsInPack > 0)
             {
                 BackpackItem backpackItem = backpack.Slots[5];
-                if (backpackItem != null && backpackItem.Instance != null && backpackItem.ItemID == 139U && backpackItem.Instance as ItemEquippable != null)
+                if (backpackItem != null && backpackItem.Instance != null && backpackItem.ItemID == 139U && backpackItem.Instance.TryCast<ItemEquippable>() != null)
                 {
                     foundBackpackItem = backpackItem;
                     return true;

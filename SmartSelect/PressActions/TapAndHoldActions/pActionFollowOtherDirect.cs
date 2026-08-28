@@ -11,13 +11,15 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
         public string FriendlyName => "Follow Other Direct";
         private string _FriendlyNameShort = "Send";
         public string FriendlyIdentifier => "Follow";
-        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        public string FriendlyNameShort => $"<color=#{TargetColorHex}>:</color><color=#{ColorHex}>{_FriendlyNameShort}</color><color=#{TargetColorHex}>:</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
+        private Color TargetColor = new Color(1f, 1f, 1f, 0.25f);
+        private string TargetColorHex => ColorUtility.ToHtmlStringRGB(TargetColor);
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
         public int? Priority => 15;
         public string pressTypeIdentifier => "Tap and Hold";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             PlayerAIBot Follower = zSmartSelect.MainSelection.GetBestBot();
             if (Follower == null) return false;
@@ -29,7 +31,7 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
             //PressActionManager.GetAction("Follow me").Invoke(Follower);
             return true;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
 
             PlayerAIBot Follower = zSmartSelect.MainSelection.GetBestBot();
@@ -41,7 +43,8 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
             PlayerAgent leader = Follower.SyncValues?.Leader;
             if (leader != null && leader == Folowee) return false; // Are they already following this agent?
             if (Follower.Agent == Folowee) return false;
-            Color = Folowee.Owner.PlayerColor;
+            Color = Follower.Agent.Owner.PlayerColor;
+            TargetColor = Folowee.Owner.PlayerColor;
             return true;
         }
     }

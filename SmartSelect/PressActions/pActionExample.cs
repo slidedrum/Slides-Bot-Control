@@ -13,11 +13,11 @@ namespace BotControl.SmartSelect.PressActions
         public string FriendlyIdentifier => "EXAMPLE";
         public bool Enabled => false;
 
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             return false;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             return false;
         }

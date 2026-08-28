@@ -4,6 +4,7 @@ using Player;
 using PrioritySet;
 using SlideDrum.sInputSystem;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace BotControl.SmartSelect.PressTypes
@@ -12,6 +13,7 @@ namespace BotControl.SmartSelect.PressTypes
     {
         // ── Current State ─────────────────────────────────────────────────────────
         public abstract Component CurrentComponent { get; set; } // Holds the componenet that the action will be performed on if invoked right now.s
+        public abstract PlayerAIBot CurrentBot { get; set; } // Holds the current bot that will perform the action
         public abstract IPressAction CurrentAction { get; set; } // Holds the current action that will be invoked if the press type is triggered right now.
 
         // ── Action Maps ───────────────────────────────────────────────────────────
@@ -32,7 +34,7 @@ namespace BotControl.SmartSelect.PressTypes
         public enum fallbackType // Defines what to do if no selectable type is found
         {
             Default,     // Do nothing.
-            //Nothing,     // Literally select the nothing
+            //Nothing,   // Literally select the nothing
             PlayerAgent, // Select a player agent through walls if we can't find anything else.
             PlayerAiBot, // Select a player ai bot through walls if we can't find anything else.
         }
@@ -78,8 +80,8 @@ namespace BotControl.SmartSelect.PressTypes
         public virtual bool Invoke() // Triggerd when the PressSequence triggers.
         {
             bool ret = false;
-            if (CurrentAction != null && CurrentAction.IsActionValid(CurrentComponent))
-                ret = CurrentAction.Invoke(CurrentComponent);
+            if (CurrentAction != null && CurrentAction.IsActionValid(CurrentComponent, CurrentBot))
+                ret = CurrentAction.Invoke(CurrentComponent, CurrentBot);
             if (ret)
                 ZiMain.PlayUiSound(zSmartSelect.CorrectSound);
             else
@@ -89,15 +91,35 @@ namespace BotControl.SmartSelect.PressTypes
         public virtual bool Update() // Triggered on slow update, responsible for updating the current action and component based on where the player is looking and what actions are valid.
         {
             CurrentAction = null;
+            var BestBot = zSmartSelect.MainSelection.GetBestBot();
+            CurrentBot = BestBot;
+            List<PlayerAIBot> BotList = ZiMain.GetBotList().OrderBy(b => (b.transform.position - zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos).sqrMagnitude).ToList();
+            if (zSmartSelect.MainSelection.AnyBotsSelected())
+            {
+                BotList.Remove(BestBot);
+                BotList.Insert(0, BestBot);
+            }
             CurrentComponent = null;
             // first we find all of the candiates from selectable types.
             PrioritySet<Component> candidates = zSearch.FindAllInViewSorted(zStaticRefrences.CameraTransform, SelectableTypes, MaxAngle: SelectionAngle);
+            foreach (PlayerAIBot Bot in BotList)
+            {
+                if (TryFindAction(candidates, Bot))
+                {
+                    CurrentBot = Bot;
+                    return true;
+                }
+            }
+            return false;
+        }
+        private bool TryFindAction(PrioritySet<Component> candidates, PlayerAIBot Bot)
+        {
             Component candidate = null;
             for (int i = 0; i < candidates.Count; i++) // loop through them all in order of how close they are to the center of the screen.
             {
                 candidate = candidates[i];
                 Il2CppSystem.Type candidateType = candidate.GetIl2CppType();
-                for (Il2CppSystem.Type type = candidateType; type != null; type = type.BaseType)
+                for (Il2CppSystem.Type type = candidateType; type != null; type = type.BaseType) // Also check against parrent types
                 {
                     foreach (Il2CppSystem.Type typeToMatch in SelectableTypes)
                     {
@@ -108,12 +130,11 @@ namespace BotControl.SmartSelect.PressTypes
                         }
                     }
                 }
-
                 if (!TypeActionMap.TryGetValue(candidateType, out var actionSet) || actionSet == null)
                     continue;
-                foreach (IPressAction action in actionSet) // loop through all of the actions for that type
+                foreach (IPressAction action in actionSet) // loop through all of the actions for that type with the selected bot
                 {
-                    if (action.IsActionValid(candidate))
+                    if (action.IsActionValid(candidate, Bot))
                     {
                         CurrentAction = action; // if it's valid, then we're good we can set and stop.
                         CurrentComponent = candidate;
@@ -123,7 +144,7 @@ namespace BotControl.SmartSelect.PressTypes
             }
             foreach (IPressAction action in NullTypeActions)
             {
-                if (action.IsActionValid(null))
+                if (action.IsActionValid(null, Bot))
                 {
                     CurrentAction = action;
                     CurrentComponent = null;
@@ -161,24 +182,24 @@ namespace BotControl.SmartSelect.PressTypes
                 case fallbackType.PlayerAiBot: // fallback type player ai bot is for when we want to look at bots through walls.
                     if (!TypeActionMap.TryGetValue(Il2CppType.Of<PlayerAIBot>(), out set) || set == null || set.Count == 0)
                         return false;
-                    PlayerAIBot Bot = zSmartSelect.GetBotLookingAt();
-                    if (Bot == null)
+                    PlayerAIBot BotLookingAt = zSmartSelect.GetBotLookingAt();
+                    if (BotLookingAt == null)
                         return false;
-                    candidate = Bot.GetComponent<PlayerAIBot>();
+                    candidate = BotLookingAt.GetComponent<PlayerAIBot>();
                     if (candidate == null)
                         return false;
                     break;
             }
             foreach (IPressAction action in set)  // loop through actions in the set 
             {
-                if (action.IsActionValid(candidate)) // TODO loop through all bots in order of closeness and see if any others are valid.  Should't be relvent for actiosn I have now, but would be good to check.
+                if (action.IsActionValid(candidate, Bot))
                 {
                     CurrentAction = action;
                     CurrentComponent = candidate;
                     return true;
                 }
             }
-
+            // If we didn't find 
             return false;
         }
         public virtual void OnRegister() { }// this is for if the press type needs to do anything when it's registered, like add default actions or something idk.

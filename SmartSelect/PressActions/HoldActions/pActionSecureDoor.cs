@@ -18,10 +18,10 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public Il2CppSystem.Type Type => Il2CppType.Of<LG_WeakDoor>();
         public string pressTypeIdentifier => "Hold";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             LG_WeakDoor Door = BestComponent.TryCast<LG_WeakDoor>();
-            PlayerAIBot BestBot = GetBestBot(Door);
+            //PlayerAIBot BestBot = GetBestBot(Door);
             if (Door == null || BestBot == null) return false;
             if (Door.Gate.IsTraversable) return false; //if the door is open, don't do anything.
             // todo have the bot interact with the door to close it before securing it.
@@ -50,11 +50,11 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             bpItem = backpack.Slots[5];
             return bpItem != null && bpItem.ItemID == itemID;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             LG_WeakDoor Door = candidate.TryCast<LG_WeakDoor>();
             if (Door == null) return false;
-            PlayerAIBot BestBot = GetBestBot(Door);
+            //PlayerAIBot BestBot = GetBestBot(Door);
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             if (!Evaluate(BestBot.Agent, 115u)) return false;

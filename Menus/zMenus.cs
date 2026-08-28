@@ -30,6 +30,7 @@ namespace BotControl.Menus
                 sMenuManager.createMenu("Contextual Actions", sMenuManager.mainMenu);
             }
             SettingsMenuClass.Setup(sMenuManager.createMenu("Settings", sMenuManager.mainMenu));
+            ContextMenu.Setup(sMenuManager.createMenu("Context Menu", sMenuManager.mainMenu));
             if (ZiMain.VoiceMenu)
                 sMenuManager.createMenu("Voice menu", sMenuManager.mainMenu);
             if (ZiMain.debugMode)

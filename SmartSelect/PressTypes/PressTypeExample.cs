@@ -1,4 +1,5 @@
 ﻿using BotControl.SmartSelect.PressActions;
+using Player;
 using PrioritySet;
 using SlideDrum.sInputSystem;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace BotControl.SmartSelect.PressTypes
     {
         // ── Current State ─────────────────────────────────────────────────────────
         public Component CurrentComponent { get => _CurrentComponent; set { _CurrentComponent = value; } }
+        public PlayerAIBot CurrentBot { get => _CurrentBot; set { _CurrentBot = value; } }
         public IPressAction CurrentAction { get => _CurrentAction; set { _CurrentAction = value; } }
 
         // ── Action Maps ───────────────────────────────────────────────────────────
@@ -48,6 +50,7 @@ namespace BotControl.SmartSelect.PressTypes
 
         // ── Private Backing Fields ────────────────────────────────────────────────
         private Component _CurrentComponent = null;
+        private PlayerAIBot _CurrentBot;
         private IPressAction _CurrentAction = null;
         private sSequenceDefinition _PressSequences = null;
         private PrioritySet<IPressAction> _NullTypeActions = new();

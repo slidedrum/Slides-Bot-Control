@@ -6,13 +6,16 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
     public class pActionShootCFoam : IPressAction
     {
         public string FriendlyName => "Shoot Cfoam";
-        public string FriendlyNameShort => "cFoam";
+        private string _FriendlyNameShort = "cFoam";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public string FriendlyIdentifier => "Deploy Equipmenet";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Double Tap";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         { 
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!Evaluate(BestBot.Agent)) return false;
             zBotActions.SendBotToUseCfoamGun(BestBot, zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, zStaticRefrences.LocalPlayer, 0);
@@ -41,13 +44,14 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             return false;
         }
 
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             // candidate is null
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             if (!Evaluate(BestBot.Agent)) return false;
+            Color = BestBot.Agent.Owner.PlayerColor;
             return true;
         }
     }

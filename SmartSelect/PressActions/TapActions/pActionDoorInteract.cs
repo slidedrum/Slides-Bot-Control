@@ -10,14 +10,16 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     {
         public string FriendlyName => "Open Door";
         private string _FriendlyNameShort = "Open";
-        public string FriendlyNameShort => _FriendlyNameShort;
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public string FriendlyIdentifier => "Interact";
         public Il2CppSystem.Type Type => Il2CppType.Of<LG_WeakDoor>();
         public string pressTypeIdentifier => "Tap";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             LG_WeakDoor Door = BestComponent.TryCast<LG_WeakDoor>();
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_THISDOOR);
             zBotActions.SendBotToInteractDoor(BestBot, Door, zStaticRefrences.LocalPlayer.transform.position, PlayerBotActionUnlock.Descriptor.MethodEnum.Any, zStaticRefrences.LocalPlayer);
             if (Door.Gate.IsTraversable)
@@ -26,14 +28,14 @@ namespace BotControl.SmartSelect.PressActions.TapActions
                 zChatHandler.sendChatMessage("Opening the door.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
-            if (!zSmartSelect.MainSelection.AnySelectedBotsAlive())
-                return false;
+            //if (!zSmartSelect.MainSelection.AnySelectedBotsAlive())
+            //    return false;
             LG_WeakDoor Door = candidate.TryCast<LG_WeakDoor>();
             if (!Door.InteractionAllowed)
                 return false;
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (!BestBot.Agent.Alive) 
                 return false;
             if (!zHelpers.CanBotReach(BestBot, Door.transform.position)) 
@@ -51,6 +53,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
                 else
                     _FriendlyNameShort = "Unlock-O";
             }
+            Color = BestBot.Agent.Owner.PlayerColor;
             return true;
         }
         private LG_DoorButton GetButton(LG_WeakDoor TargetDoor)

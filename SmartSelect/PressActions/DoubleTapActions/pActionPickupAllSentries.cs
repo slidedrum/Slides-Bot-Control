@@ -19,7 +19,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         public string pressTypeIdentifier => "Double Tap";
         public int cycleOffset = 0;
 
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             var Botlist = ZiMain.GetBotList();
             List<PlayerAIBot> AliveBotsWithTurretsOut = GetBotsWithTurretsOut();
@@ -39,7 +39,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             }
         }
 
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             List<PlayerAIBot> AliveBotsWithTurretsOut = GetBotsWithTurretsOut();
             if (AliveBotsWithTurretsOut.Count <= 1) return false;

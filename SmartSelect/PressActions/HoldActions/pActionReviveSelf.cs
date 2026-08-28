@@ -13,7 +13,12 @@ namespace BotControl.SmartSelect.PressActions
     {
         // TODO revert to closest bot if none selected.
         public string FriendlyName => "Revive Self";
-        public string FriendlyNameShort => "Revive";
+        private string _FriendlyNameShort = "Revive";
+        public string FriendlyNameShort => $"<color=#{TargetColorHex}>:</color><color=#{ColorHex}>{_FriendlyNameShort}</color><color=#{TargetColorHex}>:</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
+        private Color TargetColor = new Color(1f, 1f, 1f, 0.25f);
+        private string TargetColorHex => ColorUtility.ToHtmlStringRGB(TargetColor);
         public string FriendlyIdentifier => "Revive";
         public int? Priority => 100;
         public Il2CppSystem.Type Type => null;
@@ -33,7 +38,7 @@ namespace BotControl.SmartSelect.PressActions
                 }
             }
         }
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             // BestComponent MIGHT be null.
             // if it is, we must use the selected bot instead.
@@ -59,7 +64,7 @@ namespace BotControl.SmartSelect.PressActions
             zChatHandler.sendChatMessage($"Reviving {zStaticRefrences.LocalPlayer.PlayerName}.", FriendlyIdentifier + IPressAction.chatPermSuffix, BotToUse.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             if (zStaticRefrences.LocalPlayer.Alive) // We must be dead to be revived.
                 return false;
@@ -68,15 +73,19 @@ namespace BotControl.SmartSelect.PressActions
                 bool LookingDown = Vector3.Angle(zStaticRefrences.CameraTransform.forward, Vector3.down) < 80f;
                 if (!LookingDown) // if we're not looking down, action not valid.
                     return false;
-                HashSet<PlayerAIBot> SelectedBots = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>();
-                foreach (PlayerAIBot Bot in SelectedBots) // loop through all bots in selection
-                {
-                    if (!Bot.Agent.Alive) // if it's dead, not valid.
-                        continue;
-                    bool reachable = zHelpers.CanBotReach(Bot, zStaticRefrences.LocalPlayer.Position);
+                //HashSet<PlayerAIBot> SelectedBots = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>();
+                //foreach (PlayerAIBot Bot in SelectedBots) // loop through all bots in selection
+                //{
+                    if (!BestBot.Agent.Alive) // if it's dead, not valid.
+                        return false;
+                    bool reachable = zHelpers.CanBotReach(BestBot, zStaticRefrences.LocalPlayer.Position);
                     if (reachable)
+                    {
+                        Color = BestBot.Agent.Owner.PlayerColor;
+                        TargetColor = zStaticRefrences.LocalPlayer.Owner.PlayerColor;
                         return true; // if we are reachable, then it's valid!
-                }
+                    }
+                //}
             }
             else // are we looking at a bot?
             {
@@ -87,7 +96,11 @@ namespace BotControl.SmartSelect.PressActions
                     return false;
                 bool reachable = zHelpers.CanBotReach(Bot, zStaticRefrences.LocalPlayer.Position);
                 if (reachable)
+                {
+                    Color = Bot.Agent.Owner.PlayerColor;
+                    TargetColor = zStaticRefrences.LocalPlayer.Owner.PlayerColor;
                     return true;
+                }
             }
             return false;
         }

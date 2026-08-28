@@ -9,14 +9,16 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
     public class pActionAttackEnemy : IPressAction
     {
         public string FriendlyName => "Attack Enemy";
-        public string FriendlyNameShort => "Attack";
+        private string _FriendlyNameShort = "Attack";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public string FriendlyIdentifier => "Attack";
         public Il2CppSystem.Type Type => Il2CppType.Of<EnemyAgent>();
         public string pressTypeIdentifier => "Hold";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             EnemyAgent Enemy = BestComponent.TryCast<EnemyAgent>();
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (Enemy == null || BestBot == null) return false;
             if (BestBot == null) return false;
             if (BestBot.Agent.Alive == false) return false;
@@ -24,12 +26,11 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             zChatHandler.sendChatMessage("Attacking sleeper.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             if (DramaManager.CurrentStateEnum != DRAMA_State.Exploration && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking)
                 return false;
             EnemyAgent Enemy = candidate.TryCast<EnemyAgent>();
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (Enemy == null || BestBot == null) 
                 return false;
             if (!BestBot.Agent.Alive) 
@@ -40,6 +41,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 return false;
             if (!zHelpers.CanBotReach(BestBot, Enemy.transform.position)) 
                 return false;
+            Color = BestBot.Agent.Owner.PlayerColor;
             return true;
         }
     }

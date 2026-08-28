@@ -9,12 +9,15 @@ namespace BotControl.SmartSelect.PressActions
         private static List<string> ThrowableArchatipes = new() { "Glow Stick", "C-Foam Grenade" , "Fog Repeller" };
         public string FriendlyName => "Throw Consumable";
         public string FriendlyIdentifier => "Throw Consumable";
-        public string FriendlyNameShort => "Throw";
+        private string _FriendlyNameShort = "Throw";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Hold";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             PlayerAgent LocalPlayer = zStaticRefrences.LocalPlayer;
             PlayerBackpack Backpack = PlayerBackpackManager.GetBackpack(BestBot.Agent.Owner);
@@ -46,10 +49,10 @@ namespace BotControl.SmartSelect.PressActions
             zChatHandler.sendChatMessage($"Throwing my {Archatype}.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             if (zStaticRefrences.LocalPlayer.FPSCamera.CameraRayDist > 30) return false;
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             // find out what item they have, if any.
             PlayerBackpack Backpack = PlayerBackpackManager.GetBackpack(BestBot.Agent.Owner);
@@ -57,6 +60,7 @@ namespace BotControl.SmartSelect.PressActions
             BackpackItem item = zHelpers.GetAgentBackpackItem(BestBot.Agent, InventorySlot.Consumable);
             if (!ThrowableArchatipes.Contains(item.Instance.ArchetypeName)) return false;
             if (!zHelpers.CanBotReach(BestBot, zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos)) return false;
+            Color = BestBot.Agent.Owner.PlayerColor;
             return true;
         }
     }

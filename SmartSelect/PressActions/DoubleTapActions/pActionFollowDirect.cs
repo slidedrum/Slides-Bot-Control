@@ -1,13 +1,8 @@
-﻿using Agents;
-using BepInEx.Unity.IL2CPP.Utils;
-using BotControl.SmartSelect.PressTypes;
+﻿using BepInEx.Unity.IL2CPP.Utils;
 using Il2CppInterop.Runtime;
 using Player;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
@@ -16,13 +11,15 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         public string FriendlyName => "Follow me";
         private string _FriendlyNameShort = "Follow";
         public string FriendlyIdentifier => "Follow";
-        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        public string FriendlyNameShort => $"<color=#{TargetColorHex}>:</color><color=#{ColorHex}>{_FriendlyNameShort}</color><color=#{TargetColorHex}>:</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
+        private Color TargetColor = new Color(1f, 1f, 1f, 0.25f);
+        private string TargetColorHex => ColorUtility.ToHtmlStringRGB(TargetColor);
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
         //public int? Priority => 0;
         public string pressTypeIdentifier => "Double Tap";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             PlayerAgent Agent;
             if (BestComponent != null)
@@ -73,7 +70,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             Follower.NavMarker.UpdateExtraInfo();
         }
 
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             PlayerAgent Agent = candidate.TryCast<PlayerAgent>();
             if (Agent == null) return false;
@@ -82,6 +79,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             PlayerAgent leader = Agent?.GetComponent<PlayerAIBot>()?.SyncValues?.Leader;
             if (leader != null && leader == zStaticRefrences.LocalPlayer) return false; // I don't like calling get compoennet this much, but it's PROBABLY fine?
             Color = Agent.Owner.PlayerColor;
+            TargetColor = zStaticRefrences.LocalPlayer.Owner.PlayerColor;
             return true;
         }
     }

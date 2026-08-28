@@ -7,14 +7,17 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
     public class pActionDeploySentry : IPressAction
     {
         public string FriendlyName => "Deploy Sentry";
-        public string FriendlyNameShort => "Sentry";
+        private string _FriendlyNameShort = "Sentry";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public string FriendlyIdentifier => "Deploy Equipmenet";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Double Tap";
-        public bool Invoke(Component BestComponent)
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         { // This logic should not be done on client, send to host over network.  Maybe works now?
 
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (!zHelpers.TryGetAgentBackpackItem(BestBot.Agent, InventorySlot.GearClass, out BackpackItem backpackItem)) // this new method might work as client?  Idk.
                 return false;
             bool isSentry = backpackItem.Instance.ArchetypeName == "Sentry Gun";
@@ -90,14 +93,15 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
                 return Vector3.forward;
             return dir.normalized;
         }
-        public bool IsActionValid(Component candidate)
+        public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
             // candidate is null
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             if (!Evaluate(BestBot.Agent)) return false;
             if (!IsSentryValid(BestBot)) return false;
+            Color = BestBot.Agent.Owner.PlayerColor;
             return true;
         }
         public bool Evaluate(PlayerAgent ownerAgent)
