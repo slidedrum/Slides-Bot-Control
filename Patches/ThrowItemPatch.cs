@@ -137,7 +137,11 @@ namespace BotControl.Patches
         [HarmonyPrefix]
         public static bool PreOnButtonPressedUseGlue(PUI_CommunicationMenu __instance, PUI_CommunicationButton button, PlayerAgent targetAgent, ref bool __result)
         {
-            OnButtonThrowItem(targetAgent);
+            zHelpers.TryGetAgentBackpackItem(targetAgent, InventorySlot.GearClass, out var item);
+            if (item.ItemID == 73) // Do they have a c-foam launcher?
+                zBotActions.SendBotToUseCfoamGun(targetAgent.GetComponent<PlayerAIBot>(), zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, zStaticRefrences.LocalPlayer);
+            else
+                OnButtonThrowItem(targetAgent); 
             //OnButtonThrowItem(pThrowType.cFoam, targetAgent);
             return false;
         }
