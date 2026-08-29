@@ -1,8 +1,10 @@
 ﻿using BotControl.CustomActions;
 using Gear;
 using HarmonyLib;
+using Il2CppInterop.Runtime;
 using Player;
 using SlideMenu;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using static BotControl.ZiMain;
@@ -434,7 +436,7 @@ public class ZombifiedPatches
             }
 
             // Stop the old travel action if active
-            if (__instance.m_travelAction.Status == PlayerBotActionBase.Descriptor.StatusType.Active)
+            if (__instance.m_travelAction.Status == PlayerBotActionBase.Descriptor.StatusType.Active || __instance.m_travelAction.Status == PlayerBotActionBase.Descriptor.StatusType.Queued)
             {
                 __instance.m_bot?.StopAction(__instance.m_travelAction);
             }
@@ -481,138 +483,139 @@ public class ZombifiedPatches
     }
 
 
-    [HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.UpdateMeleeAttack))]
-    [HarmonyPrefix]
-    private static void UpdateMeleeAttack(PlayerBotActionAttack __instance, bool push)
-    {
-        //Why am I hooking into this?? What did I change??  Was this just for debugging?  I don't remember!
-        //TODO remove this entirely???
+    //[HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.UpdateMeleeAttack))]
+    //[HarmonyPrefix]
+    //private static bool UpdateMeleeAttack(PlayerBotActionAttack __instance, bool push)
+    //{
+    //    //Why am I hooking into this?? What did I change??  Was this just for debugging?  I don't remember!
+    //    //TODO remove this entirely???
 
-        // 1) Stop any firing / nanoswarm actions (SafeStopAction used in decomp)
-        __instance.SafeStopAction(__instance.m_fireAction);
-        __instance.SafeStopAction(__instance.m_useNanoswarmAction);
+    //    // 1) Stop any firing / nanoswarm actions (SafeStopAction used in decomp)
+    //    __instance.SafeStopAction(__instance.m_fireAction);
+    //    __instance.SafeStopAction(__instance.m_useNanoswarmAction);
 
-        // 2) Prepare variables used for visTarget selection & strike decision
-        Transform aimTransform = null;
-        float vulnerableScore = 0.0f;
-        bool strike = false;
+    //    // 2) Prepare variables used for visTarget selection & strike decision
+    //    Transform aimTransform = null;
+    //    float vulnerableScore = 0.0f;
+    //    bool strike = false;
 
-        // 3) Preserve previous TargetGameObject if we recently selected a visTarget
-        GameObject preservedTarget = null;
-        if (__instance.m_meleeAction != null && __instance.m_meleeAction.TargetGameObject != null)
-        {
-            // If still within visTarget re-selection delay, prefer the existing visTarget object
-            if (Time.time - __instance.m_targetSelectedTime < PlayerBotActionAttack.s_targetReselectionDelay)
-            {
-                preservedTarget = __instance.m_meleeAction.TargetGameObject;
-            }
-        }
+    //    // 3) Preserve previous TargetGameObject if we recently selected a visTarget
+    //    GameObject preservedTarget = null;
+    //    if (__instance.m_meleeAction != null && __instance.m_meleeAction.TargetGameObject != null)
+    //    {
+    //        // If still within visTarget re-selection delay, prefer the existing visTarget object
+    //        if (Time.time - __instance.m_targetSelectedTime < PlayerBotActionAttack.s_targetReselectionDelay)
+    //        {
+    //            preservedTarget = __instance.m_meleeAction.TargetGameObject;
+    //        }
+    //    }
 
-        // 4) Choose aimTransform and compute strike boolean
-        if (push)
-        {
-            // push branch uses EasyAimTarget on the visTarget agent
-            if (__instance.m_currentAttackOption == null || __instance.m_currentAttackOption.TargetAgent == null)
-            {
-                // decomp jumps to a trap; return early here to match safe behavior
-                return;
-            }
+    //    // 4) Choose aimTransform and compute strike boolean
+    //    if (push)
+    //    {
+    //        // push branch uses EasyAimTarget on the visTarget agent
+    //        if (__instance.m_currentAttackOption == null || __instance.m_currentAttackOption.TargetAgent == null)
+    //        {
+    //            // decomp jumps to a trap; return early here to match safe behavior
+    //            return false;
+    //        }
 
-            aimTransform = __instance.m_currentAttackOption.TargetAgent.EasyAimTarget;
-            strike = true; // push => always attempt strike (decomp set bVar13 = true)
-        }
-        else
-        {
-            // non-push: find a vulnerable visTarget, passing preservedTarget (may be null)
-            if (__instance.m_currentAttackOption == null)
-            {
-                return;
-            }
+    //        aimTransform = __instance.m_currentAttackOption.TargetAgent.EasyAimTarget;
+    //        strike = true; // push => always attempt strike (decomp set bVar13 = true)
+    //    }
+    //    else
+    //    {
+    //        // non-push: find a vulnerable visTarget, passing preservedTarget (may be null)
+    //        if (__instance.m_currentAttackOption == null)
+    //        {
+    //            return false;
+    //        }
 
-            aimTransform = __instance.FindVulnerableTarget(__instance.m_currentAttackOption.TargetAgent,
-                                                preservedTarget,
-                                                out vulnerableScore);
-            strike = 0.2f < vulnerableScore; // decomp used 0.2 < local_res20[0]
-        }
+    //        aimTransform = __instance.FindVulnerableTarget(__instance.m_currentAttackOption.TargetAgent,
+    //                                            preservedTarget,
+    //                                            out vulnerableScore);
+    //        strike = 0.2f < vulnerableScore; // decomp used 0.2 < local_res20[0]
+    //    }
 
-        // 5) If we have no current attack option, abort (decomp branches to trap)
-        if (__instance.m_currentAttackOption == null)
-        {
-            return;
-        }
+    //    // 5) If we have no current attack option, abort (decomp branches to trap)
+    //    if (__instance.m_currentAttackOption == null)
+    //    {
+    //        return false;
+    //    }
 
-        // 6) Read stance from the current attack option
-        var stance = __instance.m_currentAttackOption.Stance;
+    //    // 6) Read stance from the current attack option
+    //    var stance = __instance.m_currentAttackOption.Stance;
 
-        // 7) If no melee descriptor exists, create and initialize one (matching decomp)
-        if (__instance.m_meleeAction == null)
-        {
-            var descriptor = new PlayerBotActionMelee.Descriptor(__instance.m_bot);
+    //    // 7) If no melee descriptor exists, create and initialize one (matching decomp)
+    //    if (__instance.m_meleeAction == null)
+    //    {
+    //        var descriptor = new PlayerBotActionMelee.Descriptor(__instance.m_bot);
 
-            descriptor.ParentActionBase = __instance;
-            descriptor.Prio = __instance.m_desc.Prio;
+    //        descriptor.ParentActionBase = __instance;
+    //        descriptor.Prio = __instance.m_desc.Prio;
 
-            // Event delegate — decomp allocated a delegate object
-            //descriptor.EventDelegate = instance.OnMeleeActionEvent;
+    //        // Event delegate — decomp allocated a delegate object
+    //        descriptor.EventDelegate = DelegateSupport.ConvertDelegate<PlayerBotActionBase.Descriptor.EventDelegateFunc>(new Action<PlayerBotActionBase.Descriptor>(__instance.OnMeleeActionEvent));
 
-            // New fields present in IL2CPP decomp
-            descriptor.Push = push;
-            descriptor.Loop = !push;
-            descriptor.Travel = stance == PlayerBotActionAttack.StanceEnum.Engage /* == 2 in decomp */;
+    //        // New fields present in IL2CPP decomp
+    //        descriptor.Push = push;
+    //        descriptor.Loop = !push;
+    //        descriptor.Travel = stance == PlayerBotActionAttack.StanceEnum.Engage /* == 2 in decomp */;
 
-            // Values observed in the decomp
-            descriptor.Haste = __instance.m_desc.Haste;
-            descriptor.Force = 0.75f;
-            descriptor.Strike = strike;
+    //        // Values observed in the decomp
+    //        descriptor.Haste = __instance.m_desc.Haste;
+    //        descriptor.Force = 0.75f;
+    //        descriptor.Strike = strike;
 
 
-            // Set visTarget agent and (optionally) visTarget game object
-            descriptor.TargetAgent = __instance.m_currentAttackOption.TargetAgent;
-            if (aimTransform != null)
-            {
-                descriptor.TargetGameObject = aimTransform.gameObject;
-            }
+    //        // Set visTarget agent and (optionally) visTarget game object
+    //        descriptor.TargetAgent = __instance.m_currentAttackOption.TargetAgent;
+    //        if (aimTransform != null)
+    //        {
+    //            descriptor.TargetGameObject = aimTransform.gameObject;
+    //        }
 
-            // Assign weapon if it's the expected melee type (decomp did a type check)
-            var itemWeapon = __instance.m_currentAttackOption.ItemToUse as MeleeWeaponThirdPerson;
-            descriptor.Weapon = itemWeapon;
+    //        // Assign weapon if it's the expected melee type (decomp did a type check)
+    //        var itemWeapon = __instance.m_currentAttackOption.ItemToUse.TryCast<MeleeWeaponThirdPerson>(); ;
+    //        descriptor.Weapon = itemWeapon;
 
-            // Ask the bot to run this descriptor; if accepted, keep pointer
-            if (__instance.m_bot != null && __instance.m_bot.RequestAction(descriptor))
-            {
-                __instance.m_meleeAction = descriptor;
-                if (zActions.isManualAction(descriptor))
-                {
-                    //FlexibleMethodDefinition callback = new FlexibleMethodDefinition(CheckForWakeChance, [__instance.m_bot, descriptor.TargetAgent.gameObject]);
-                    //zActionSub.addOnTerminated(descriptor, callback);
-                }
-            }
-            return;
-        }
+    //        // Ask the bot to run this descriptor; if accepted, keep pointer
+    //        if (__instance.m_bot != null && __instance.m_bot.RequestAction(descriptor))
+    //        {
+    //            __instance.m_meleeAction = descriptor;
+    //            if (zActions.isManualAction(descriptor))
+    //            {
+    //                //FlexibleMethodDefinition callback = new FlexibleMethodDefinition(CheckForWakeChance, [__instance.m_bot, descriptor.TargetAgent.gameObject]);
+    //                //zActionSub.addOnTerminated(descriptor, callback);
+    //            }
+    //        }
+    //        return false;
+    //    }
 
-        // 8) Else (m_meleeAction already exists) — update its fields to reflect new selection
-        // Update priority from attack descriptor
-        if (__instance.m_desc != null)
-        {
-            __instance.m_meleeAction.Prio = __instance.m_desc.Prio;
-        }
+    //    // 8) Else (m_meleeAction already exists) — update its fields to reflect new selection
+    //    // Update priority from attack descriptor
+    //    if (__instance.m_desc != null)
+    //    {
+    //        __instance.m_meleeAction.Prio = __instance.m_desc.Prio;
+    //    }
 
-        // Update visTarget agent
-        __instance.m_meleeAction.TargetAgent = __instance.m_currentAttackOption.TargetAgent;
+    //    // Update visTarget agent
+    //    __instance.m_meleeAction.TargetAgent = __instance.m_currentAttackOption.TargetAgent;
 
-        // Update TargetGameObject if we have an aim transform
-        if (aimTransform != null)
-        {
-            __instance.m_meleeAction.TargetGameObject = aimTransform.gameObject;
-        }
+    //    // Update TargetGameObject if we have an aim transform
+    //    if (aimTransform != null)
+    //    {
+    //        __instance.m_meleeAction.TargetGameObject = aimTransform.gameObject;
+    //    }
 
-        // Update weapon (perform cast as in original; decomp did a runtime type check)
-        var updatedWeapon = __instance.m_currentAttackOption.ItemToUse as MeleeWeaponThirdPerson;
-        __instance.m_meleeAction.Weapon = updatedWeapon;
+    //    // Update weapon (perform cast as in original; decomp did a runtime type check)
+    //    var updatedWeapon = __instance.m_currentAttackOption.ItemToUse as MeleeWeaponThirdPerson;
+    //    __instance.m_meleeAction.Weapon = updatedWeapon;
 
-        // Update Strike bool
-        __instance.m_meleeAction.Strike = strike;
-    }
+    //    // Update Strike bool
+    //    __instance.m_meleeAction.Strike = strike;
+    //    return false;
+    //}
 
 
 

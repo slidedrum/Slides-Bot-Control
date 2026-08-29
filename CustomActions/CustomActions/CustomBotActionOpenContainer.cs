@@ -12,7 +12,7 @@ namespace BotControl.CustomActions.CustomActions
         //This is an example of how you can set up your own custom action!
         public static new bool Setup() //This will be called when your class is regestered, it should return true if your action will even activate on it's own, or false if it's an exclusively manual action.
         {
-            return false;
+            return true;
         }
         public new class Descriptor : CustomActionBase.Descriptor
         {
