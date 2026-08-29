@@ -44,12 +44,12 @@ namespace SlideMenu
         }
         private void Update()
         {
-            sMenuManager.Update();
+            //sMenuManager.Update();
             onUpdate?.Invoke();
         }
         private void LateUpdate()
         {
-            sMenuManager.LateUpdate();
+            //sMenuManager.LateUpdate();
             onLateUpdate?.Invoke();
         }
         public static void InvokeStatic(FlexibleMethodDefinition method, float time)
