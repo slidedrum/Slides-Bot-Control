@@ -16,8 +16,6 @@ namespace BotControl.Patches
     [HarmonyPatch]
     internal class PickupActionPatch
     {
-        internal static HashSet<LG_Area> AreaPermOverideLocations = new();
-        internal static HashSet<LG_Zone> ZonePermOverideLocations = new();
         public static Il2CppReferenceArray<ItemDataBlock> rawConsumableItems
         {
             get
@@ -370,7 +368,7 @@ namespace BotControl.Patches
                 return false;
             activityEpicenter = __instance.m_bot.transform.position; //TODO patch GetActivityEpicenter
             activityNode = __instance.m_bot.Agent.CourseNode; // This is what's different
-            if (AreaPermOverideLocations.Contains(activityNode.m_area) || ZonePermOverideLocations.Contains(activityNode.m_zone))
+            if (!(bool)zSlideComputer.ActionPermissions.ValueAt($"{activityNode.m_zone.AliasName} {activityNode.m_area.m_geoArea}"))
                 return false;
             // Prepare temporary reservations (object + position) using static temp objects on RootPlayerBotAction
             if (__instance.m_agent != null && RootPlayerBotAction.s_tempObjReservation != null)
