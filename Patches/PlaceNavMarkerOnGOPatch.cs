@@ -63,15 +63,15 @@ namespace BotControl.Patches
         public static string GetCurrentAction(PlayerAIBot bot)
         {
             PlayerBotActionBase MostImportantAction = null;
-            ZiMain.log.LogInfo("---");
+            //ZiMain.log.LogInfo("---");
             foreach (PlayerBotActionBase action in bot.Actions)
             {
-                ZiMain.log.LogInfo($"{action.ToString()} - {action.DescBase.Prio} - {action.DescBase.ParentActionBase?.ToString()}");
+                //ZiMain.log.LogInfo($"{action.ToString()} - {action.DescBase.Prio} - {action.DescBase.ParentActionBase?.ToString()}");
                 if (action.DescBase.ParentActionBase == null)
                     MostImportantAction = action;
             }
-            ZiMain.log.LogInfo(MostImportantAction.ToString());
-            ZiMain.log.LogInfo("---");
+            //ZiMain.log.LogInfo(MostImportantAction.ToString());
+            //ZiMain.log.LogInfo("---");
             return MostImportantAction.ToString();
         }
     }
