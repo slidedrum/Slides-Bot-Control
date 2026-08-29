@@ -265,7 +265,8 @@ namespace BotControl
             }
             else
             {
-                zHelpers.TryGetStandoffPosition(aiBot.transform.position, item.transform.position, 1f, out TargetPosition);
+                if (!zHelpers.SnapPositionToNav(item.transform.position, out TargetPosition, maxdistance: 5f, areamask: -1))
+                    TargetPosition = item.transform.position;
             }
 
             float haste = 1f;
