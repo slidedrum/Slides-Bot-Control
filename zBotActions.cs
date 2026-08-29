@@ -475,6 +475,7 @@ namespace BotControl
             {
                 Prio = defaultPrio,
                 Haste = 0.8f,
+                StraightShot = item.ItemID == 115, // only c-foam grenades are a straight shot.
                 TargetPosition = TargetPosition,
                 TargetObject = Commander.transform,
                 TargetType = PlayerBotActionThrowItem.TargetTypeEnum.Position,
