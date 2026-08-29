@@ -22,12 +22,10 @@ namespace BotControl.Menus
         {
             contextMenu = menu;
             contextNode = menu.GetNode();
-            PickupZoneOveridesMenu = new("Pickup zone overrides", menu);
-            contextMenu.AddNode(PickupZoneOveridesMenu);
+            PickupZoneOveridesMenu = sMenuManager.createMenu("Pickup zone overrides", menu);
             PickupZoneOveridesMenu.AddNode("Room Manual", AddCurrentRoomManual);
             PickupZoneOveridesMenu.AddNode("Zone Manual", AddCurrentZoneManual);
-            ManualAreaMenu = new("Manual Areas", PickupZoneOveridesMenu);
-            PickupZoneOveridesMenu.AddNode(ManualAreaMenu);
+            ManualAreaMenu = sMenuManager.createMenu("Manual Areas", PickupZoneOveridesMenu);
         }
         internal static void AddCurrentRoomManual()
         {
