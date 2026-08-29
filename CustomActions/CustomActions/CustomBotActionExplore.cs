@@ -67,7 +67,7 @@ namespace BotControl.CustomActions.CustomActions
                 InitDescriptor(bot);
                 //Use this
             }
-            public override void compareAction(ref PlayerBotActionBase.Descriptor bestAction)
+            public override void CompareAction(PlayerAIBot bot, ref PlayerBotActionBase.Descriptor bestAction)
             {
                 return;
                 if (!canExplore)
