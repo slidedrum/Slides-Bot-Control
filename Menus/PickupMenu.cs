@@ -1,5 +1,6 @@
 ﻿using BotControl.Patches;
 using GameData;
+using LevelGeneration;
 using Player;
 using SlideDrum;
 using SlideMenu;
@@ -22,10 +23,11 @@ namespace BotControl.Menus
         {
             //prioNodesByID = new Dictionary<uint, sMenu.sMenuNode>();
             pickupDistance = new(10, "pickupDistance");
-            pickupMenu = menu;
-            pickupMenu.radius = 125f;
-            pickupNode = pickupMenu.GetNode();
+            pickupNode = menu.GetNode();
             pickupDistance.AddNode("Pickup", null, "Default").onChanged.Listen(SetSearchDistance).Listen(UpdateNodeSettingsDisplay, [pickupNode]);
+
+            pickupMenu = sMenuManager.createMenu("Item overrides", menu);
+            pickupMenu.radius = 125f;
 
             sMenu.sMenuNode glowstickNode = null;
             
@@ -121,14 +123,19 @@ namespace BotControl.Menus
 
             pickupNode.ClearListeners(sMenuManager.nodeEvent.OnUnpressedSelected);
             pickupNode.ClearListeners(sMenuManager.nodeEvent.WhileSelected);
-            pickupNode.AddListener(sMenuManager.nodeEvent.OnDoubleTapped, pickupMenu.Open);
+            pickupNode.AddListener(sMenuManager.nodeEvent.OnDoubleTapped, menu.Open);
             pickupNode.AddListener(sMenuManager.nodeEvent.WhileSelected, UpdateNodeBasedOnScroll, pickupNode);
             pickupNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, ResetSettings, pickupNode);
-            pickupMenu.parrentMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, ResetSettings, pickupNode);
+            AutomaticActionMenuClass.AutoActionMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, ResetSettings, pickupNode);
 
             pickupMenu.AddPannel(sMenu.sMenuPannel.Side.top, "Controls what bots will pickup.");
             pickupMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "Scroll to change the priority of different items.");
             UpdateNodeSettingsDisplay(pickupNode);
+
+            menu.centerNode.ClearListeners(sMenuManager.nodeEvent.OnUnpressedSelected);
+            menu.centerNode.AddListener(sMenuManager.nodeEvent.OnTapped, menu.parrentMenu.Open);
+
+            ZoneOverrides.Setup(menu);
         }
         private static void UpdateAdvancedNodeBasedOnScroll(string itemName, sMenu.sMenuNode node, int increment = 10)
         {
@@ -282,6 +289,53 @@ namespace BotControl.Menus
             if (value <= 50f)
                 return Color.Lerp(yellow, green, (value - 25f) / 25f);
             return Color.Lerp(green, blue, (value - 50f) / 50f);
+        }
+
+        public static class ZoneOverrides
+        {
+            public static sMenu PickupZoneOveridesMenu;
+            public static Dictionary<string, sMenu> zoneMenus = new Dictionary<string, sMenu>();
+
+            public static void Setup(sMenu menu)
+            {
+                PickupZoneOveridesMenu = sMenuManager.createMenu("Zone overrides", menu);
+                zSlideComputer.ActionPermissions.AddNode("PickupAreas", null, hasDefaultValue: true, parent: "Pickup");
+                foreach (LG_Zone zone in Builder.CurrentFloor.allZones)
+                {
+                    zoneMenus[zone.AliasName] = sMenuManager.createMenu(zone.AliasName, PickupZoneOveridesMenu);
+                    sMenu.sMenuNode ZoneNode = PickupZoneOveridesMenu.GetNode(zone.AliasName);
+                    ZoneNode.RemoveListener(sMenuManager.nodeEvent.OnUnpressedSelected);
+                    PickupZoneOveridesMenu.centerNode.RemoveListener(sMenuManager.nodeEvent.OnUnpressedSelected);
+                    PickupZoneOveridesMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnTapped, PickupZoneOveridesMenu.parrentMenu.Open);
+                    PickupZoneOveridesMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, ResetNode, zone.AliasName);
+                    ZoneNode.AddListener(sMenuManager.nodeEvent.OnTapped, ToggleNode, zone.AliasName);
+                    ZoneNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetNode, zone.AliasName);
+                    ZoneNode.AddListener(sMenuManager.nodeEvent.OnDoubleTapped, zoneMenus[zone.AliasName].Open);
+                    zSlideComputer.ActionPermissions.AddNode(zone.AliasName, null, hasDefaultValue: true, parent: "PickupAreas", onChanged: new FlexibleMethodDefinition(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [zone.AliasName, ZoneNode]));
+                    foreach (LG_Area area in zone.m_areas)
+                    {
+                        string name = $"{zone.AliasName} {area.m_geoArea}";
+                        if (zoneMenus[zone.AliasName].GetNode(name) != null)
+                            continue;
+                        sMenu.sMenuNode AreaNode = zoneMenus[zone.AliasName].AddNode(name);
+                        AreaNode.AddListener(sMenuManager.nodeEvent.OnTapped, ToggleNode, name);
+                        AreaNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetNode, name);
+                        zoneMenus[zone.AliasName].centerNode.RemoveListener(sMenuManager.nodeEvent.OnUnpressedSelected);
+                        zoneMenus[zone.AliasName].centerNode.AddListener(sMenuManager.nodeEvent.OnTapped, PickupZoneOveridesMenu.parrentMenu.Open);
+                        zoneMenus[zone.AliasName].centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, ResetNode, name);
+                        zSlideComputer.ActionPermissions.AddNode(name, null, hasDefaultValue: true, parent: zone.AliasName, onChanged: new FlexibleMethodDefinition(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [name, AreaNode]));
+                    }
+                }
+            }
+            private static void ToggleNode(string nodeName)
+            {
+                bool? own = zSlideComputer.ActionPermissions.GetValue(nodeName);
+                zSlideComputer.ActionPermissions.SetValue(nodeName, own == false);
+            }
+            private static void ResetNode(string nodeName)
+            {
+                zSlideComputer.ActionPermissions.ResetToDefault(nodeName);
+            }
         }
     }
 }
