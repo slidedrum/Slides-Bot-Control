@@ -93,9 +93,9 @@ namespace BotControl.CustomActions.Patches
             var data = zActions.GetOrCreateData(__instance);
             foreach (var act in data.customActionDescriptors)
             {
-                act.compareAction(ref data.bestAction);
+                act.CompareAction(__instance.m_bot, ref data.bestAction);
             }
-            if (data.bestAction != null)
+            if (data.bestAction != null && data.bestAction.IsTerminated())
             {
                 __instance.m_bot.StartAction(data.bestAction);
             }
