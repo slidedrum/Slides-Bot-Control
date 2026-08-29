@@ -21,7 +21,7 @@ namespace BotControl.CustomActions.CustomActions
             public PlayerBotActionUnlock.Descriptor.MethodEnum method = PlayerBotActionUnlock.Descriptor.MethodEnum.Any;
             private PlayerManager.PositionReservation m_posReservation;
             private PlayerManager.ObjectReservation m_objReservation;
-            public static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionBase.AccessLayers.Legs | PlayerBotActionBase.AccessLayers.Hip | PlayerBotActionBase.AccessLayers.RootPosition | PlayerBotActionBase.AccessLayers.RootRotation;
+            public static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionBase.AccessLayers.Legs | PlayerBotActionBase.AccessLayers.Hip | PlayerBotActionBase.AccessLayers.RootPosition;
             //This is an example of how you can set up your own custom descriptor!
             public Descriptor() : base(ClassInjector.DerivedConstructorPointer<Descriptor>()) // Don't use this!  Needed for il2cpp nonsense.
             {
@@ -71,6 +71,7 @@ namespace BotControl.CustomActions.CustomActions
                     {
                         CharacterID = this.Bot.Agent.CharacterID,
                         Position = this.TargetContainer.transform.position,
+                        Prio = CustomBotActionOpenContainer.Prio,
                         Radius = 0.5f
                     };
                 }
@@ -91,6 +92,7 @@ namespace BotControl.CustomActions.CustomActions
                         this.m_objReservation = new PlayerManager.ObjectReservation
                         {
                             CharacterID = this.Bot.Agent.CharacterID,
+                            Prio = CustomBotActionOpenContainer.Prio,
                             Object = gameObject
                         };
                     }
@@ -114,8 +116,56 @@ namespace BotControl.CustomActions.CustomActions
                 PlayerManager.Current.RemovePositionReservation(this.m_posReservation);
                 PlayerManager.Current.RemoveGameObjectReservation(this.m_objReservation);
             }
-            public virtual void CompareAction(ref PlayerBotActionBase.Descriptor bestAction)
+            public override void CompareAction(PlayerAIBot bot, ref PlayerBotActionBase.Descriptor bestAction)
             {
+                this.Prio = CustomBotActionOpenContainer.Prio;
+                if (!IsTerminated())
+                {
+                    if (bestAction == null || this.Prio >= bestAction.Prio)
+                        bestAction = this;
+                    return;
+                }
+                if (bestAction?.Prio > this.Prio)
+                    return;
+                var containers = bot.Agent.CourseNode.MetaData.StorageContainers;
+                LG_WeakResourceContainer ClosestContainer = null;
+                float containerDistance = float.MaxValue;
+                foreach (LG_ResourceContainer_Storage container in containers)
+                {
+                    var core = container.m_core.TryCast<LG_WeakResourceContainer>();
+                    if (core == null)
+                        continue;
+                    if (core.ISOpen == true)
+                        continue;
+                    Vector3 vector2 = container.transform.position - bot.transform.position;
+                    float sqrMagnitude = vector2.sqrMagnitude;
+                    float maxDistnce = RootPlayerBotAction.s_collectItemSearchDistance * RootPlayerBotAction.s_collectItemSearchDistance;
+                    if (sqrMagnitude > maxDistnce)
+                        continue;
+                    if (sqrMagnitude > containerDistance)
+                        continue;
+                    var tempPos = RootPlayerBotAction.s_tempPosReservation;
+                    tempPos.CharacterID = bot.Agent.CharacterID;
+                    tempPos.Position = container.transform.position;
+                    tempPos.Prio = CustomBotActionOpenContainer.Prio;
+                    tempPos.Radius = 0.5f;
+                    if (PlayerManager.Current.IsPositionReserved(tempPos))
+                        continue;
+
+                    var tempObj = RootPlayerBotAction.s_tempObjReservation;
+                    tempObj.CharacterID = bot.Agent.CharacterID;
+                    tempObj.Object = container.gameObject;
+                    tempObj.Prio = CustomBotActionOpenContainer.Prio;
+
+                    if (PlayerManager.Current.IsObjectReserved(tempObj))
+                        continue;
+                    ClosestContainer = core;
+                    containerDistance = sqrMagnitude;
+                }
+                if (ClosestContainer == null)
+                    return;
+                TargetContainer = ClosestContainer;
+                bestAction = this;
                 //Should your action be queued?
                 //This gets called every frame
                 //Be sure to compare priority against the current best action.
@@ -140,6 +190,7 @@ namespace BotControl.CustomActions.CustomActions
         private PlayerBotActionLook.Descriptor LookAction;
         private PlayerBotActionUnlock.Descriptor UnlockAction;
         private float Haste = 1f;
+        private static float Prio = 4.2f;
         private LG_WeakResourceContainer TargetContainer;
         private Vector3 TargetLoction;
         private Descriptor m_desc;
