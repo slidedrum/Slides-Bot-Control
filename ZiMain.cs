@@ -209,6 +209,8 @@ public class ZiMain : BasePlugin
         log = Log;
         zActionSub.addOnRemoved((Action<PlayerAIBot, PlayerBotActionBase>)onActionTerminated);
         zActionSub.addOnAdded((Action<PlayerAIBot, PlayerBotActionBase>)onActionAdded);
+        zActionSub.addOnAdded((bot, action) => PlaceNavMarkerOnGOPatch.OnBotActionChanged(bot));
+        zActionSub.addOnRemoved((bot, action) => PlaceNavMarkerOnGOPatch.OnBotActionChanged(bot));
         UseBioscanEvaluatePatches.ApplyNativePatch();
         //Il2CppInteropNativePatches.ApplyNativePatch();
         EventAPI.OnManagersSetup += () =>
