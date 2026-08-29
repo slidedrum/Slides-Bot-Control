@@ -66,7 +66,7 @@ namespace BotControl.CustomActions.CustomActions
                 //This includes any form of interuption, but does not include finishing the action.
                 base.InternalOnTerminated();
             }
-            public virtual void CompareAction(ref PlayerBotActionBase.Descriptor bestAction)
+            public override void CompareAction(PlayerAIBot bot, ref PlayerBotActionBase.Descriptor bestAction)
             {
                 //Should your action be queued?
                 //This gets called every frame
