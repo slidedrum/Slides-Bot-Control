@@ -85,11 +85,17 @@ namespace BotControl.Patches
         {
             var charId = __instance.Agent.CharacterID;
             var @throw = Il2CppType.Of<PlayerBotActionThrowItem.Descriptor>().FullName;
+            var glue = Il2CppType.Of<PlayerBotActionUseGlueGun.Descriptor>().FullName;
             var travel = Il2CppType.Of<PlayerBotActionTravel.Descriptor>().FullName;
             if (desc.GetIl2CppType().FullName == @throw) // we are getting the travel action sent here, but idk the destination.
             {
                 var throwDesc = desc.Cast<PlayerBotActionThrowItem.Descriptor>();
                 throwDescriptions[charId] = throwDesc;
+            }
+            else if (desc.GetIl2CppType().FullName == glue)
+            {
+                var glueDesc = desc.Cast<PlayerBotActionUseGlueGun.Descriptor>();
+                GlueGunPatch.standPos[charId] = glueDesc.TargetObject.position;
             }
             else if (desc.GetIl2CppType().FullName == travel)
             {
@@ -98,6 +104,11 @@ namespace BotControl.Patches
                 if (TypeName != null && TypeName == "Player.PlayerBotActionThrowItem")
                 {
                     traveldesc.DestinationPos = GetMovePosition(traveldesc.ParentActionBase.Cast<PlayerBotActionThrowItem>());
+                }
+                else if (TypeName == "Player.PlayerBotActionUseGlueGun")
+                {
+                    traveldesc.DestinationPos = GlueGunPatch.GetMovePosition(traveldesc.ParentActionBase.Cast<PlayerBotActionUseGlueGun>());
+                    traveldesc.Radius = 0.2f;
                 }
                 else if (throwDescriptions.ContainsKey(charId) && throwDescriptions[charId] != null && !throwDescriptions[charId].IsTerminated())
                 {
