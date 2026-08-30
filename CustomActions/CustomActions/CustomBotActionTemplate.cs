@@ -31,7 +31,7 @@ namespace BotControl.CustomActions.CustomActions
                 //The descriptor is used to describe everything about your action.
                 //Any paramaters are set up by the calling class.  
                 //Be sure to add any you need to this class.
-                //Some paramaters are inhareted, like Prio (priority). 
+                //Some paramaters are inherited, like Prio (priority). 
             }
             public override PlayerBotActionBase CreateAction()
             {
