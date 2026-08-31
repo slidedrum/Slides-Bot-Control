@@ -279,6 +279,8 @@ public class ZiMain : BasePlugin
                 if (found)
                     break;
             }
+            if (!zActions.DoingAnyManualAction(bot.Agent))
+                CustomWakeManager.ApplyToExistingTargets(bot.Agent, false);
         }
         if (typeName == "PlayerBotActionCarryExpeditionItem")
         {

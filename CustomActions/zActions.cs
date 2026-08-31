@@ -1,6 +1,5 @@
 ﻿using Player;
 using PrioritySet;
-using System;
 using System.Collections.Generic;
 //using Zombified_Initiative;
 
@@ -52,6 +51,19 @@ namespace BotControl.CustomActions
                 ActionDataStore[botId] = data;
             }
             return data;
+        }
+        public static bool DoingAnyManualAction(PlayerAgent bot)
+        {
+            if (manualActions == null) return false;
+            foreach(List<ManualAction> actions in manualActions.Values)
+            {
+                foreach( ManualAction action in actions)
+                {
+                    if (action.Bot.Agent.Pointer == bot.Pointer && !action.ActionDescriptor.IsTerminated())
+                        return true;
+                }
+            }
+            return false;
         }
         public static PlayerAgent isManualAction(PlayerBotActionBase.Descriptor descriptor)
         {

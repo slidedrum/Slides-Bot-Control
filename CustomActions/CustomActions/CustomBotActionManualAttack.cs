@@ -108,11 +108,9 @@ namespace BotControl.CustomActions.CustomActions
         private PlayerBotActionAttack.Descriptor AttackAction;
         private PlayerBotActionTravel.Descriptor TravelAction;
         private PlayerBotActionMelee.Descriptor  MeleAction;
-        private static float walkNoiseCheckInterval = 1;
         private static float nextWalkNoiseCheckTimestamp = 0;
-        private static float walkNoiseChance = 1f / 50f;
-        private static float hitNoiseChance = 1f / 10f;
         private bool wasCooldownState = false;
+        private bool startedMoving = false;
 
         public CustomBotActionManualAttack() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionManualAttack>())// Don't use this!  Needed for il2cpp nonsense.
         {
@@ -193,6 +191,7 @@ namespace BotControl.CustomActions.CustomActions
             if (this.m_bot.RequestAction(Desc))
             {
                 this.AttackAction = Desc;
+                startedMoving = false;
                 this.state = State.Move;
             }
             else
@@ -213,7 +212,7 @@ namespace BotControl.CustomActions.CustomActions
                 return false;
             return true;
         }
-
+        
         private void UpdateStateMove()
         {
             //AttackAction?.ActionBase?.Cast<PlayerBotActionAttack>().m_meleeAction.ActionBase.Cast<PlayerBotActionMelee>().m_travelAction
@@ -222,38 +221,20 @@ namespace BotControl.CustomActions.CustomActions
             if (TravelAction == null || TravelAction.DestinationPos == Vector3.zero)
                 TravelAction = MeleAction?.ActionBase?.Cast<PlayerBotActionMelee>()?.m_travelAction?.Cast<PlayerBotActionTravel.Descriptor>();
             if (TravelAction == null || (TravelAction.DestinationPos == Vector3.zero && TravelAction.DestinationObject == null))
-                return; // attack instance not created yet; try again next frame
+                if (startedMoving == true)
+                    state = State.Failed; // something happend and we're no longer moving.
+                else
+                    return; // attack instance not created yet; try again next frame
+            startedMoving = true;
             if (TravelAction.IsTerminated())
                 state = State.Attack;
             if (Time.time > nextWalkNoiseCheckTimestamp)
             {
-                nextWalkNoiseCheckTimestamp = Time.time + walkNoiseCheckInterval;
-                if (UnityEngine.Random.value < walkNoiseChance)
-                    MakePlayerNoise(m_agent);
+                nextWalkNoiseCheckTimestamp = Time.time + CustomWakeManager.walkNoiseCheckInterval;
+                //CustomWakeManager.WalkNoiseCheck(m_agent);
             }
         }
-        private static void MakePlayerNoise(PlayerAgent player, float radius = 15f)
-        {
-            if (player == null || !player.Alive)
-                return;
 
-            AIG_CourseNode node = player.CourseNode;
-            if (node == null)
-                return;
-
-            NM_NoiseData noise = new();
-            noise.noiseMaker = player.Cast<INM_NoiseMaker>();
-            noise.position = player.transform.position;
-            noise.radiusMin = 0f;
-            noise.radiusMax = radius;
-            noise.yScale = 1f;
-            noise.node = node;
-            noise.type = NM_NoiseType.InstaDetect;
-            noise.includeToNeightbourAreas = true;
-            noise.raycastFirstNode = false;
-
-            NoiseManager.MakeNoise(noise);
-        }
         private void UpdateStateAttack()
         {
             if (MeleAction.Strike == false)
@@ -264,10 +245,7 @@ namespace BotControl.CustomActions.CustomActions
             {
                 if (AttackAction.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
                 {
-                    if (UnityEngine.Random.value < hitNoiseChance)
-                    {
-                        MakePlayerNoise(m_agent);
-                    }
+                    //CustomWakeManager.HitNoiseCheck(m_agent);
                     state = State.Finished;
                 }
                 else
@@ -277,10 +255,7 @@ namespace BotControl.CustomActions.CustomActions
             if (!wasCooldownState == false && MeleAction.State == PlayerBotActionMelee.Descriptor.StateEnum.Cooldown && MeleAction.TargetAgent.Alive == true)
             {
                 wasCooldownState = true;
-                if (UnityEngine.Random.value < hitNoiseChance * 2)
-                {
-                    MakePlayerNoise(m_agent);
-                }
+                //CustomWakeManager.HitNoiseCheck(m_agent, 2f);
             }
             if (MeleAction.State != PlayerBotActionMelee.Descriptor.StateEnum.Cooldown)
                 wasCooldownState = false;

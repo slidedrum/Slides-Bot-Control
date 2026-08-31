@@ -24,6 +24,7 @@ namespace BotControl
             zActions.manualActions[manualAction.Commander.CharacterID].Add(manualAction);
             if (SNet.IsMaster)
                 manualAction.Bot.StartAction(manualAction.ActionDescriptor);
+            CustomWakeManager.ApplyToExistingTargets(manualAction.Bot.Agent, true);
         }
         public static void StartAction(PlayerAIBot aiBot, PlayerBotActionBase.Descriptor Desc, PlayerAgent Commander, uint ID)
         {
