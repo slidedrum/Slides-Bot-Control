@@ -8,6 +8,7 @@ using Il2CppInterop.Runtime;
 using LevelGeneration;
 using Player;
 using System;
+using static Player.PlayerBotActionUnlock.Descriptor;
 
 [HarmonyPatch]
 public static class UnlockActionPatch
@@ -29,7 +30,47 @@ public static class UnlockActionPatch
         __result = ChooseMethod(__instance);
         return false;
     }
+    [HarmonyPatch(typeof(PlayerBotActionUnlock.Descriptor), nameof(PlayerBotActionUnlock.Descriptor.Evaluate))]
+    [HarmonyPrefix]
+    public static bool Evaluate(PlayerBotActionUnlock.Descriptor __instance, PlayerAIBot bot, LG_WeakLock testLock, ref MethodEnum Method, ref bool __result)
+    {
+        if (!bot.WantsCrouch() && (Method & MethodEnum.Melee) == MethodEnum.Melee)
+        {
+            BackpackItem backpackItem;
+            if (bot.Backpack.TryGetBackpackItem(InventorySlot.GearMelee, out backpackItem))
+            {
+                if (testLock.Status == eWeakLockStatus.LockedMelee)
+                {
+                    Method = MethodEnum.Melee;
+                    __result = true;
+                    return false;
+                }
+            }
+        }
 
+        if ((Method & MethodEnum.Melt) == MethodEnum.Melt)
+        {
+            if (PlayerBotActionUseLockMelter.Descriptor.Evaluate(bot, testLock))
+            {
+                Method = MethodEnum.Melt;
+                __result = true;
+                return false;
+            }
+        }
+        if ((Method & MethodEnum.Hack) == MethodEnum.Hack && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking)
+        {
+            if (PlayerBotActionUseHackingTool.Descriptor.Evaluate(bot, testLock))
+            {
+                Method = MethodEnum.Hack;
+                __result = true;
+                return false;
+            }
+        }
+
+        Method = MethodEnum.None;
+        __result = false;
+        return false;
+    }
     private static PlayerBotActionBase.Descriptor.EventDelegateFunc CreateEventDelegate(
         PlayerBotActionUnlock action)
     {
