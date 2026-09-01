@@ -58,7 +58,19 @@ namespace BotControl
             GetPointOnPath(s_path, stopAt, out standoffPosition);
             return true;
         }
-
+        public static bool IsAnyHumanPlayerNear(Vector3 testPos, float minDistance)
+        {
+            float num = minDistance * minDistance;
+            for (int i = 0; i < PlayerManager.PlayerAgentsInLevel.Count; i++)
+            {
+                PlayerAgent playerAgent = PlayerManager.PlayerAgentsInLevel[i];
+                if (playerAgent != null && !playerAgent.Owner.IsBot && (testPos - playerAgent.Position).sqrMagnitude < num)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public static void GetPointOnPath(NavMeshPath path, float maxDistance, out Vector3 point)
         {
             s_cornerCount = path.GetCornersNonAlloc(s_corners);
