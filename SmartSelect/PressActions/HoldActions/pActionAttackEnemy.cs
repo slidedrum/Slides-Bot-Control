@@ -28,8 +28,8 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         }
         public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
-            if (DramaManager.CurrentStateEnum != DRAMA_State.Exploration && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking)
-                return false;
+            //if (DramaManager.CurrentStateEnum != DRAMA_State.Exploration && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking && DramaManager.CurrentStateEnum != DRAMA_State.Encounter)
+            //    return false;
             EnemyAgent Enemy = candidate.TryCast<EnemyAgent>();
             if (Enemy == null || BestBot == null) 
                 return false;
@@ -37,8 +37,8 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
                 return false;
             if (!Enemy.Alive) 
                 return false;
-            if (Enemy.EnemyData.EnemyType != eEnemyType.Standard)
-                return false;
+            //if (Enemy.EnemyData.EnemyType != eEnemyType.Standard)
+            //    return false;
             if (!zHelpers.CanBotReach(BestBot, Enemy.transform.position)) 
                 return false;
             Color = BestBot.Agent.Owner.PlayerColor;

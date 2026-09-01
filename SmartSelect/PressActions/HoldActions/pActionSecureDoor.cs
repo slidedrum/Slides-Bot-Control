@@ -71,7 +71,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         {
             List<PlayerAIBot> BotList = ZiMain.GetBotList();
             List<PlayerAIBot> Candidates = new();
-            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            PlayerAIBot BestBot = zSmartSelect.MainSelection.GetFirstSelectedBot();
             foreach (PlayerAIBot bot in BotList)
             {
                 if (!bot.Agent.Alive)

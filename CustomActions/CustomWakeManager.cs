@@ -3,7 +3,10 @@ using AIGraph;
 using Enemies;
 using HarmonyLib;
 using Player;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace BotControl.CustomActions
 {
@@ -14,6 +17,10 @@ namespace BotControl.CustomActions
         // Loop all enemies, 
         private static float walkNoiseChance = 1f / 50f;
         private static float hitNoiseChance = 1f / 10f;
+        public static bool IsDetectable(PlayerAIBot bot)
+        {
+            return zActions.DoingAnyManualAction(bot.Agent);
+        }
         internal static void WalkNoiseCheck(PlayerAgent Agent)
         {
             if (UnityEngine.Random.value < walkNoiseChance)

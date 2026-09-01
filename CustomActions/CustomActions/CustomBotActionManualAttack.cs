@@ -111,6 +111,7 @@ namespace BotControl.CustomActions.CustomActions
         private static float nextWalkNoiseCheckTimestamp = 0;
         private bool wasCooldownState = false;
         private bool startedMoving = false;
+        private int framesWaitingForMoveToStart = 0;
 
         public CustomBotActionManualAttack() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionManualAttack>())// Don't use this!  Needed for il2cpp nonsense.
         {
@@ -176,27 +177,48 @@ namespace BotControl.CustomActions.CustomActions
             if (!VerifyTarget())
             {
                 state = State.Failed;
+                return;
             }
-            PlayerBotActionAttack.Descriptor Desc = new(m_bot)
+            if (AttackAction == null)
+                AttackAction = new(m_bot);
+            AttackAction.ParentActionBase = this;
+            AttackAction.Prio = m_desc.Prio;
+            AttackAction.Haste = Haste;
+            AttackAction.TargetAgent = TargetAgent;
+            AttackAction.Means = Means;
+            AttackAction.Posture = Posture;
+            AttackAction.Stance = stance;
+            AttackAction.MovementAllowed = MovementAllowed;
+            if (AttackAction.IsTerminated())
             {
-                ParentActionBase = this,
-                Prio = m_desc.Prio,
-                Haste = Haste,
-                TargetAgent = TargetAgent,
-                Means = Means,
-                Posture = Posture,
-                Stance = stance,
-                MovementAllowed = MovementAllowed,
-            };
-            if (this.m_bot.RequestAction(Desc))
-            {
-                this.AttackAction = Desc;
-                startedMoving = false;
-                this.state = State.Move;
+                StopBlockingLookActions();
+                if (this.m_bot.RequestAction(AttackAction))
+                {
+                    startedMoving = false;
+                    this.state = State.Move;
+                }
+                else
+                {
+                    this.state = State.Failed;
+                }
             }
             else
             {
-                this.state = State.Failed;
+                state = State.Move;
+            }
+        }
+
+        private void StopBlockingLookActions()
+        {
+            var actions = m_bot.Actions;
+            for (int i = actions.Count - 1; i >= 0; i--)
+            {
+                var walk = actions[i].TryCast<PlayerBotActionWalk>();
+                if (walk?.m_lookAction != null && !walk.m_lookAction.IsTerminated())
+                    m_bot.StopAction(walk.m_lookAction);
+                var look = actions[i].TryCast<PlayerBotActionLook>();
+                if (look?.DescBase != null && !look.DescBase.IsTerminated())
+                    m_bot.StopAction(look.DescBase);
             }
         }
 
@@ -224,19 +246,34 @@ namespace BotControl.CustomActions.CustomActions
                 if (startedMoving == true)
                     state = State.Failed; // something happend and we're no longer moving.
                 else
-                    return; // attack instance not created yet; try again next frame
+                {
+                    framesWaitingForMoveToStart++;
+                    if (framesWaitingForMoveToStart < 10)
+                        return; // attack instance not created yet; try again next frame
+                    else
+                    {
+                        state = State.Idle; // We didn't start moving.  back to idle.
+                    }
+                        
+                }
+            framesWaitingForMoveToStart = 0;
             startedMoving = true;
-            if (TravelAction.IsTerminated())
-                state = State.Attack;
+            if (TravelAction == null || TravelAction.IsTerminated())
+                if (Vector3.Distance(m_bot.transform.position, TargetAgent.transform.position) < PlayerBotActionMelee.s_strikeMaxDistance)
+                    state = State.Attack;
+                else
+                    state = State.Idle;
             if (Time.time > nextWalkNoiseCheckTimestamp)
-            {
-                nextWalkNoiseCheckTimestamp = Time.time + CustomWakeManager.walkNoiseCheckInterval;
-                //CustomWakeManager.WalkNoiseCheck(m_agent);
-            }
+                {
+                    nextWalkNoiseCheckTimestamp = Time.time + CustomWakeManager.walkNoiseCheckInterval;
+                    //CustomWakeManager.WalkNoiseCheck(m_agent);
+                }
         }
 
         private void UpdateStateAttack()
         {
+            if (MeleAction == null)
+                state = State.Idle;
             if (MeleAction.Strike == false)
                 MeleAction.Strike = true;
             //m_strikeDelayTimestamp = Time.time;

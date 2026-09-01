@@ -52,6 +52,14 @@ namespace BotControl.CustomActions
             }
             return data;
         }
+        public static bool AnyCustomActionRunning(PlayerAIBot Bot)
+        {
+            var data = zActions.GetOrCreateData(Bot);
+            foreach (var act in data.customActionDescriptors)
+                if (!act.IsTerminated())
+                    return true;
+            return false;
+        }
         public static bool DoingAnyManualAction(PlayerAgent bot)
         {
             if (manualActions == null) return false;

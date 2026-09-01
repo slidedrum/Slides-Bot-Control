@@ -59,7 +59,7 @@ namespace BotControl.SmartSelect
             }
             return ret;
         }
-        public PlayerAIBot GetBestBot()
+        public PlayerAIBot GetFirstSelectedBot()
         {
             SelectedObjects.RemoveWhere(x => x == null);
             return GetSelected<PlayerAIBot>().FirstOrDefault();

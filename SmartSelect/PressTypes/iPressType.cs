@@ -1,4 +1,5 @@
-﻿using BotControl.SmartSelect.PressActions;
+﻿using BotControl.CustomActions;
+using BotControl.SmartSelect.PressActions;
 using Il2CppInterop.Runtime;
 using Player;
 using PrioritySet;
@@ -91,18 +92,32 @@ namespace BotControl.SmartSelect.PressTypes
         public virtual bool Update() // Triggered on slow update, responsible for updating the current action and component based on where the player is looking and what actions are valid.
         {
             CurrentAction = null;
-            var BestBot = zSmartSelect.MainSelection.GetBestBot();
-            CurrentBot = BestBot;
+            var FirstSelectedBot = zSmartSelect.MainSelection.GetFirstSelectedBot();
+            CurrentBot = FirstSelectedBot;
             List<PlayerAIBot> BotList = ZiMain.GetBotList().OrderBy(b => (b.transform.position - zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos).sqrMagnitude).ToList();
             if (zSmartSelect.MainSelection.AnyBotsSelected())
             {
-                BotList.Remove(BestBot);
-                BotList.Insert(0, BestBot);
+                BotList.Remove(FirstSelectedBot);
+                BotList.Insert(0, FirstSelectedBot);
             }
             CurrentComponent = null;
             // first we find all of the candiates from selectable types.
             PrioritySet<Component> candidates = zSearch.FindAllInViewSorted(zStaticRefrences.CameraTransform, SelectableTypes, MaxAngle: SelectionAngle);
+            List<PlayerAIBot> SecondaryBotList = new();
             foreach (PlayerAIBot Bot in BotList)
+            {
+                if (zActions.DoingAnyManualAction(Bot.Agent) && (!zSmartSelect.MainSelection.AnyBotsSelected() || Bot.Pointer != FirstSelectedBot?.Pointer))
+                {
+                    SecondaryBotList.Add(Bot);
+                    continue;
+                }
+                if (TryFindAction(candidates, Bot))
+                {
+                    CurrentBot = Bot;
+                    return true;
+                }
+            }
+            foreach (PlayerAIBot Bot in SecondaryBotList)
             {
                 if (TryFindAction(candidates, Bot))
                 {

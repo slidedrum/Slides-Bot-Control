@@ -9,23 +9,23 @@ namespace BotControl.SmartSelect
 {
     public static class zSmartSelect
     {
-// This class handles everything with the smart select button (V)
-//
-//            (      TAP     /     HOLD      /   DOUBLE TAP  /  TAP & HOLD   ) 
-//            ( ------------------------------------------------------------ ) 
-// Player/Bot ( ---Select--- / ----Share---- / Follow/Cancel / ---Send To--- )
-//       Item ( ------------ / ---Pickup---- / ------------- / ------------- )
-//  Equipment ( ---Pickup--- / ---Refill---- / -Pickup All-- / ------------- )
-//  Container ( ----Open---- / ------------- / --*Place?*--- / ------------- )
-// Floor/Wall ( ------------ / -Consumable-- / --Equipment-- / ----Move----- )
-//    Holding ( ------------ / -*Drop Here*- / --Drop Now--- / ------------- )
-//       Door ( -Open/Close- / -Throw cFoam- / --*Break?*--- / ------------- )
-//       Lock ( ---Unlock--- / -Lock Melter- / ------------- / ------------- )
-// Enemy/Quiet( ------------ / Sneak Attack- / -*All Sync*-- / ---*Sync*---- )
-// Enemy/Loud ( --*Target*-- / ------------- / *All Target*- / ------------- )
-//  Generator ( ------------ / -Place Cell-- / ------------- / ------------- )
-//    Look Up ( Cancel Last- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
-//  Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- ) 
+        // This class handles everything with the smart select button (V)
+        //
+        //            (      TAP     /     HOLD      /   DOUBLE TAP  /  TAP & HOLD   ) 
+        //            ( ------------------------------------------------------------ ) 
+        // Player/Bot ( ---Select--- / ----Share---- / Follow/Cancel / ---Send To--- )
+        //       Item ( ------------ / ---Pickup---- / ------------- / ------------- )
+        //  Equipment ( ---Pickup--- / ---Refill---- / -Pickup All-- / ------------- )
+        //  Container ( ----Open---- / ------------- / --*Place?*--- / ------------- )
+        // Floor/Wall ( ------------ / -Consumable-- / --Equipment-- / ----Move----- )
+        //    Holding ( ------------ / -*Drop Here*- / --Drop Now--- / ------------- )
+        //       Door ( -Open/Close- / -Throw cFoam- / --*Break?*--- / ------------- )
+        //       Lock ( ---Unlock--- / -Lock Melter- / ------------- / ------------- )
+        // Enemy/Quiet( ------------ / Sneak Attack- / -*All Sync*-- / ---*Sync*---- )
+        // Enemy/Loud ( ------------ / --*Target*--- / *All Target*- / ------------- )
+        //  Generator ( ------------ / -Place Cell-- / ------------- / ------------- )
+        //    Look Up ( Cancel Last- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
+        //  Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- ) 
 
         // TODO lock melter
         // TODO cancel bot's last

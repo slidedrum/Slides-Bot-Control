@@ -13,9 +13,32 @@ namespace BotControl.Patches
     [HarmonyPatch]
     internal class TravelActionPatch
     {
+
+        //TODO figure out why they run even in stealth.
         private static Dictionary<IntPtr, AgentData> agentData = new();
-        private const float MaxTimeToWaitForTwitcher = 5f;
-        private const float TwitcherMoveInterval = 0.2f;
+        private const float MaxTimeToWaitForTwitcherMax = 3f;
+        private const float MaxTimeToWaitForTwitcherMin = 8f;
+        private static float _MaxTimeToWaitForTwitcher = 5f;
+        private static float MaxTimeToWaitForTwitcher { 
+            get 
+            {
+                _MaxTimeToWaitForTwitcher = UnityEngine.Random.Range(MaxTimeToWaitForTwitcherMin, MaxTimeToWaitForTwitcherMax);
+                return _MaxTimeToWaitForTwitcher;
+            } 
+        }
+        private const float TwitcherMoveIntervalMax = 0.1f;
+        private const float TwitcherMoveIntervalMin = 0.8f;
+        private static float _TwitcherMoveInterval = 0.3f;
+        private static float TwitcherMoveInterval
+        {
+            get
+            {
+                _TwitcherMoveInterval = UnityEngine.Random.Range(TwitcherMoveIntervalMin, TwitcherMoveIntervalMax);
+                return _TwitcherMoveInterval;
+            }
+        }
+        private static List<DRAMA_State> loudStates = new List<DRAMA_State>() { DRAMA_State.Alert, DRAMA_State.Encounter, DRAMA_State.Combat, DRAMA_State.Survival, DRAMA_State.IntentionalCombat };
+        private static bool IsLoud => loudStates.Contains(DramaManager.CurrentStateEnum);
         private class AgentData
         {
             public List<EnemyAgent> NearbyTwitchers = new();
@@ -38,12 +61,12 @@ namespace BotControl.Patches
         {
             //return true;
             AgentData data = GetOrCreateData(__instance.m_bot.Pointer);
-            if (DramaManager.CurrentStateEnum != DRAMA_State.Sneaking)
+            if (IsLoud)
             {
                 data.LastTimeNotWaitingForTwitcher = Time.time;
                 return true;
             }
-            bool HoldForTwicher = DramaManager.CurrentStateEnum == DRAMA_State.Sneaking && zActions.DoingAnyManualAction(__instance.m_bot.Agent) && __instance.m_bot.m_hasTwitcherNearby;
+            bool HoldForTwicher = !IsLoud && zActions.DoingAnyManualAction(__instance.m_bot.Agent) && __instance.m_bot.m_hasTwitcherNearby;
             if (!HoldForTwicher)
                 data.LastTimeNotWaitingForTwitcher = Time.time;
             else
@@ -65,10 +88,10 @@ namespace BotControl.Patches
             if (part.Type == JourneyPartBase.TypeEnum.Walk)
             {
                 JourneyPartWalk walkPart = part.TryCast<JourneyPartWalk>();
-                if (DramaManager.CurrentStateEnum == DRAMA_State.Sneaking && zActions.DoingAnyManualAction(__instance.m_bot.Agent))
+                if (!IsLoud && CustomWakeManager.IsDetectable(__instance.m_bot) && __instance.m_bot.m_hasSleeperNearby)
                 {
-                    if (__instance.m_bot.m_hasSleeperNearby)
-                        walkPart.Action.Posture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch;
+                    __instance.m_desc.WalkPosture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch;
+                    __instance.m_desc.Haste = 0.5f;
                 }
             }
             return true;
@@ -95,7 +118,7 @@ namespace BotControl.Patches
                 {
                     TargetType = PlayerBotActionLook.TargetTypeEnum.Object,
                     Haste = 1f,
-                    Prio = __instance.DescBase.Prio,
+                    Prio = 3f,
                     ParentActionBase = __instance,
                 };
             __instance.m_lookAction.TargetObj = LookingAt.transform;

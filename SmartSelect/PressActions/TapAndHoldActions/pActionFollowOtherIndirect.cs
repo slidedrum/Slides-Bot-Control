@@ -20,7 +20,7 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
         public string pressTypeIdentifier => "Tap and Hold";
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
-            PlayerAIBot Follower = zSmartSelect.MainSelection.GetBestBot();
+            PlayerAIBot Follower = zSmartSelect.MainSelection.GetFirstSelectedBot();
             if (Follower == null) return false;
             if (!Follower.Agent.Alive) return false;
             PlayerAgent Followeee;
@@ -36,7 +36,7 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
         }
         public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
-            PlayerAIBot Follower = zSmartSelect.MainSelection.GetBestBot();
+            PlayerAIBot Follower = zSmartSelect.MainSelection.GetFirstSelectedBot();
             if (Follower == null) return false;
             if (!Follower.Agent.Alive) return false;
             PlayerAgent Folowee = zSmartSelect.GetPlayerAgentLookingAt();

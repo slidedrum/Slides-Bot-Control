@@ -1,6 +1,8 @@
-﻿using HarmonyLib;
-using Player;
+﻿using BotControl.CustomActions;
+using BotControl.CustomActions.CustomActions;
 using BotControl.Menus;
+using HarmonyLib;
+using Player;
 
 namespace BotControl.Patches
 {
@@ -72,6 +74,17 @@ namespace BotControl.Patches
             RootPlayerBotAction.m_prioSettings.FollowLeaderRadius = (float)FollowMenuClass.followRadius.GetValue();
             RootPlayerBotAction.s_followLeaderRadius =              (float)FollowMenuClass.followRadius.GetValue();
             RootPlayerBotAction.s_followLeaderMaxDistance =         (float)FollowMenuClass.maxDistance.GetValue();
+            var follow = __instance.m_followLeaderAction;
+            var bot = __instance.m_bot;
+            var agent = bot.Agent;
+            bool recall = follow.Client != null
+                && !zActions.DoingAnyManualAction(agent)
+                && !zActions.AnyCustomActionRunning(bot)
+                && (follow.Client.Position - agent.Position).sqrMagnitude
+                    > RootPlayerBotAction.s_followLeaderMaxDistance
+                    * RootPlayerBotAction.s_followLeaderMaxDistance;
+
+            follow.FormationPrio = recall ? follow.Prio : RootPlayerBotAction.m_prioSettings.FollowLeaderFormation;
             return true;
         }
         [HarmonyPatch(typeof(RootPlayerBotAction), nameof(RootPlayerBotAction.UpdateActionFollowPlayer))]

@@ -178,6 +178,8 @@ namespace BotControl.CustomActions.CustomActions
 
                     if (PlayerManager.Current.IsObjectReserved(tempObj))
                         continue;
+                    if (Vector3.Distance(bot.SyncValues.Leader.Position, core.transform.position) > RootPlayerBotAction.s_followLeaderMaxDistance)
+                        continue;
                     if (core.IsLocked() && !Evaluate(bot, core.WeakLockComponent, ref method))
                         continue;
                     ClosestContainer = core;
