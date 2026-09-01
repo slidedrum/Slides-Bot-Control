@@ -12,29 +12,20 @@ namespace BotControl.CustomActions.CustomActions
     internal class CustomBotActionExplore : CustomActionBase
     {
         private StateEnum state = StateEnum.None;
+        public static float Prio = 5f;
         VisitNode UnexploredNode = null;
-        public static Dictionary<int, bool> ExplorePerms = new(); //bot.Agent.Owner.PlayerSlotIndex()
+        //public static Dictionary<int, bool> ExplorePerms = new(); //bot.Agent.Owner.PlayerSlotIndex()
         public static new bool Setup()
         {
             return true;
         }
         public static bool GetExplorePerm(PlayerAIBot bot)
         {
-            return GetExplorePerm(bot.Agent);
-        }
-        public static bool GetExplorePerm(PlayerAgent agent)
-        {
-            return GetExplorePerm(agent.Owner.PlayerSlotIndex());
-        }
-        public static bool GetExplorePerm(int index)
-        {
-            if (ExplorePerms.TryGetValue(index, out var perm)) { return perm; }
-            return ExplorePerms[index] = false;
+            return (bool)zSlideComputer.ActionPermissions.ValueAt("Explore");
         }
         public PlayerBotActionTravel.Descriptor travelAction = null;
         public new class Descriptor : CustomActionBase.Descriptor
         {
-            public new int Prio = 5;
             float lastLooked = 0;
             public bool canExplore = true;
             float lookCooldown = 5;
@@ -69,7 +60,6 @@ namespace BotControl.CustomActions.CustomActions
             }
             public override void CompareAction(PlayerAIBot bot, ref PlayerBotActionBase.Descriptor bestAction)
             {
-                return;
                 if (!canExplore)
                     return;
                 if (lastLooked == 0)
@@ -133,12 +123,6 @@ namespace BotControl.CustomActions.CustomActions
             //ZiMain.sendChatMessage("Here I go exploring because I feel like it.",m_bot.Agent);
             state = StateEnum.lookingForUnexplored;
         }
-        public void ToggleCanExplore()
-        {
-            int index = this.m_bot.Agent.Owner.PlayerSlotIndex();
-            bool allowed = ExplorePerms[index];
-            ExplorePerms[index] = !allowed;
-        }
         public override bool Update()
         {
             base.Update();
@@ -182,7 +166,7 @@ namespace BotControl.CustomActions.CustomActions
                         DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.Position,
                         Persistent = false,
                         ParentActionBase = this,
-                        Prio = 3,
+                        Prio = Prio,
                     };
                     m_bot.StartAction(travelAction);
                     FlexibleMethodDefinition callback = new(OnTravelActionEvent, [travelAction]);

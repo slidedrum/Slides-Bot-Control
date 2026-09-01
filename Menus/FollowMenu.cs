@@ -47,29 +47,29 @@ namespace BotControl.Menus
 
             zSlideComputer.ActionPriorities.AddNode("Fighting", null, "Follow", defaultValue: null, hasDefaultValue: true, condition: () => { return fightingStates.Contains(DramaManager.CurrentStateEnum); });
             zSlideComputer.ActionPriorities.AddNode("Stealth", null, "Follow", defaultValue: null, hasDefaultValue: true, condition: () => { return DramaManager.CurrentStateEnum == DRAMA_State.Sneaking; });
-            zSlideComputer.ActionPriorities.AddNode("Explore", null, "Follow", defaultValue: null, hasDefaultValue: true, condition: () => { return DramaManager.CurrentStateEnum == DRAMA_State.Exploration; });
+            zSlideComputer.ActionPriorities.AddNode("Exploring", null, "Follow", defaultValue: null, hasDefaultValue: true, condition: () => { return DramaManager.CurrentStateEnum == DRAMA_State.Exploration; });
 
             followRadius.AddNode("Follow", null, (string?)null);
             followRadius.AddNode("Fighting", null, "Follow", defaultValue: null, hasDefaultValue: true, condition: () => { return fightingStates.Contains(DramaManager.CurrentStateEnum); });
             followRadius.AddNode("Stealth", null, "Follow", defaultValue: null, hasDefaultValue: true, condition: () => { return DramaManager.CurrentStateEnum == DRAMA_State.Sneaking; });
-            followRadius.AddNode("Explore", null, "Follow", defaultValue: null, hasDefaultValue: true, condition: () => { return DramaManager.CurrentStateEnum == DRAMA_State.Exploration; });
+            followRadius.AddNode("Exploring", null, "Follow", defaultValue: null, hasDefaultValue: true, condition: () => { return DramaManager.CurrentStateEnum == DRAMA_State.Exploration; });
             
             maxDistance.AddNode("Follow", null, (string?)null);
             maxDistance.AddNode("Fighting", null, "Follow", defaultValue: null, hasDefaultValue: true, condition: () => { return fightingStates.Contains(DramaManager.CurrentStateEnum); });
             maxDistance.AddNode("Stealth", null, "Follow", defaultValue: null, hasDefaultValue: true, condition: () => { return DramaManager.CurrentStateEnum == DRAMA_State.Sneaking; });
-            maxDistance.AddNode("Explore", null, "Follow", defaultValue: null, hasDefaultValue: true, condition: () => { return DramaManager.CurrentStateEnum == DRAMA_State.Exploration; });
+            maxDistance.AddNode("Exploring", null, "Follow", defaultValue: null, hasDefaultValue: true, condition: () => { return DramaManager.CurrentStateEnum == DRAMA_State.Exploration; });
 
             followRadius.nodes["Follow"].onChanged.Listen(UpdateNodeSettingsDisplay, args: [followMenuNode]);
             maxDistance.nodes["Follow"].onChanged.Listen(UpdateNodeSettingsDisplay, args: [followMenuNode]);
 
             catagoryNodes["Fighting"] = AddCatagoryNode("Fighting");
             catagoryNodes["Stealth"] = AddCatagoryNode("Stealth");
-            catagoryNodes["Explore"] = AddCatagoryNode("Explore");
+            catagoryNodes["Exploring"] = AddCatagoryNode("Exploring");
 
             followMenu.AddCatagory("Basic");
             followMenu.AddNodeToCatagory("Basic", "Fighting");
             followMenu.AddNodeToCatagory("Basic", "Stealth");
-            followMenu.AddNodeToCatagory("Basic", "Explore");
+            followMenu.AddNodeToCatagory("Basic", "Exploring");
             followMenu.AddCatagory("Advanced");
 
             followMenu.AddPannel(sMenu.sMenuPannel.Side.top, "Controlls when and how closely the bots follow their leader.");
@@ -91,7 +91,7 @@ namespace BotControl.Menus
                         parentNode = "Stealth";
                         break;
                     case DRAMA_State.Exploration:
-                        parentNode = "Explore";
+                        parentNode = "Exploring";
                         break;
                     case var s when fightingStates.Contains(s):
                         parentNode = "Fighting";
@@ -253,17 +253,17 @@ namespace BotControl.Menus
                     case DRAMA_State.Sneaking:
                         catagoryNodes["Stealth"].SetColor(currentStateColor);
                         catagoryNodes["Fighting"].SetColor(defaultColor);
-                        catagoryNodes["Explore"].SetColor(defaultColor);
+                        catagoryNodes["Exploring"].SetColor(defaultColor);
                         break;
                     case DRAMA_State.Exploration:
                         catagoryNodes["Stealth"].SetColor(defaultColor);
                         catagoryNodes["Fighting"].SetColor(defaultColor);
-                        catagoryNodes["Explore"].SetColor(currentStateColor);
+                        catagoryNodes["Exploring"].SetColor(currentStateColor);
                         break;
                     case var s when fightingStates.Contains(s):
                         catagoryNodes["Stealth"].SetColor(defaultColor);
                         catagoryNodes["Fighting"].SetColor(currentStateColor);
-                        catagoryNodes["Explore"].SetColor(defaultColor);
+                        catagoryNodes["Exploring"].SetColor(defaultColor);
                         break;
                 }
             }
