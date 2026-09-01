@@ -36,7 +36,7 @@ namespace BotControl.Menus
                     continue;
                 sMenu.sMenuNode menuNode = attackMenu.AddNode(means.ToString());
                 overrideNode.onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey, menuNode]);
-                overrideNode.onChanged.Listen(RemoveActions, args: []);
+                overrideNode.onChanged.Listen(zBotActions.RemoveActions, args: [typeof(PlayerBotActionAttack)]);
                 menuNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [actionKey, menuNode]);
                 menuNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
                 attackMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
@@ -48,16 +48,7 @@ namespace BotControl.Menus
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "I'm pretty sure that's not the fault of the mod.");
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "I'd like to see if I can improve it anyway.");
         }
-        public static void RemoveActions() // TODO when we have per bot permisions set up, this needs to change to accomidate that.
-        {
-            if (!SNet.IsMaster)
-                return;
-            var botlist = ZiMain.GetBotList();
-            foreach (PlayerAIBot bot in botlist)
-            {
-                zSlideComputer.RemoveActionsOfType(bot.Agent, typeof(PlayerBotActionAttack));
-            }
-        }
+
     }
    
 }

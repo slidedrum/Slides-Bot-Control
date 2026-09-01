@@ -31,7 +31,16 @@ namespace BotControl
             ManualAction manualAction = new ManualAction(Desc, Commander, aiBot, ID);
             StartAction(manualAction);
         }
-
+        public static void RemoveActions(Type type) // TODO when we have per bot permisions set up, this needs to change to accomidate that.
+        {
+            if (!SNet.IsMaster)
+                return;
+            var botlist = ZiMain.GetBotList();
+            foreach (PlayerAIBot bot in botlist)
+            {
+                zSlideComputer.RemoveActionsOfType(bot.Agent, type);
+            }
+        }
         public static PlayerBotActionBase.Descriptor TryGetDescriptor<Type>(PlayerAIBot Bot) where Type : PlayerBotActionBase.Descriptor
         {
             if (Bot == null) return null;

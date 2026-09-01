@@ -1,4 +1,5 @@
-﻿using Player;
+﻿using BotControl.CustomActions.CustomActions;
+using Player;
 using SlideDrum;
 using SlideMenu;
 using System;
@@ -39,6 +40,8 @@ namespace BotControl.Menus
             autoActionMenus.Add(followMenu);
             var unlockMenu = sMenuManager.createMenu("Unlock", AutoActionMenu);
             autoActionMenus.Add(unlockMenu);
+            var openMenu = sMenuManager.createMenu("Open", AutoActionMenu);
+            autoActionMenus.Add(openMenu);
 
             zSlideComputer.PermissionDefinitions.ClearPermissionDefinitions();
             zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Revive", true, menu: reviveMenu, node: reviveMenu.GetNode(), ActionTypeToCull: typeof(PlayerBotActionRevive), defaultPriority: 12);
@@ -50,6 +53,7 @@ namespace BotControl.Menus
             zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Pickup", true, menu: pickupMenu, node: pickupMenu.GetNode(), ActionTypeToCull: typeof(PlayerBotActionCollectItem), defaultPriority: 4.2f);
             zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Drop", true, null, ActionTypeToCull: typeof(PlayerBotActionCollectItem));
             zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Unlock", true, menu: unlockMenu, node: unlockMenu.GetNode(), ActionTypeToCull: typeof(PlayerBotActionUnlock), defaultPriority: 4.1f);
+            zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Open", true, menu: openMenu, node: openMenu.GetNode(), ActionTypeToCull: typeof(CustomBotActionOpenContainer), defaultPriority: CustomBotActionOpenContainer.Prio);
             zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Move", true, null, ActionTypeToCull: typeof(PlayerBotActionWalk));
 
 
@@ -87,6 +91,7 @@ namespace BotControl.Menus
             BioTrackerMenuClass.Setup(bioTrackerMenu);
             AttackMenuClass.Setup(attackMenu);
             ReviveMenuClass.Setup(reviveMenu);
+            OpenMenuClass.Setup(openMenu);
 
             AutoActionMenu.AddCatagory("All");
             AutoActionMenu.AddCatagory("Favorites");

@@ -5,6 +5,7 @@ using Player;
 using SlideMenu;
 using System;
 using UnityEngine;
+using static Player.PlayerBotActionUnlock.Descriptor;
 namespace BotControl.CustomActions.CustomActions
 {
     public class CustomBotActionOpenContainer : CustomActionBase
@@ -127,12 +128,29 @@ namespace BotControl.CustomActions.CustomActions
                 }
                 if (bestAction?.Prio > this.Prio)
                     return;
+                foreach (PlayerBotActionUnlock.Descriptor.MethodEnum Method in Enum.GetValues<PlayerBotActionUnlock.Descriptor.MethodEnum>())
+                {
+                    if (Method == PlayerBotActionUnlock.Descriptor.MethodEnum.None || Method == PlayerBotActionUnlock.Descriptor.MethodEnum.Any)
+                        continue;
+                    if ((bool)zSlideComputer.ActionPermissions.ValueAt("openMethod" + Method.ToString()))
+                    {
+                        method |= Method;
+                        if (DramaManager.CurrentStateEnum == DRAMA_State.Sneaking)
+                            method &= ~PlayerBotActionUnlock.Descriptor.MethodEnum.Hack;
+                    }
+                    else
+                    {
+                        method &= ~Method;
+                    }
+                }
+                if (method == PlayerBotActionUnlock.Descriptor.MethodEnum.None)
+                    return;
                 var containers = bot.Agent.CourseNode.MetaData.StorageContainers;
                 LG_WeakResourceContainer ClosestContainer = null;
                 float containerDistance = float.MaxValue;
                 foreach (LG_ResourceContainer_Storage container in containers)
                 {
-                    var core = container.m_core.TryCast<LG_WeakResourceContainer>();
+                    LG_WeakResourceContainer core = container.m_core.TryCast<LG_WeakResourceContainer>();
                     if (core == null)
                         continue;
                     if (core.ISOpen == true)
@@ -144,20 +162,21 @@ namespace BotControl.CustomActions.CustomActions
                         continue;
                     if (sqrMagnitude > containerDistance)
                         continue;
-                    var tempPos = RootPlayerBotAction.s_tempPosReservation;
+                    PlayerManager.PositionReservation tempPos = RootPlayerBotAction.s_tempPosReservation;
                     tempPos.CharacterID = bot.Agent.CharacterID;
                     tempPos.Position = container.transform.position;
                     tempPos.Prio = CustomBotActionOpenContainer.Prio;
                     tempPos.Radius = 0.5f;
                     if (PlayerManager.Current.IsPositionReserved(tempPos))
                         continue;
-
-                    var tempObj = RootPlayerBotAction.s_tempObjReservation;
+                    PlayerManager.ObjectReservation tempObj = RootPlayerBotAction.s_tempObjReservation;
                     tempObj.CharacterID = bot.Agent.CharacterID;
                     tempObj.Object = container.gameObject;
                     tempObj.Prio = CustomBotActionOpenContainer.Prio;
 
                     if (PlayerManager.Current.IsObjectReserved(tempObj))
+                        continue;
+                    if (core.IsLocked() && !Evaluate(bot, core.WeakLockComponent, ref method))
                         continue;
                     ClosestContainer = core;
                     containerDistance = sqrMagnitude;
@@ -173,6 +192,41 @@ namespace BotControl.CustomActions.CustomActions
                 //Be sure to not set this to best action if it's already active.
             }
 
+        }
+        public static bool Evaluate(PlayerAIBot bot, LG_WeakLock testLock, ref MethodEnum Method)
+        {
+            if (!bot.WantsCrouch() && (Method & MethodEnum.Melee) == MethodEnum.Melee)
+            {
+                BackpackItem backpackItem;
+                if (bot.Backpack.TryGetBackpackItem(InventorySlot.GearMelee, out backpackItem))
+                {
+                    if (testLock.Status == eWeakLockStatus.LockedMelee)
+                    {
+                        Method = MethodEnum.Melee;
+                        return true;
+                    }
+                }
+            }
+
+            if ((Method & MethodEnum.Melt) == MethodEnum.Melt)
+            {
+                if (PlayerBotActionUseLockMelter.Descriptor.Evaluate(bot, testLock))
+                {
+                    Method = MethodEnum.Melt;
+                    return true;
+                }
+            }
+            if ((Method & MethodEnum.Hack) == MethodEnum.Hack && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking)
+            {
+                if (PlayerBotActionUseHackingTool.Descriptor.Evaluate(bot, testLock))
+                {
+                    Method = MethodEnum.Hack;
+                    return true;
+                }
+            }
+
+            Method = MethodEnum.None;
+            return false;
         }
         private enum State
         {
@@ -190,7 +244,7 @@ namespace BotControl.CustomActions.CustomActions
         private PlayerBotActionLook.Descriptor LookAction;
         private PlayerBotActionUnlock.Descriptor UnlockAction;
         private float Haste = 1f;
-        private static float Prio = 4.2f;
+        internal static float Prio = 4.2f;
         private LG_WeakResourceContainer TargetContainer;
         private Vector3 TargetLoction;
         private Descriptor m_desc;
