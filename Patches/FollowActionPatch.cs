@@ -84,7 +84,7 @@ namespace BotControl.Patches
                     > RootPlayerBotAction.s_followLeaderMaxDistance
                     * RootPlayerBotAction.s_followLeaderMaxDistance;
 
-            follow.FormationPrio = recall ? follow.Prio : RootPlayerBotAction.m_prioSettings.FollowLeaderFormation;
+            //follow.FormationPrio = recall ? follow.Prio : RootPlayerBotAction.m_prioSettings.FollowLeaderFormation;
             return true;
         }
         [HarmonyPatch(typeof(RootPlayerBotAction), nameof(RootPlayerBotAction.UpdateActionFollowPlayer))]

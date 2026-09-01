@@ -12,8 +12,9 @@ namespace BotControl.CustomActions.CustomActions
     internal class CustomBotActionExplore : CustomActionBase
     {
         private StateEnum state = StateEnum.None;
-        public static float Prio = 5f;
+        public static float Prio = 3.1f;
         VisitNode UnexploredNode = null;
+        PlayerAgent OriginalLeader = null;
         public static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionBase.AccessLayers.Legs | PlayerBotActionBase.AccessLayers.RootPosition;
         //public static Dictionary<int, bool> ExplorePerms = new(); //bot.Agent.Owner.PlayerSlotIndex()
         public static new bool Setup()
@@ -129,6 +130,16 @@ namespace BotControl.CustomActions.CustomActions
         public override bool Update()
         {
             base.Update();
+            if (OriginalLeader == null)
+            {
+                OriginalLeader = m_bot.SyncValues.Leader;
+                m_bot.SyncValues.Leader = m_bot.Agent;
+            }
+            if (m_bot.SyncValues.Leader != m_bot.Agent)
+            {
+                DescBase.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Failed);
+                Stop();
+            }
             if (!GetExplorePerm(m_bot))
             {
                 DescBase.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Successful);
@@ -238,6 +249,9 @@ namespace BotControl.CustomActions.CustomActions
         {
             if (travelAction != null && !travelAction.IsTerminated())
                 m_bot.StopAction(travelAction);
+            if (m_bot.SyncValues.Leader == m_bot.Agent)
+                m_bot.SyncValues.Leader = OriginalLeader;
+            OriginalLeader = null;
             base.Stop();
         }
         public enum StateEnum
