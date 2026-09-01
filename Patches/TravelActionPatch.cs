@@ -86,7 +86,7 @@ namespace BotControl.Patches
             data.EnemyLookingAt = LookingAt;
             if (LookingAt == null)//todo && simple raycast from bot head to enemy position to see if the bot can see the enemy)
             {
-                if (__instance.m_lookAction != null && !__instance.m_lookAction.IsTerminated())
+                if (__instance.m_lookAction != null && __instance.m_lookAction.TargetType == PlayerBotActionLook.TargetTypeEnum.Object && !__instance.m_lookAction.IsTerminated())
                     __instance.m_bot.StopAction(__instance.m_lookAction);
                 return true;
             }

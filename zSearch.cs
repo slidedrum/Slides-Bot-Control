@@ -163,10 +163,15 @@ namespace BotControl
                 {
                     if (Type == null)
                         continue;
-                    Component componenet = collider.GetComponentInParent(Type);
-                    if (componenet != null)
+                    Component ParentComponenet = collider.GetComponentInParent(Type);
+                    if (ParentComponenet != null)
                     {
-                        Candidates.Add(componenet);
+                        Candidates.Add(ParentComponenet);
+                    }
+                    Component ChildComponenet = collider.GetComponentInChildren(Type);
+                    if (ChildComponenet != null)
+                    {
+                        Candidates.Add(ChildComponenet);
                     }
                 }
             }

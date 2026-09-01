@@ -14,6 +14,7 @@ namespace BotControl.CustomActions.CustomActions
         private StateEnum state = StateEnum.None;
         public static float Prio = 5f;
         VisitNode UnexploredNode = null;
+        public static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionBase.AccessLayers.Legs | PlayerBotActionBase.AccessLayers.RootPosition;
         //public static Dictionary<int, bool> ExplorePerms = new(); //bot.Agent.Owner.PlayerSlotIndex()
         public static new bool Setup()
         {
@@ -56,6 +57,7 @@ namespace BotControl.CustomActions.CustomActions
             {
                 ClassInjector.DerivedConstructorBody(this);
                 InitDescriptor(bot);
+                this.RequiredLayers = s_RequiredLayers;
                 //Use this
             }
             public override void CompareAction(PlayerAIBot bot, ref PlayerBotActionBase.Descriptor bestAction)
@@ -87,13 +89,14 @@ namespace BotControl.CustomActions.CustomActions
                     var desc = act.DescBase;
                     maxprio = Math.Max(desc.Prio, maxprio);
                 }
-                if (maxprio > Prio)
+                if (maxprio > CustomBotActionExplore.Prio)
                     return;
                 if (zVisitedManager.GetUnexploredLocation(Bot.Agent.Position, 0, 30) == null)
                     return;
-                if (bestAction == null || Prio > bestAction.Prio)
+                if (bestAction == null || CustomBotActionExplore.Prio > bestAction.Prio)
                 {
                     bestAction = this;
+                    this.Prio = CustomBotActionExplore.Prio;
                     lastLooked = Time.time;
                 }
             }
@@ -128,8 +131,6 @@ namespace BotControl.CustomActions.CustomActions
             base.Update();
             if (!GetExplorePerm(m_bot))
             {
-                if (travelAction != null)
-                    m_bot.StopAction(travelAction);
                 DescBase.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Successful);
                 state = StateEnum.Finished;
                 return true;
@@ -166,11 +167,11 @@ namespace BotControl.CustomActions.CustomActions
                         DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.Position,
                         Persistent = false,
                         ParentActionBase = this,
-                        Prio = Prio,
+                        Prio = CustomBotActionExplore.Prio,
                     };
                     m_bot.StartAction(travelAction);
-                    FlexibleMethodDefinition callback = new(OnTravelActionEvent, [travelAction]);
-                    zActionSub.addOnTerminated(travelAction, callback);
+                    //FlexibleMethodDefinition callback = new(OnTravelActionEvent, [travelAction]);
+                    //zActionSub.addOnTerminated(travelAction, callback);
                     state = StateEnum.Moving;
                     return false;
                 }
@@ -191,15 +192,18 @@ namespace BotControl.CustomActions.CustomActions
             {
                 if (HasFoundEnemies())
                 {
-                    m_bot.StopAction(travelAction);
-                    state = StateEnum.Finished;
+                    state = StateEnum.Finished;                    
                     return false;
                 }
                 if (UnexploredNode != null && UnexploredNode.discovered)
                 {
-                    m_bot.StopAction(travelAction);
                     state = StateEnum.lookingForUnexplored;
+                    UnexploredNode = null;
                     return false;
+                }
+                else if (travelAction.DestinationPos != UnexploredNode.position)
+                {
+                    travelAction.DestinationPos = UnexploredNode.position;
                 }
             }
             return !IsActive();
@@ -215,21 +219,25 @@ namespace BotControl.CustomActions.CustomActions
             //}
             return zFindableManager.AllFoundFindables.Any(obj => obj.found && obj.pingSyle == eNavMarkerStyle.PlayerPingEnemy && obj.gameObject != null && obj.gameObject.activeInHierarchy); ;
         }
-        public void OnTravelActionEvent(PlayerBotActionBase.Descriptor descBase)
-        {
-            travelAction = (PlayerBotActionTravel.Descriptor)descBase;
-            UnexploredNode = null;
-            if (travelAction.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
-            {
-                state = StateEnum.lookingForUnexplored;
-            }
-            else if (travelAction.IsTerminated())
-            {
-                state = StateEnum.Finished;
-            }
-        }
+        //public void OnTravelActionEvent(PlayerBotActionBase.Descriptor descBase)
+        //{
+        //    PlayerBotActionTravel.Descriptor IncomingTravelAction = (PlayerBotActionTravel.Descriptor)descBase;
+        //    if (IncomingTravelAction.Pointer != this.travelAction.Pointer)
+        //        return;
+        //    UnexploredNode = null;
+        //    if (IncomingTravelAction.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
+        //    {
+        //        state = StateEnum.lookingForUnexplored;
+        //    }
+        //    else if (IncomingTravelAction.IsTerminated())
+        //    {
+        //        state = StateEnum.Finished;
+        //    }
+        //}
         public override void Stop()
         {
+            if (travelAction != null && !travelAction.IsTerminated())
+                m_bot.StopAction(travelAction);
             base.Stop();
         }
         public enum StateEnum

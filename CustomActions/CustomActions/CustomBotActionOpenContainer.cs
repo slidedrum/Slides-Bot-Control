@@ -22,7 +22,7 @@ namespace BotControl.CustomActions.CustomActions
             public PlayerBotActionUnlock.Descriptor.MethodEnum method = PlayerBotActionUnlock.Descriptor.MethodEnum.Any;
             private PlayerManager.PositionReservation m_posReservation;
             private PlayerManager.ObjectReservation m_objReservation;
-            public static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionBase.AccessLayers.Legs | PlayerBotActionBase.AccessLayers.Hip | PlayerBotActionBase.AccessLayers.RootPosition;
+            public static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionCollectItem.Descriptor.s_RequiredLayers;
             //This is an example of how you can set up your own custom descriptor!
             public Descriptor() : base(ClassInjector.DerivedConstructorPointer<Descriptor>()) // Don't use this!  Needed for il2cpp nonsense.
             {
