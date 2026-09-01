@@ -155,6 +155,8 @@ namespace BotControl.CustomActions.CustomActions
                         continue;
                     if (core.ISOpen == true)
                         continue;
+                    if (zHelpers.IsAnyHumanPlayerNear(core.transform.position, 3f))
+                        continue;
                     Vector3 vector2 = container.transform.position - bot.transform.position;
                     float sqrMagnitude = vector2.sqrMagnitude;
                     float maxDistnce = RootPlayerBotAction.s_collectItemSearchDistance * RootPlayerBotAction.s_collectItemSearchDistance;
@@ -193,41 +195,7 @@ namespace BotControl.CustomActions.CustomActions
             }
 
         }
-        public static bool Evaluate(PlayerAIBot bot, LG_WeakLock testLock, ref MethodEnum Method)
-        {
-            if (!bot.WantsCrouch() && (Method & MethodEnum.Melee) == MethodEnum.Melee)
-            {
-                BackpackItem backpackItem;
-                if (bot.Backpack.TryGetBackpackItem(InventorySlot.GearMelee, out backpackItem))
-                {
-                    if (testLock.Status == eWeakLockStatus.LockedMelee)
-                    {
-                        Method = MethodEnum.Melee;
-                        return true;
-                    }
-                }
-            }
 
-            if ((Method & MethodEnum.Melt) == MethodEnum.Melt)
-            {
-                if (PlayerBotActionUseLockMelter.Descriptor.Evaluate(bot, testLock))
-                {
-                    Method = MethodEnum.Melt;
-                    return true;
-                }
-            }
-            if ((Method & MethodEnum.Hack) == MethodEnum.Hack && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking)
-            {
-                if (PlayerBotActionUseHackingTool.Descriptor.Evaluate(bot, testLock))
-                {
-                    Method = MethodEnum.Hack;
-                    return true;
-                }
-            }
-
-            Method = MethodEnum.None;
-            return false;
-        }
         private enum State
         {
             Idle,
