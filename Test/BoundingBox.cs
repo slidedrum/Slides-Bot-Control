@@ -138,6 +138,7 @@ public class BoundingBox
                     }
 
             _go.transform.rotation = originalRotation;
+            _go.transform.parent = originalParent;
             return;
         }
         // Combine all bounds

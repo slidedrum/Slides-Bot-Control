@@ -168,11 +168,6 @@ namespace BotControl
                     {
                         Candidates.Add(ParentComponenet);
                     }
-                    Component ChildComponenet = collider.GetComponentInChildren(Type);
-                    if (ChildComponenet != null)
-                    {
-                        Candidates.Add(ChildComponenet);
-                    }
                 }
             }
             return Candidates;
