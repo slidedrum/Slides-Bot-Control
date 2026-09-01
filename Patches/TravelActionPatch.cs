@@ -14,6 +14,8 @@ namespace BotControl.Patches
     internal class TravelActionPatch
     {
         private static Dictionary<IntPtr, AgentData> agentData = new();
+        private const float MaxTimeToWaitForTwitcher = 5f;
+        private const float TwitcherMoveInterval = 0.2f;
         private class AgentData
         {
             public List<EnemyAgent> NearbyTwitchers = new();
@@ -46,9 +48,9 @@ namespace BotControl.Patches
                 data.LastTimeNotWaitingForTwitcher = Time.time;
             else
             {
-                if (Time.time - data.LastTimeNotWaitingForTwitcher > 5f)
+                if (Time.time - data.LastTimeNotWaitingForTwitcher > MaxTimeToWaitForTwitcher)
                 {
-                    data.LastTimeNotWaitingForTwitcher = Time.time + 1f;
+                    data.LastTimeNotWaitingForTwitcher = Time.time + TwitcherMoveInterval;
                 }
             }
             return !HoldForTwicher || data.LastTimeNotWaitingForTwitcher > Time.time;
