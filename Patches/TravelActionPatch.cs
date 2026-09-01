@@ -11,7 +11,7 @@ using static Player.PlayerBotActionTravel;
 namespace BotControl.Patches
 {
     [HarmonyPatch]
-    internal class TravelACtionPatch
+    internal class TravelActionPatch
     {
         private static Dictionary<IntPtr, AgentData> agentData = new();
         private class AgentData
