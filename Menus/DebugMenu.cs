@@ -1,9 +1,15 @@
-﻿using CollisionRundown.Features.HUDs;
+﻿using BotControl;
+using BotControl.CustomActions.CustomActions;
+using BotControl.Patches;
+using BotControl.SmartSelect;
+using CollisionRundown.Features.HUDs;
+using Player;
 using SlideMenu;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using BotControl.Patches;
-using BotControl;
+using static RootMotion.FinalIK.AimPoser;
 
 namespace BotControl.Menus
 {
@@ -37,6 +43,7 @@ namespace BotControl.Menus
             debugMenu.AddNode("Find unexplored", zDebug.MarkUnexploredArea);
             debugMenu.AddNode("SendBotToExplore", zDebug.SendClosestBotToExplore);
             debugMenu.AddNode("Show corners", zDebug.debugCorners);
+            debugMenu.AddNode("Guard", SendGuardDebug);
             //debugMenu.AddNode("Toggle explore",ExploreAction.ToggleCanExplore);
             debugNodeMenu.AddNode("Node I'm looking at", zDebug.GetNodeImLookingAT, [sMenuManager.mainMenu.gameObject.transform]);
             debugNodeMenu.AddNode("Toggle Nodes", zDebug.ToggleNodes);
@@ -70,7 +77,39 @@ namespace BotControl.Menus
             debugCameraCullingMenu.radius = 140;
             debugCameraCullingMenu.setNodeSize(0.5f);
         }
-
+        private static void SendGuardDebug()
+        {
+            var bot = zSmartSelect.MainSelection.GetFirstSelectedBot();
+            List<PlayerAIBot> BotList = ZiMain.GetBotList().OrderBy(b => (b.transform.position - zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos).sqrMagnitude).ToList();
+            if (zSmartSelect.MainSelection.AnyBotsSelected())
+            {
+                BotList.Remove(bot);
+                BotList.Insert(0, bot);
+            }
+            bot = BotList[0];
+            Transform Transform = sMenuManager.mainMenu.gameObject.transform;
+            if (Transform == null)
+                return;
+            // Raycast from the transform's position in its forward direction
+            if (!Physics.Raycast(Transform.position, Transform.forward, out RaycastHit hit, 100f))
+                return;
+            Vector3 pos = hit.point;
+            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cube.name = "DebugCube";
+            cube.transform.position = pos;
+            cube.transform.localScale = Vector3.one * 0.25f;
+            cube.GetComponent<Renderer>().material.color = Color.white;
+            CustomBotActionGuard.Descriptor Guard = new(bot)
+            {
+                maxDistance = 2,
+                minDistance = 1,
+                mode = CustomBotActionGuard.Descriptor.Mode.GameObject,
+                Haste = 1f,
+                Prio = 3,
+                GuardObject = cube,
+            };
+            bot.StartAction(Guard);
+        }
         private static void toggleUsePickupAction()
         {
             PickupActionPatch.useUpdateActionCollectItem = !PickupActionPatch.useUpdateActionCollectItem;
