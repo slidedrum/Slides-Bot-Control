@@ -169,8 +169,7 @@ namespace BotControl.CustomActions.CustomActions
                 {
                     intialized = true;
                     m_bot.StopAction(follow);
-                    m_bot.SyncValues.Leader = m_bot.Agent;
-                    m_bot.SyncValues.IsLeaderDirty = true;
+                    zBotActions.SetLeader(m_bot.Agent, m_bot.Agent, zStaticRefrences.LocalPlayer, 0);
                 }
             }
             if (m_bot.SyncValues.Leader != m_bot.Agent)

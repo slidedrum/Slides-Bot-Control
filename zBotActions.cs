@@ -86,14 +86,12 @@ namespace BotControl
             if (aiBot == null) return;
             if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
-            PlayerBotActionTravel.Descriptor Desc = new PlayerBotActionTravel.Descriptor(aiBot)
+            CustomBotActionGuard.Descriptor Desc = new CustomBotActionGuard.Descriptor(aiBot)
             {
                 Prio = defaultPrio,
                 Haste = 1,
-                DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.Position,
-                DestinationPos = TargetLocation,
-                Persistent = false,
-                Bulletproof = PlayerBotActionTravel.Descriptor.BulletproofEnum.None,
+                mode = CustomBotActionGuard.Descriptor.Mode.Position,
+                GuardPosition = TargetLocation,
             };
             StartAction(aiBot, Desc, Commander, actionID);
             if (!SNet.IsMaster) //Are we a client?
