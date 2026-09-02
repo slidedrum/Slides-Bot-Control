@@ -132,8 +132,10 @@ namespace BotControl.CustomActions.CustomActions
             base.Update();
             if (OriginalLeader == null)
             {
-                OriginalLeader = m_bot.SyncValues.Leader;
+                var Leader = m_bot.SyncValues.Leader;
+                OriginalLeader = Leader;
                 m_bot.SyncValues.Leader = m_bot.Agent;
+                
             }
             if (m_bot.SyncValues.Leader != m_bot.Agent)
             {
