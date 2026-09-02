@@ -2,6 +2,7 @@
 using Player;
 using System;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 namespace BotControl.CustomActions.CustomActions
 {
 
@@ -104,6 +105,7 @@ namespace BotControl.CustomActions.CustomActions
         private State state;
         private Descriptor m_desc;
         private PlayerBotActionTravel.Descriptor TravelAction;
+        Vector3 TargetPos => mode == Descriptor.Mode.Position ? GuardPosition : GuardObject.transform.position;
         private bool LineOfSight;
         private float minDistance;
         private float maxDistance;
@@ -115,6 +117,9 @@ namespace BotControl.CustomActions.CustomActions
         private float Haste;
         private float Prio;
         private bool intialized = false;
+        private float LastMovedTimestamp = 0;
+        private Vector3 lastMovedPosition = Vector3.zero;
+        private const float resetTime = 5;
 
         public CustomBotActionGuard() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionGuard>())// Don't use this!  Needed for il2cpp nonsense.
         {
@@ -192,31 +197,46 @@ namespace BotControl.CustomActions.CustomActions
         }
         private void UpdateStateIdle()
         {
-            Vector3 TargetPos = mode == Descriptor.Mode.Position ? GuardPosition : GuardObject.transform.position;
-            float Distance = Vector3.Distance(TargetPos, m_bot.transform.position);
-            if (Distance > maxDistance)
+            float DistanceToTarget = Vector3.Distance(TargetPos, m_bot.transform.position);
+            if (DistanceToTarget > maxDistance)
+                ReturnToPosition(minDistance);
+            if (DistanceToTarget < minDistance)
+                return;
+            if (Vector3.Distance(lastMovedPosition, m_bot.transform.position) > 0.01)
+                UpdateLastMoved();
+                
+            if (Time.time - LastMovedTimestamp > resetTime)
+                ReturnToPosition();
+        }
+        private void UpdateLastMoved()
+        {
+            LastMovedTimestamp = Time.time;
+            lastMovedPosition = m_bot.transform.position;
+        }
+        private void ReturnToPosition(float radius = 0.1f)
+        {
+            state = State.Move;
+            if (TravelAction == null)
             {
-                state = State.Move;
-                if (TravelAction == null)
+                TravelAction = new(m_bot)
                 {
-                    TravelAction = new(m_bot)
-                    {
-                        Haste = Haste,
-                        DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.Position,
-                        Prio = Prio,
-                        Persistent = false,
-                        DestinationPos = mode == Descriptor.Mode.Position ? GuardPosition : GuardObject.transform.position,
-                        Radius = 0.1f,
-                        ParentActionBase = this,
-                    };
-                }
-                TravelAction.DestinationPos = TargetPos;
-                TravelAction.Radius = minDistance;
-                m_bot.RequestAction(TravelAction);
+                    Haste = Haste,
+                    DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.Position,
+                    Prio = Prio,
+                    Persistent = false,
+                    DestinationPos = mode == Descriptor.Mode.Position ? GuardPosition : GuardObject.transform.position,
+                    Radius = radius,
+                    ParentActionBase = this,
+                };
             }
+            TravelAction.DestinationPos = TargetPos;
+            TravelAction.Radius = radius;
+            m_bot.RequestAction(TravelAction);
+            return;
         }
         private void UpdateStateMove()
         {
+            UpdateLastMoved();
             if (TravelAction.IsTerminated())
                 state = State.Idle;
         }
