@@ -90,6 +90,7 @@ namespace BotControl
             {
                 Prio = defaultPrio,
                 Haste = 1,
+                maxDistance = 4,
                 mode = CustomBotActionGuard.Descriptor.Mode.Position,
                 GuardPosition = TargetLocation,
             };
