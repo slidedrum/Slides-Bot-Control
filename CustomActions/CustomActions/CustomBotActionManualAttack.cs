@@ -38,7 +38,7 @@ namespace BotControl.CustomActions.CustomActions
             {
                 ClassInjector.DerivedConstructorBody(this);
                 InitDescriptor(bot);
-                this.RequiredLayers = AccessLayers.None;
+                this.RequiredLayers = PlayerBotActionBase.AccessLayers.LeftArm | PlayerBotActionBase.AccessLayers.RightArm | PlayerBotActionBase.AccessLayers.LookDirection | PlayerBotActionBase.AccessLayers.WieldPrimary;
                 //Use this is your descriptor constructor.
                 //The descriptor is used to describe everything about your action.
                 //Any paramaters are set up by the calling class.  

@@ -2,7 +2,6 @@
 using Player;
 using System;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
 namespace BotControl.CustomActions.CustomActions
 {
 
@@ -16,15 +15,79 @@ namespace BotControl.CustomActions.CustomActions
         }
         public new class Descriptor : CustomActionBase.Descriptor
         {
+            static readonly Il2CppSystem.Collections.Generic.List<PlayerBotActionBase.Descriptor.PositionRestriction> Il2cppBullshit = new();
             internal static PlayerBotActionBase.AccessLayers s_RequiredLayers = PlayerBotActionBase.AccessLayers.RestrictionRadius;
             public bool LineOfSight;
             public float minDistance;
             public float maxDistance;
             public float Angle;
             public float AngleRange;
-            public GameObject GuardObject;
-            public Vector3 GuardPosition;
-            public Mode mode;
+            private GameObject _GuardObject;
+            public GameObject GuardObject
+            {
+                get
+                {
+                    return _GuardObject;
+                }
+                set
+                {
+                    _GuardObject = value;
+                    UpdateInternalGuardObject();
+                }
+            }
+            private Vector3 _GuardPosition;
+            public Vector3 GuardPosition
+            {
+                get
+                {
+                    return _GuardPosition;
+                }
+                set
+                {
+                    _GuardPosition = value;
+                    UpdateInternalGuardObject();
+                }
+            }
+            private Descriptor.Mode _mode;
+            public Descriptor.Mode mode
+            {
+                get
+                {
+                    return _mode;
+                }
+                set
+                {
+                    _mode = value;
+                    UpdateInternalGuardObject();
+                }
+            }
+            private GameObject _InternalGuardObject;
+            public GameObject InternalGuardObject
+            {
+                get
+                {
+                    UpdateInternalGuardObject();
+                    return _InternalGuardObject;
+                }
+            }
+            private void UpdateInternalGuardObject()
+            {
+                if (_InternalGuardObject == null)
+                {
+                    _InternalGuardObject = new GameObject($"{Bot.Agent.name}'s internal guard object");
+                    
+                }
+                if (mode == Descriptor.Mode.Position)
+                {
+                    _InternalGuardObject.transform.SetParent(null);
+                    _InternalGuardObject.transform.position = GuardPosition;
+                }
+                else if (mode == Descriptor.Mode.GameObject)
+                {
+                    _InternalGuardObject.transform.SetParent(GuardObject.transform, false);
+                    _InternalGuardObject.transform.localPosition = Vector3.zero;
+                }
+            }
             public float Haste;
             public enum Mode
             {
@@ -76,6 +139,10 @@ namespace BotControl.CustomActions.CustomActions
             {
                 //This gets called when your action is added to the que.
                 base.OnQueued();
+                CreatePosRestriction();
+                Il2cppBullshit.Add(PosRestriction); // This is needed so that the restriction does not get garbage collected for some fucking reason.
+                base.PosRestriction.Center = InternalGuardObject.transform;
+                base.PosRestriction.Radius = maxDistance;
             }
             public override AccessLayers GetAccessLayersRuntime()
             {
@@ -105,31 +172,29 @@ namespace BotControl.CustomActions.CustomActions
         private State state;
         private Descriptor m_desc;
         private PlayerBotActionTravel.Descriptor TravelAction;
-        Vector3 TargetPos => mode == Descriptor.Mode.Position ? GuardPosition : GuardObject.transform.position;
+        Vector3 TargetPos => m_desc.InternalGuardObject.transform.position;
         private bool LineOfSight;
         private float minDistance;
         private float maxDistance;
         private float Angle;
         private float AngleRange;
-        private GameObject GuardObject;
-        private Vector3 GuardPosition;
-        private Descriptor.Mode mode;
         private float Haste;
         private float Prio;
         private bool intialized = false;
         private float LastMovedTimestamp = 0;
         private Vector3 lastMovedPosition = Vector3.zero;
         private const float resetTime = 5;
+        private GameObject GuardObject;
+        private Vector3 GuardPosition;
+        private Descriptor.Mode mode;
 
         public CustomBotActionGuard() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionGuard>())// Don't use this!  Needed for il2cpp nonsense.
         {
             ClassInjector.DerivedConstructorBody(this);
-
         }// Don't use this!  Needed for il2cpp nonsense.
         public CustomBotActionGuard(IntPtr ptr) : base(ptr) // Don't use this!  Needed for il2cpp nonsense.
         {
             ClassInjector.DerivedConstructorBody(this);
-
         }// Don't use this!  Needed for il2cpp nonsense.
         public CustomBotActionGuard(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<CustomBotActionGuard>())
         {
@@ -198,8 +263,8 @@ namespace BotControl.CustomActions.CustomActions
         private void UpdateStateIdle()
         {
             float DistanceToTarget = Vector3.Distance(TargetPos, m_bot.transform.position);
-            if (DistanceToTarget > maxDistance)
-                ReturnToPosition(minDistance);
+            //if (DistanceToTarget > maxDistance)
+            //    ReturnToPosition(minDistance);
             if (DistanceToTarget < minDistance)
                 return;
             if (Vector3.Distance(lastMovedPosition, m_bot.transform.position) > 0.01)

@@ -88,7 +88,7 @@ namespace BotControl
                 actionID = zHelpers.HashString($"RequestToMoveToLocation{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
             CustomBotActionGuard.Descriptor Desc = new CustomBotActionGuard.Descriptor(aiBot)
             {
-                Prio = defaultPrio,
+                Prio = 3,
                 Haste = 1,
                 maxDistance = 4,
                 minDistance = 1,
