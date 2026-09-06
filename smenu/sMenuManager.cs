@@ -232,8 +232,8 @@ namespace SlideMenu
         }
         public static void SetupCamera() {
             mainCamera = Camera.main;
-            var cameraEcents = mainCamera.gameObject.AddComponent<zCameraEvents>();
-            cameraEcents.onPreRender.Listen(PreRender); // THis might cause double actions in some cases
+            var cameraEvents = mainCamera.gameObject.AddComponent<zCameraEvents>();
+            cameraEvents.onPreRender.Listen(PreRender); // THis might cause double actions in some cases
             menuParrent = new GameObject("menus");
             mainMenu = new sMenu("Main");
             mainMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnUnpressedSelected, CloseAllMenus);
