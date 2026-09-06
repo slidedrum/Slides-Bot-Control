@@ -9,6 +9,10 @@ namespace BotControl.CustomActions.CustomActions
     public class CustomBotActionSyncAttack : CustomActionBase
     {
         //This is an example of how you can set up your own custom action!
+        private EnemyAgent TargetAgent;
+        private PlayerBotActionTravel.Descriptor TravelAction;
+        private PlayerBotActionMelee.Descriptor MeleAction;
+        private float Haste;
         public static new bool Setup() //This will be called when your class is regestered, it should return true if your action will even activate on it's own, or false if it's an exclusively manual action.
         {
             return true;
@@ -18,10 +22,6 @@ namespace BotControl.CustomActions.CustomActions
             //This is an example of how you can set up your own custom descriptor!
             public float Haste = 1f;
             public EnemyAgent TargetAgent;
-            public PlayerBotActionAttack.AttackMeansEnum Means = PlayerBotActionAttack.AttackMeansEnum.Melee;
-            public PlayerBotActionWalk.Descriptor.PostureEnum Posture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch;
-            public PlayerBotActionAttack.StanceEnum stance = PlayerBotActionAttack.StanceEnum.All;
-            public PlayerAgent Commander;
             public Descriptor() : base(ClassInjector.DerivedConstructorPointer<Descriptor>()) // Don't use this!  Needed for il2cpp nonsense.
             {
                 ClassInjector.DerivedConstructorBody(this);
@@ -95,6 +95,7 @@ namespace BotControl.CustomActions.CustomActions
             Failed,
         }
         private State state;
+        private Descriptor m_desc;
 
         public CustomBotActionSyncAttack() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionSyncAttack>())// Don't use this!  Needed for il2cpp nonsense.
         {
@@ -110,6 +111,7 @@ namespace BotControl.CustomActions.CustomActions
         {
             ClassInjector.DerivedConstructorBody(this);
             InitFromDescriptor(desc);
+            m_desc = desc;
             //Use this constructor.
             //This means your action is starting!
         }
@@ -119,13 +121,124 @@ namespace BotControl.CustomActions.CustomActions
             //Be sure to do any cleanup if you need to.
             base.Stop();
         }
+        private bool VerifyTarget()
+        {
+            if (TargetAgent == null)
+                return false;
+            if (!TargetAgent.gameObject.activeInHierarchy)
+                return false;
+            if (!zHelpers.CanBotReach(m_bot, TargetAgent.transform.position))
+                return false;
+            return true;
+        }
+        private bool VerifyPosition()
+        {
+            float Distance = Vector3.Distance(m_bot.transform.position, TargetAgent.transform.position);
+            return Distance < 
+        }
         public override bool Update()
         {
             //This is called every frame when your action is active.
             if (base.Update())
                 return true;
+            switch (state)
+            {
+                case State.Idle:
+                    UpdateStateIdle();
+                    break;
+                case State.Move:
+                    UpdateStateMove();
+                    break;
+                case State.Charge:
+                    UpdateStateCharge();
+                    break;
+                case State.Wait:
+                    UpdateStateWait();
+                    break;
+                case State.Strike:
+                    UpdateStateStrike();
+                    break;
+                case State.Finished:
+                    UpdateStateFinished();
+                    break;
+                case State.Failed:
+                    UpdateStateFailed();
+                    break;
+            }
             //Your stuff goes here
             return !base.IsActive();
+        }
+
+        private void UpdateStateIdle()
+        {
+            if (!VerifyTarget())
+            {
+                state = State.Failed;
+                return;
+            }
+            if (VerifyPosition())
+            {
+                state = State.Charge;
+                return;
+            }
+
+            if (!VerifyTarget())
+            {
+                state = State.Failed;
+                return;
+            }
+            if (TravelAction == null)
+                TravelAction = new(m_bot);
+            TravelAction.ParentActionBase = this;
+            TravelAction.Prio = m_desc.Prio;
+            TravelAction.Haste = Haste;
+            TravelAction.TargetAgent = TargetAgent;
+            TravelAction.Means = Means;
+            TravelAction.
+            TravelAction.Posture = Posture;
+            TravelAction.Stance = stance;
+            TravelAction.MovementAllowed = true;
+            if (TravelAction.IsTerminated())
+            {
+                StopBlockingLookActions();
+                if (this.m_bot.RequestAction(AttackAction))
+                {
+                    startedMoving = false;
+                    this.state = State.Move;
+                }
+                else
+                {
+                    this.state = State.Failed;
+                }
+            }
+            else
+            {
+                state = State.Move;
+            }
+        }
+        private void UpdateStateMove()
+        {
+
+        }
+        private void UpdateStateCharge()
+        {
+
+        }
+        private void UpdateStateWait()
+        {
+
+        }
+        private void UpdateStateStrike()
+        {
+
+        }
+        private void UpdateStateFinished()
+        {
+
+        }
+        private void UpdateStateFailed()
+        {
+
         }
         public override bool IsActionAllowed(PlayerBotActionBase.Descriptor desc)
         {
