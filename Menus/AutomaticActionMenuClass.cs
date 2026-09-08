@@ -55,9 +55,9 @@ namespace BotControl.Menus
             zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Pickup", true, menu: pickupMenu, node: pickupMenu.GetNode(), ActionTypeToCull: typeof(PlayerBotActionCollectItem), defaultPriority: 4.2f);
             zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Drop", true, null, ActionTypeToCull: typeof(PlayerBotActionCollectItem));
             zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Unlock", true, menu: unlockMenu, node: unlockMenu.GetNode(), ActionTypeToCull: typeof(PlayerBotActionUnlock), defaultPriority: 4.1f);
-            zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Open", true, menu: openMenu, node: openMenu.GetNode(), ActionTypeToCull: typeof(CustomBotActionOpenContainer), defaultPriority: CustomBotActionOpenContainer.Prio);
-            zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Move", true, menu: exploreMenu, node: exploreMenu.GetNode(), ActionTypeToCull: typeof(PlayerBotActionWalk), defaultPriority: CustomBotActionExplore.Prio);
-            zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Explore", true, null, ActionTypeToCull: typeof(CustomBotActionExplore));
+            zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Open", false, menu: openMenu, node: openMenu.GetNode(), ActionTypeToCull: typeof(CustomBotActionOpenContainer), defaultPriority: CustomBotActionOpenContainer.Prio);
+            zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Move", true, null, ActionTypeToCull: typeof(PlayerBotActionWalk), defaultPriority: CustomBotActionExplore.Prio);
+            zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Explore", false, menu: exploreMenu, node: exploreMenu.GetNode(), ActionTypeToCull: typeof(CustomBotActionExplore));
 
 
             foreach (sMenu menu in autoActionMenus)
@@ -109,10 +109,12 @@ namespace BotControl.Menus
             AutoActionMenu.AddNodeToCatagory("Behavior", "Unlock");
             AutoActionMenu.AddNodeToCatagory("Behavior", "Ping");
             AutoActionMenu.AddNodeToCatagory("Behavior", "Follow");
+            AutoActionMenu.AddNodeToCatagory("Behavior", "Open");
+            AutoActionMenu.AddNodeToCatagory("Behavior", "Explore");
             AutoActionMenu.AddCatagory("Combat");
             AutoActionMenu.AddNodeToCatagory("Combat", "Attack");
             AutoActionMenu.AddNodeToCatagory("Combat", "Revive");
-            AutoActionMenu.AddNodeToCatagory("Behavior", "Use BioTracker");
+            AutoActionMenu.AddNodeToCatagory("Combat", "Use BioTracker");
 
             AutoActionMenu.SetCatagory("Favorites");
         }

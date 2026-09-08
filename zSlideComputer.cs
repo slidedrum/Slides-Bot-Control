@@ -98,9 +98,14 @@ namespace BotControl
                 {
                     //actionNameToMenuNodes[key] = node;
                     permissionsNode.onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [key, node]);
+                    AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay(key, node);
                 }
                 if (menu != null)
+                {
                     permissionsNode.onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [key, menu.centerNode]);
+                    AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay(key, menu.centerNode);
+                }
+                    
 
             }
             public static bool KeyExists(string key)

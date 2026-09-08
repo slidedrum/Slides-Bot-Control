@@ -79,13 +79,15 @@ namespace BotControl.Menus
             menuNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
             BulletMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
 
+            BulletMenu.AddPannel(sMenu.sMenuPannel.Side.top, "What weapons are the bots allowed to use?");
+            BulletMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "TODO: Make this per bot.");
+            BulletMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "May take a while as I want per bot overrides to be global for all permisions, not just weapons.");
 
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.top, "This controls if the bots are allowed to atack");
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.top, "And what they are allowed to attack with");
-            attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "These settings are a bit janky atm.");
-            attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "Especially when changed in the middle of combat.");
-            attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "I'm pretty sure that's not the fault of the mod.");
-            attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "I'd like to see if I can improve it anyway.");
+            attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "These settings should no longer be janky anymore.");
+            attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "Even when changed in the middle of combat.");
+            attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "You can change what weapon they are allowed to use by double tapping bullet.");
         }
         private static void ToggleWeaponSlotPerms(InventorySlot slot, string actionKey, sMenu.sMenuNode node)
         {

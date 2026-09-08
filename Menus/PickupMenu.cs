@@ -27,6 +27,10 @@ namespace BotControl.Menus
             pickupDistance.AddNode("Pickup", null, "Default").onChanged.Listen(SetSearchDistance).Listen(UpdateNodeSettingsDisplay, [pickupNode]);
 
             pickupMenu = sMenuManager.createMenu("Item overrides", menu);
+
+            menu.AddPannel(sMenu.sMenuPannel.Side.top, "This menu allows you to change what and where bots are allowed to pick things up!");
+
+
             pickupMenu.radius = 125f;
 
             sMenu.sMenuNode glowstickNode = null;
@@ -299,6 +303,10 @@ namespace BotControl.Menus
             public static void Setup(sMenu menu)
             {
                 PickupZoneOveridesMenu = sMenuManager.createMenu("Zone overrides", menu);
+                PickupZoneOveridesMenu.AddPannel(sMenu.sMenuPannel.Side.top, "Choose what zones bots can pick things up in.");
+                PickupZoneOveridesMenu.AddPannel(sMenu.sMenuPannel.Side.top, "Double tap into a zone to select sub areas.");
+                PickupZoneOveridesMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "Is it overpowered to be able to see what zones/area are in a level?\nShould I require you to enter the zone for it to show up?\nBut then if you already know the map, and want to set things up in advance you can't do that.\n¯\\_(ツ)_/¯");
+
                 zSlideComputer.ActionPermissions.AddNode("PickupAreas", null, hasDefaultValue: true, parent: "Pickup");
                 foreach (LG_Zone zone in Builder.CurrentFloor.allZones)
                 {
