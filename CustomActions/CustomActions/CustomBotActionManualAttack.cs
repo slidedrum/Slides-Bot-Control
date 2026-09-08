@@ -238,24 +238,30 @@ namespace BotControl.CustomActions.CustomActions
         private void UpdateStateMove()
         {
             //AttackAction?.ActionBase?.Cast<PlayerBotActionAttack>().m_meleeAction.ActionBase.Cast<PlayerBotActionMelee>().m_travelAction
-            if (MeleAction == null || MeleAction.TargetAgent == null)
+            if (MeleAction == null || MeleAction.TargetAgent == null) // TODO make sure it doesn't assume melee only
                 MeleAction = AttackAction?.ActionBase?.Cast<PlayerBotActionAttack>()?.m_meleeAction?.Cast<PlayerBotActionMelee.Descriptor>();
             if (TravelAction == null || TravelAction.DestinationPos == Vector3.zero)
                 TravelAction = MeleAction?.ActionBase?.Cast<PlayerBotActionMelee>()?.m_travelAction?.Cast<PlayerBotActionTravel.Descriptor>();
             if (TravelAction == null || (TravelAction.DestinationPos == Vector3.zero && TravelAction.DestinationObject == null))
+            {
                 if (startedMoving == true)
+                {
                     state = State.Failed; // something happend and we're no longer moving.
+                }
                 else
                 {
                     framesWaitingForMoveToStart++;
                     if (framesWaitingForMoveToStart < 10)
+                    {
                         return; // attack instance not created yet; try again next frame
+                    }
                     else
                     {
                         state = State.Idle; // We didn't start moving.  back to idle.
                     }
-                        
+
                 }
+            }
             framesWaitingForMoveToStart = 0;
             startedMoving = true;
             if (TravelAction == null || TravelAction.IsTerminated())

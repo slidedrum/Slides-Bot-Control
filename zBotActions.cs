@@ -627,7 +627,7 @@ namespace BotControl
             }
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
         }
-        public static void SendBotToAttackSleeper(PlayerAIBot aiBot, EnemyAgent Enemy, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
+        public static void SendBotToAttackSleeper(PlayerAIBot aiBot, EnemyAgent Enemy, PlayerBotActionAttack.AttackMeansEnum Means, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToAttackSleeper{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
@@ -635,7 +635,8 @@ namespace BotControl
             {
                 TargetAgent = Enemy,
                 Haste = 0.5f,
-                Prio = defaultPrio
+                Prio = defaultPrio,
+                Means = Means,
             };
             StartAction(aiBot, desc, Commander, actionID);
             if (!SNet.IsMaster) //Are we a client?
@@ -646,6 +647,7 @@ namespace BotControl
                 info.Commander = pStructs.Get_pStructFromRefrence(Commander);
                 info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
                 info.Enemy = pStructs.Get_pStructFromRefrence(Enemy);
+                info.Means = Means;
                 info.ID = actionID;
                 NetworkAPI.InvokeEvent<pAttackEnemyInfo>("RequestToAttackSleeper", info);
                 return;

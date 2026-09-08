@@ -405,13 +405,14 @@ namespace BotControl.Networking
             PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.Commander);
             PlayerAgent BotAgent = pStructs.Get_RefFrom_pStruct(info.BotAgent);
             EnemyAgent Enemy = pStructs.Get_RefFrom_pStruct(info.Enemy);
+            PlayerBotActionAttack.AttackMeansEnum Means = info.Means;
             ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to kill the {Enemy.EnemyData.name} at {Enemy.transform.position}");
             if (!BotAgent.Owner.IsBot)
             {
                 ZiMain.log.LogWarning("Invalid request to attack sleeper, You can't tell a player what to do.");
                 return;
             }
-            zBotActions.SendBotToAttackSleeper(BotAgent.GetComponent<PlayerAIBot>(), Enemy, Commander, netSender, info.ID);
+            zBotActions.SendBotToAttackSleeper(BotAgent.GetComponent<PlayerAIBot>(), Enemy, Means, Commander, netSender, info.ID);
         }
         internal static void ReciveRequestToSyncAttack(ulong netSender, pStructs.pAttackEnemyInfo info)
         {

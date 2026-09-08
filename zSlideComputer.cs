@@ -366,12 +366,14 @@ namespace BotControl
         //    sMenu.sMenuNode node = zSlideComputer.actionNameToMenuNodes[actionKey];
         //    GenericToggleAllowed(actionKey, node, allowDissabled);
         //}
-        internal static void GenericToggleAllowed(string actionKey, sMenu.sMenuNode node, bool allowDissabled = false)
+        internal static bool GenericToggleAllowed(string actionKey, sMenu.sMenuNode node, bool allowDissabled = false)
         {
+            bool currentValue = (bool)zSlideComputer.ActionPermissions.ValueAt(actionKey);
             if (!allowDissabled && !node.gameObject.activeInHierarchy)
-                return;
-            bool allowed = !(bool)zSlideComputer.ActionPermissions.ValueAt(actionKey);
+                return currentValue;
+            bool allowed = !currentValue;
             zSlideComputer.ActionPermissions.SetValue(actionKey, allowed);
+            return allowed;
         }
 
         //public static void ToggleResourceSharePermission(uint itemID)

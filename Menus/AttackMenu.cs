@@ -2,8 +2,9 @@
 using Player;
 using SlideDrum;
 using SlideMenu;
-using SNetwork;
+using System;
 using System.Collections.Generic;
+using static SlideMenu.sMenu;
 
 namespace BotControl.Menus
 {
@@ -11,16 +12,8 @@ namespace BotControl.Menus
     {
         public static sMenu attackMenu;
         public static sMenu.sMenuNode attackNode;
-        public static sMenu.sMenuNode meleeNode;
-        //public static sMenu.sMenuNode pushNode;
-        public static sMenu.sMenuNode bulletNode;
-        public static sMenu.sMenuNode secondaryNode;
-        public static List<PlayerBotActionAttack.AttackMeansEnum> meansBlackList = new()
-        {
-            PlayerBotActionAttack.AttackMeansEnum.NanoSwarmDebuff,
-            PlayerBotActionAttack.AttackMeansEnum.Push,
-            PlayerBotActionAttack.AttackMeansEnum.Special,
-        };
+        public static sMenu BulletMenu;
+
 
         public static void Setup(sMenu menu)
         {
@@ -28,19 +21,66 @@ namespace BotControl.Menus
             attackNode = menu.GetNode();
             attackMenu.centerNode.ClearListeners(sMenuManager.nodeEvent.OnUnpressedSelected);
             attackMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnTapped, attackMenu.parrentMenu.Open);
-            foreach (var means in AttackActionPatch.meansList)
-            {
-                string actionKey = "attackMeans" + means.ToString();
-                OverrideTree<bool?>.Node overrideNode = zSlideComputer.ActionPermissions.AddNode(actionKey, null, "Attack", defaultValue: null, hasDefaultValue: true);
-                if (meansBlackList.Contains(means))
-                    continue;
-                sMenu.sMenuNode menuNode = attackMenu.AddNode(means.ToString());
-                overrideNode.onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey, menuNode]);
-                overrideNode.onChanged.Listen(zBotActions.RemoveActions, args: [typeof(PlayerBotActionAttack)]);
-                menuNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [actionKey, menuNode]);
-                menuNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
-                attackMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
-            }
+            string actionKey;
+            OverrideTree<bool?>.Node overrideNode;
+
+
+            string MeleString = PlayerBotActionAttack.AttackMeansEnum.Melee.ToString();
+            actionKey = "attackMeans" + MeleString;
+            overrideNode = zSlideComputer.ActionPermissions.AddNode(actionKey, null, "Attack", defaultValue: null, hasDefaultValue: true);
+            sMenu.sMenuNode menuNode = attackMenu.AddNode(MeleString);
+            overrideNode.onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey, menuNode]);
+            overrideNode.onChanged.Listen(zBotActions.RemoveActions, args: [typeof(PlayerBotActionAttack)]);
+            menuNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [actionKey, menuNode]);
+            menuNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
+            attackMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
+
+            string BulletString = PlayerBotActionAttack.AttackMeansEnum.Bullet.ToString();
+            actionKey = "attackMeans" + BulletString;
+            BulletMenu = sMenuManager.createMenu(BulletString);
+            overrideNode = zSlideComputer.ActionPermissions.AddNode(actionKey, null, "Attack", defaultValue: null, hasDefaultValue: true);
+            menuNode = attackMenu.AddNode(BulletMenu);
+            overrideNode.onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey, menuNode]);
+            overrideNode.onChanged.Listen(zBotActions.RemoveActions, args: [typeof(PlayerBotActionAttack)]);
+            menuNode.RemoveListener(sMenuManager.nodeEvent.OnUnpressedSelected);
+            menuNode.AddListener(sMenuManager.nodeEvent.OnDoubleTapped, BulletMenu.Open);
+            menuNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [actionKey, menuNode]);
+            menuNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
+            attackMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
+
+            //foreach (var means in AttackActionPatch.meansList)
+            //{
+                //actionKey = "attackMeans" + means.ToString();
+                //overrideNode = zSlideComputer.ActionPermissions.AddNode(actionKey, null, "Attack", defaultValue: null, hasDefaultValue: true);
+                //    if (meansBlackList.Contains(means))
+                //        continue;
+                //    sMenu.sMenuNode menuNode = attackMenu.AddNode(means.ToString());
+                //    overrideNode.onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey, menuNode]);
+                //    overrideNode.onChanged.Listen(zBotActions.RemoveActions, args: [typeof(PlayerBotActionAttack)]);
+                //    menuNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [actionKey, menuNode]);
+                //    menuNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
+                //    attackMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
+            //}
+
+            actionKey = "MainWeapon";
+            overrideNode = zSlideComputer.ActionPermissions.AddNode(actionKey, null, "attackMeans" + BulletString, defaultValue: null, hasDefaultValue: true);
+            menuNode = BulletMenu.AddNode(actionKey);
+            overrideNode.onChanged.Listen(zBotActions.RemoveActions, args: [typeof(PlayerBotActionAttack)]);
+            overrideNode.onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey, menuNode]);
+            menuNode.AddListener(sMenuManager.nodeEvent.OnTapped, ToggleWeaponSlotPerms, args: [InventorySlot.GearStandard, actionKey, menuNode]);
+            menuNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
+            BulletMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
+
+            actionKey = "SpecialWeapon";
+            overrideNode = zSlideComputer.ActionPermissions.AddNode(actionKey, null, "attackMeans" + BulletString, defaultValue: null, hasDefaultValue: true);
+            menuNode = BulletMenu.AddNode(actionKey);
+            overrideNode.onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey, menuNode]);
+            overrideNode.onChanged.Listen(zBotActions.RemoveActions, args: [typeof(PlayerBotActionAttack)]);
+            menuNode.AddListener(sMenuManager.nodeEvent.OnTapped, ToggleWeaponSlotPerms, args: [InventorySlot.GearSpecial, actionKey, menuNode]);
+            menuNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
+            BulletMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey]);
+
+
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.top, "This controls if the bots are allowed to atack");
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.top, "And what they are allowed to attack with");
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "These settings are a bit janky atm.");
@@ -48,7 +88,25 @@ namespace BotControl.Menus
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "I'm pretty sure that's not the fault of the mod.");
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "I'd like to see if I can improve it anyway.");
         }
-
+        private static void ToggleWeaponSlotPerms(InventorySlot slot, string actionKey, sMenu.sMenuNode node)
+        {
+            bool allowed = zSlideComputer.GenericToggleAllowed(actionKey, node);
+            foreach (PlayerAgent bot in zStaticRefrences.AllBotAgents)
+            {
+                PlayerAIBot aiBot = bot.GetComponent<PlayerAIBot>();
+                RootPlayerBotAction root = aiBot.m_rootAction.ActionBase.TryCast<RootPlayerBotAction>();
+                IntPtr pointer = root.m_attackAction.Pointer;
+                if (!AttackActionPatch.AllowedGuns.ContainsKey(pointer))
+                    AttackActionPatch.AllowedGuns[pointer] = new List<InventorySlot> { InventorySlot.GearSpecial, InventorySlot.GearStandard };
+                if (allowed)
+                {
+                    if (!AttackActionPatch.AllowedGuns[pointer].Contains(slot))
+                        AttackActionPatch.AllowedGuns[pointer].Add(slot);
+                }
+                else
+                    AttackActionPatch.AllowedGuns[pointer].Remove(slot);
+            }
+        }
     }
    
 }

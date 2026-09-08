@@ -108,6 +108,7 @@ namespace BotControl.Networking
         public struct pAttackEnemyInfo
         {
             public pEnemyAgent Enemy;
+            public PlayerBotActionAttack.AttackMeansEnum Means;
             public pPlayerAgent BotAgent;
             public pPlayerAgent Commander;
             internal uint ID;

@@ -1,4 +1,4 @@
-﻿using BotControl.Menus;
+﻿using Gear;
 using HarmonyLib;
 using Player;
 using System;
@@ -18,35 +18,7 @@ namespace BotControl.Patches
                     x != PlayerBotActionAttack.AttackMeansEnum.None &&
                     ((int)x & ((int)x - 1)) == 0)
                 .ToList();
-        //public static Dictionary<PlayerBotActionAttack.AttackMeansEnum, bool> meansPerms = new()
-        //{
-        //    {PlayerBotActionAttack.AttackMeansEnum.Bullet, true },
-        //    {PlayerBotActionAttack.AttackMeansEnum.Special, true },
-        //    {PlayerBotActionAttack.AttackMeansEnum.Melee, true },
-        //    {PlayerBotActionAttack.AttackMeansEnum.Push, true },
-        //    {PlayerBotActionAttack.AttackMeansEnum.NanoSwarmDebuff, true },
-        //};
-        //public static Dictionary<PlayerBotActionAttack.AttackMeansEnum, sMenu.sMenuNode> nodes = new()
-        //{
-        //    {PlayerBotActionAttack.AttackMeansEnum.Bullet, AttackMenuClass.bulletNode },
-        //    //{PlayerBotActionAttack.AttackMeansEnum.Special, AutomaticActionMenuClass.AttackMenuClass.secondaryNode },
-        //    {PlayerBotActionAttack.AttackMeansEnum.Melee, AttackMenuClass.meleeNode },
-        //    //{PlayerBotActionAttack.AttackMeansEnum.Push, AutomaticActionMenuClass.AttackMenuClass.pushNode },
-        //};
-        //public static void ToggleMeansPerms(PlayerBotActionAttack.AttackMeansEnum meansType)
-        //{
-        //    bool allowed = !meansPerms[meansType];
-        //    SetMeansPerms(meansType, allowed);
-        //}
-        //public static void SetMeansPerms(PlayerBotActionAttack.AttackMeansEnum meansType, bool allowed)
-        //{
-        //    meansPerms[meansType] = allowed;
-        //    var node = nodes[meansType];
-        //    if (allowed)
-        //        node.SetColor(sMenuManager.defaultColor);
-        //    else
-        //        node.SetColor(new UnityEngine.Color(0.25f, 0f, 0f));
-        //}
+        public static Dictionary<IntPtr, List<InventorySlot>> AllowedGuns = new(); // TODO fix the memory leak with this dict not removing old items.
         [HarmonyPatch(typeof(RootPlayerBotAction), nameof(RootPlayerBotAction.UpdateActionAttack))]
         [HarmonyPrefix]
         [HarmonyPriority(Priority.Last)] //Needed for betterbots compat?
@@ -74,6 +46,8 @@ namespace BotControl.Patches
             foreach (var means in meansList)
             {
                 string actionKey = "attackMeans" + means.ToString();
+                if (!zSlideComputer.ActionPermissions.HasKey(actionKey))
+                    continue;
                 bool allowed = (bool)zSlideComputer.ActionPermissions.ValueAt(actionKey);
                 if (allowed)
                     newMeans |= means;
@@ -85,11 +59,37 @@ namespace BotControl.Patches
         }
         [HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.IsWithinMeleeReach))]
         [HarmonyPrefix]
-        public static bool PreIsWithinMeleeReach(PlayerBotActionAttack __instance, Vector3 testPosition, float reachMultiplier, ref bool __result)
+        public static bool PreIsWithinMeleeReach(PlayerBotActionAttack __instance, Vector3 testPosition, float reachMultiplier, ref bool __result) // Why did I do this?
         {
             if ((__instance.m_desc.Means & PlayerBotActionAttack.AttackMeansEnum.Bullet) == 0)
             {
                 //__result = Vector3.Distance(testPosition, __instance.m_bot.SyncValues.Leader.Position) < RootPlayerBotAction.s_followLeaderMaxDistance;
+                __result = true;
+                return false;
+            }
+            return true;
+        }
+        [HarmonyPatch(typeof(PlayerBotActionAttack.__c__DisplayClass27_0) , nameof(PlayerBotActionAttack.__c__DisplayClass27_0._ChooseAttackOption_b__1))] //PlayerBotActionAttack.ChooseAttackOptionLocals.ScoreBullet
+        [HarmonyPrefix]
+        public static bool PreChooseBulletPatch(PlayerBotActionAttack.__c__DisplayClass27_0 __instance, BulletWeaponSynced weapon, ref float __result)  // Restrict the weapon to only ones in the list.
+        {
+            IntPtr pointer = __instance.__4__this.m_desc.Pointer; //attack descriptor
+            if (!AllowedGuns.ContainsKey(pointer))
+                return true;
+            if (AllowedGuns[pointer].Contains(weapon.ItemDataBlock.inventorySlot))
+                return true;
+            __result = -1;
+            return false;
+        }
+        [HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.CurrentAttackOptionNeedsReevaluation))]
+        [HarmonyPrefix]
+        public static bool PreCurrentAttackOptionNeedsReevaluationPatch(PlayerBotActionAttack __instance, bool allowPush, ref bool __result) // Force re-eval if holding an invalid weapon.  Will call choose bullet
+        {
+            IntPtr pointer = __instance.m_desc.Pointer; //attack descriptor
+            if (!AllowedGuns.ContainsKey(pointer))
+                return true;
+            if (!AllowedGuns[pointer].Contains(__instance.m_inventory.WieldedSlot))
+            {
                 __result = true;
                 return false;
             }
