@@ -91,6 +91,17 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
 
 
 ### Changelog
+v1.3
+ - You can now command unselected bots with smart sellect.  Commands will fall back to the nearest bot.
+ - Added option to restrict what guns bots attack with, via a new sub menu in bullet attack menu.
+ - Added Sync attack action to smart select.  Bots will charge a melee attack, and strike when any enemy takes damage.
+WIP - Moved sneak attack to tap instead of hold, hold now triggers a loud attack, even in stealth.  Allowing you to tell bots to snipe a scout.
+ - Added new automatic action, open locker.
+ - Added new Zone override option in pickup permissions, letting you restict pickups by zone/area.
+ - Changed how move action works, they will now return to that spot if they have to move.
+ - Fixed some misalanious bugs with attack action restictions.
+ - Removed excessive debug logging.
+
 V1.2.6
  - Fixed and re-added the betterbots compatability layer.  Bots should behave when changing attack means now!
 
