@@ -321,7 +321,7 @@ namespace BotControl.Menus
                         AreaNode.AddListener(sMenuManager.nodeEvent.OnTapped, ToggleNode, name);
                         AreaNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetNode, name);
                         zoneMenus[zone.AliasName].centerNode.RemoveListener(sMenuManager.nodeEvent.OnUnpressedSelected);
-                        zoneMenus[zone.AliasName].centerNode.AddListener(sMenuManager.nodeEvent.OnTapped, PickupZoneOveridesMenu.parrentMenu.Open);
+                        zoneMenus[zone.AliasName].centerNode.AddListener(sMenuManager.nodeEvent.OnTapped, PickupZoneOveridesMenu.Open);
                         zoneMenus[zone.AliasName].centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, ResetNode, name);
                         zSlideComputer.ActionPermissions.AddNode(name, null, hasDefaultValue: true, parent: zone.AliasName, onChanged: new FlexibleMethodDefinition(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [name, AreaNode]));
                     }
