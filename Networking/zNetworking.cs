@@ -413,6 +413,22 @@ namespace BotControl.Networking
             }
             zBotActions.SendBotToAttackSleeper(BotAgent.GetComponent<PlayerAIBot>(), Enemy, Commander, netSender, info.ID);
         }
+        internal static void ReciveRequestToSyncAttack(ulong netSender, pStructs.pAttackEnemyInfo info)
+        {
+            ZiMain.log.LogInfo("Recived request to sync attack!");
+            if (!SNet.IsMaster)
+                return;
+            PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.Commander);
+            PlayerAgent BotAgent = pStructs.Get_RefFrom_pStruct(info.BotAgent);
+            EnemyAgent Enemy = pStructs.Get_RefFrom_pStruct(info.Enemy);
+            ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to sync attack the {Enemy.EnemyData.name} at {Enemy.transform.position}");
+            if (!BotAgent.Owner.IsBot)
+            {
+                ZiMain.log.LogWarning("Invalid request to sync attack, You can't tell a player what to do.");
+                return;
+            }
+            zBotActions.SendBotToSyncAttack(BotAgent.GetComponent<PlayerAIBot>(), Enemy, Commander, netSender, info.ID);
+        }
         internal static void ReciveRequestToDropHere(ulong netSender, pStructs.pLocationInfo info)
         {
             ZiMain.log.LogInfo("Recived request to drop here!");

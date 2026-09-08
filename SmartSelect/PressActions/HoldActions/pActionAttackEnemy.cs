@@ -23,6 +23,8 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             if (BestBot == null) return false;
             if (BestBot.Agent.Alive == false) return false;
             zBotActions.SendBotToAttackSleeper(BestBot, Enemy, zStaticRefrences.LocalPlayer);
+            PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_HURRY);
+            zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Hurry.", 1f);
             zChatHandler.sendChatMessage("Attacking sleeper.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }

@@ -602,6 +602,31 @@ namespace BotControl
                     break;
             }
         }
+        public static void SendBotToSyncAttack(PlayerAIBot aiBot, EnemyAgent Enemy, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
+        {
+            if (actionID == 0)
+                actionID = zHelpers.HashString($"RequestToSyncAttack{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            CustomBotActionSyncAttack.Descriptor desc = new CustomBotActionSyncAttack.Descriptor(aiBot)
+            {
+                TargetAgent = Enemy,
+                Haste = 0.5f,
+                Prio = defaultPrio
+            };
+            StartAction(aiBot, desc, Commander, actionID);
+            if (!SNet.IsMaster) //Are we a client?
+            {
+                if (netsender != 0) //Is this request coming from a different client?
+                    return;
+                pAttackEnemyInfo info = new pAttackEnemyInfo();
+                info.Commander = pStructs.Get_pStructFromRefrence(Commander);
+                info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
+                info.Enemy = pStructs.Get_pStructFromRefrence(Enemy);
+                info.ID = actionID;
+                NetworkAPI.InvokeEvent<pAttackEnemyInfo>("RequestToSyncAttack", info);
+                return;
+            }
+            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
+        }
         public static void SendBotToAttackSleeper(PlayerAIBot aiBot, EnemyAgent Enemy, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0)

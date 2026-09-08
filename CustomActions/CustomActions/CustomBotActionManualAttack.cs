@@ -334,20 +334,10 @@ namespace BotControl.CustomActions.CustomActions
         {
             if (__instance.m_meleeAction == null)
                 return;
-            if (!zActions.isManualAction(__instance.m_meleeAction))
+            if (__instance.m_desc?.ParentActionBase?.TryCast<CustomBotActionManualAttack>() == null)
                 return;
             if (__instance.m_meleeAction.Strike == false)
                 __instance.m_meleeAction.Strike = true;
         }
-        //[HarmonyPatch(typeof(PlayerBotActionMelee), nameof(PlayerBotActionMelee.UpdateStateCharge))]
-        //[HarmonyPrefix]
-        //public static void PreUpdateStateCharge(PlayerBotActionMelee __instance)
-        //{
-        //    var desc = __instance.m_desc;
-        //    if (!zActions.isManualAction(desc))
-        //        return;
-        //    if (desc.Strike == false)
-        //        desc.Strike = true;
-        //}
     }
 }

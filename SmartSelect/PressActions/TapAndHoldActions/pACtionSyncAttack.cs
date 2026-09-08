@@ -19,7 +19,14 @@ namespace BotControl.SmartSelect.PressActions
 
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
-            return false;
+            EnemyAgent Enemy = BestComponent.TryCast<EnemyAgent>();
+            if (Enemy == null || BestBot == null) return false;
+            if (BestBot.Agent.Alive == false) return false;
+            zBotActions.SendBotToSyncAttack(BestBot, Enemy, zStaticRefrences.LocalPlayer);
+            PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_HURRY);
+            zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Hurry.", 1f);
+            zChatHandler.sendChatMessage("On the way.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            return true;
         }
         public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {

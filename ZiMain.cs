@@ -197,6 +197,7 @@ public class ZiMain : BasePlugin
         NetworkAPI.RegisterEvent<pPlaceMineInfo>            ("RequestToPlaceMine",                zNetworking.ReciveRequestToPlaceMine);
         NetworkAPI.RegisterEvent<pShareResourceInfo>        ("RequestToShareResourcePack",        zNetworking.ReciveRequestToShareResource);
         NetworkAPI.RegisterEvent<pAttackEnemyInfo>          ("RequestToAttackSleeper",            zNetworking.ReciveRequestToKillSleeper);
+        NetworkAPI.RegisterEvent<pAttackEnemyInfo>          ("RequestToSyncAttack",               zNetworking.ReciveRequestToSyncAttack);
         NetworkAPI.RegisterEvent<pThrowDataInfo>            ("RequestToThrowItem",                zNetworking.ReciveRequestToThrowItem);
         NetworkAPI.RegisterEvent<pBoolOverideTreeInfo>      ("SetBoolOverideTree",                zNetworking.ReciveSetBoolOverideTree);
         NetworkAPI.RegisterEvent<pIntOverideTreeInfo>       ("SetIntOverideTree",                 zNetworking.ReciveSetIntOverideTree);

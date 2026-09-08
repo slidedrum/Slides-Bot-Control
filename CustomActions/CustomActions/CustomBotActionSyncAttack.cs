@@ -1,4 +1,7 @@
-﻿using Enemies;
+﻿using BotControl.SmartSelect.PressActions;
+using Enemies;
+using Gear;
+using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Player;
 using System;
@@ -8,7 +11,20 @@ namespace BotControl.CustomActions.CustomActions
 
     public class CustomBotActionSyncAttack : CustomActionBase
     {
-        //This is an example of how you can set up your own custom action!
+        public enum State
+        {
+            Idle,
+            Move,
+            Charge,
+            Wait,
+            Strike,
+            Striking,
+            Finished,
+            Failed,
+        }
+        private State state;
+        private Descriptor m_desc;
+        internal static float LastDamageDeltTimestamp = 0f;
         private EnemyAgent TargetAgent;
         private PlayerBotActionTravel.Descriptor TravelAction;
         private PlayerBotActionMelee.Descriptor MeleAction;
@@ -84,18 +100,8 @@ namespace BotControl.CustomActions.CustomActions
             }
 
         }
-        public enum State
-        {
-            Idle,
-            Move,
-            Charge,
-            Wait,
-            Strike,
-            Finished,
-            Failed,
-        }
-        private State state;
-        private Descriptor m_desc;
+
+        private static float MeleDistance = 2f;//PlayerBotActionMelee.s_distanceCheckThresholdSQ * PlayerBotActionMelee.s_chargeMaxDistanceSQ;
 
         public CustomBotActionSyncAttack() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionSyncAttack>())// Don't use this!  Needed for il2cpp nonsense.
         {
@@ -112,6 +118,10 @@ namespace BotControl.CustomActions.CustomActions
             ClassInjector.DerivedConstructorBody(this);
             InitFromDescriptor(desc);
             m_desc = desc;
+            this.m_desc = desc;
+            this.TargetAgent = desc.TargetAgent;
+            this.Haste = desc.Haste;
+            this.state = State.Idle;
             //Use this constructor.
             //This means your action is starting!
         }
@@ -120,8 +130,28 @@ namespace BotControl.CustomActions.CustomActions
             //This is called when your action is told to stop.
             //Be sure to do any cleanup if you need to.
             base.Stop();
+            if (TravelAction != null && !TravelAction.IsTerminated())
+                SafeStopAction(TravelAction);
+            if (MeleAction != null && !MeleAction.IsTerminated())
+                SafeStopAction(MeleAction);
+            if (this.IsActive())
+                m_desc.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Failed);
         }
-        private bool VerifyTarget()
+        private bool Verify(bool ignoreWake = false)
+        {
+            if (!VerifyTarget(ignoreWake))
+            {
+                state = State.Failed;
+                return false;
+            }
+            if (!VerifyPosition())
+            {
+                state = State.Move;
+                return false;
+            }
+            return true;
+        }
+        private bool VerifyTarget(bool ignoreWake = false)
         {
             if (TargetAgent == null)
                 return false;
@@ -129,12 +159,17 @@ namespace BotControl.CustomActions.CustomActions
                 return false;
             if (!zHelpers.CanBotReach(m_bot, TargetAgent.transform.position))
                 return false;
+            if (!m_desc.TargetAgent.Alive)
+                return false;
+            if (!ignoreWake && (!m_desc.TargetAgent.AI.IsHibernating(out bool _, out bool isWakingUp) || isWakingUp))
+                return false;
+            //todo verify that not under attack
             return true;
         }
         private bool VerifyPosition()
         {
-            float Distance = Vector3.Distance(m_bot.transform.position, TargetAgent.transform.position);
-            return Distance < 
+            float Distance = (m_agent.transform.position - TargetAgent.Position).sqrMagnitude;
+            return Distance <= MeleDistance * MeleDistance;
         }
         public override bool Update()
         {
@@ -157,6 +192,9 @@ namespace BotControl.CustomActions.CustomActions
                     break;
                 case State.Strike:
                     UpdateStateStrike();
+                    break;
+                case State.Striking:
+                    UpdateStateStriking();
                     break;
                 case State.Finished:
                     UpdateStateFinished();
@@ -181,64 +219,113 @@ namespace BotControl.CustomActions.CustomActions
                 state = State.Charge;
                 return;
             }
-
+            state = State.Move;
+        }
+        private void UpdateStateMove()
+        {
             if (!VerifyTarget())
             {
                 state = State.Failed;
                 return;
             }
-            if (TravelAction == null)
-                TravelAction = new(m_bot);
-            TravelAction.ParentActionBase = this;
-            TravelAction.Prio = m_desc.Prio;
-            TravelAction.Haste = Haste;
-            TravelAction.TargetAgent = TargetAgent;
-            TravelAction.Means = Means;
-            TravelAction.
-            TravelAction.Posture = Posture;
-            TravelAction.Stance = stance;
-            TravelAction.MovementAllowed = true;
-            if (TravelAction.IsTerminated())
+            if (VerifyPosition())
             {
-                StopBlockingLookActions();
-                if (this.m_bot.RequestAction(AttackAction))
-                {
-                    startedMoving = false;
-                    this.state = State.Move;
-                }
-                else
-                {
-                    this.state = State.Failed;
-                }
+                state = State.Charge;
+                return;
             }
-            else
+            if (TravelAction == null || TravelAction.IsTerminated())
             {
-                state = State.Move;
+                PlayerAgent agent = m_bot.Agent;
+                TravelAction = new(m_bot)
+                {
+                    DestinationObject = TargetAgent.gameObject,
+                    Haste = Haste,
+                    Radius = 0.7f * MeleDistance,
+                    DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.GameObject,
+                    Persistent = false,
+                    ParentActionBase = this,
+                    Prio = m_desc.Prio,
+                };
+                m_bot.RequestAction(TravelAction);
             }
-        }
-        private void UpdateStateMove()
-        {
-
         }
         private void UpdateStateCharge()
         {
-
+            Verify();
+            if (TravelAction != null)
+                m_bot.StopAction(TravelAction);
+            if (MeleAction == null || MeleAction.IsTerminated())
+            {
+                PlayerAgent agent = m_bot.Agent;
+                if (!m_bot.m_backpack.TryGetBackpackItem(InventorySlot.GearMelee, out BackpackItem meleeBackpackItem))
+                    Stop();
+                // ...
+                MeleeWeaponThirdPerson meleeWeapon = meleeBackpackItem.Instance.TryCast<MeleeWeaponThirdPerson>();
+                MeleAction = new(m_bot)
+                {
+                    TargetAgent = TargetAgent,
+                    Haste = m_desc.Haste,
+                    Strike = false,
+                    Travel = false,
+                    TargetGameObject = TargetAgent.EasyAimTarget.gameObject,
+                    Weapon = meleeWeapon,
+                    ParentActionBase = this,
+                    Prio = m_desc.Prio,
+                };
+                m_bot.RequestAction(MeleAction);
+            }
+            if (MeleAction.IsCharged)
+            {
+                zChatHandler.sendChatMessage("Ready to strike!", "Sync" + IPressAction.chatPermSuffix, m_bot.Agent);
+                state = State.Wait;
+            }
         }
         private void UpdateStateWait()
         {
-
+            if (!Verify(true))
+                return;
+            if (MeleAction == null || MeleAction.IsTerminated())
+            {
+                state = State.Charge;
+                return;
+            }
+            if (Time.time - LastDamageDeltTimestamp < 1)
+                state = State.Strike;
         }
         private void UpdateStateStrike()
         {
-
+            if (!Verify())
+                return;
+            if (MeleAction == null || MeleAction.IsTerminated())
+            {
+                state = State.Charge;
+                return;
+            }
+            MeleAction.Strike = true;
+            state = State.Striking;
+        }
+        private void UpdateStateStriking()
+        {
+            if (!Verify())
+                return;
+            if (MeleAction.IsTerminated())
+            {
+                if (MeleAction.IsCompleted())
+                    state = State.Finished;
+                else
+                    state = State.Failed;
+                return;
+            }
         }
         private void UpdateStateFinished()
         {
-
+            m_desc.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Successful);
+            Stop();
         }
         private void UpdateStateFailed()
         {
-
+            m_desc.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Failed);
+            Stop();
         }
         public override bool IsActionAllowed(PlayerBotActionBase.Descriptor desc)
         {
@@ -264,6 +351,16 @@ namespace BotControl.CustomActions.CustomActions
             //Called when the bot is warped, duh.
             //This will set completion status to failed by deafult.
             base.OnWarped(position);
+        }
+    }
+    [HarmonyPatch]
+    public static class EnemyTakesDamagePatch
+    {
+        [HarmonyPatch(typeof(EnemyAgent), nameof(EnemyAgent.OnTakeDamage))]
+        [HarmonyPostfix]
+        public static void PostOnTakeDamagePatch(PlayerBotActionAttack __instance)
+        {
+            CustomBotActionSyncAttack.LastDamageDeltTimestamp = Time.time;
         }
     }
 }
