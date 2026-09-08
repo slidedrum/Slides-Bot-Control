@@ -4,7 +4,6 @@ using SlideDrum;
 using SlideMenu;
 using System;
 using System.Collections.Generic;
-using static SlideMenu.sMenu;
 
 namespace BotControl.Menus
 {
