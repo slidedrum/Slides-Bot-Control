@@ -32,6 +32,13 @@ namespace BotControl
             ManualAction manualAction = new ManualAction(Desc, Commander, aiBot, ID);
             StartAction(manualAction);
         }
+        public static void StopAllActions(PlayerAIBot bot)
+        {
+            foreach (var action in bot.Actions)
+            {
+                bot.StopAction(action.DescBase);
+            }
+        }
         public static void RemoveActions(Type type) // TODO when we have per bot permisions set up, this needs to change to accomidate that.
         {
             if (!SNet.IsMaster)

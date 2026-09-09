@@ -41,7 +41,9 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             uint voiceID = zSmartSelect.GetVoiceId(Follower);
             if (Follower.Owner.IsBot)
             {
+                
                 PlayerAIBot Bot = Follower?.GetComponent<PlayerAIBot>();
+                zBotActions.StopAllActions(Bot);
                 string botname = Bot.Agent.PlayerName;
                 string followName = Leader.PlayerName;
                 if (Leader == zStaticRefrences.LocalPlayer)
