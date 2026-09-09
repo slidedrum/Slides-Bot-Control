@@ -269,11 +269,8 @@ namespace BotControl.CustomActions.CustomActions
                     state = State.Attack;
                 else
                     state = State.Idle;
-            if (Time.time > nextWalkNoiseCheckTimestamp)
-                {
-                    nextWalkNoiseCheckTimestamp = Time.time + CustomWakeManager.walkNoiseCheckInterval;
-                    //CustomWakeManager.WalkNoiseCheck(m_agent);
-                }
+            if (TravelAction != null)
+                TravelAction.WalkPosture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch;
         }
 
         private void UpdateStateAttack()

@@ -1,4 +1,5 @@
-﻿using BotControl.CustomActions;
+﻿using AIGraph;
+using BotControl.CustomActions;
 using BotControl.CustomActions.CustomActions;
 using BotControl.Networking;
 using BotControl.SmartSelect.PressActions;
@@ -548,7 +549,7 @@ namespace BotControl
                 TargetType = targetType,
                 TargetGO = targetObject,
                 Prio = 13,
-                TargetPosition = targetObject.transform.position,
+                //TargetPosition = targetObject.transform.position,
                 Method = method,
                 Lock = Lock,
             };
@@ -610,6 +611,7 @@ namespace BotControl
             {
                 TargetAgent = Enemy,
                 Haste = 0.5f,
+                Posture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch,
                 Prio = defaultPrio
             };
             StartAction(aiBot, desc, Commander, actionID);
@@ -635,6 +637,7 @@ namespace BotControl
             {
                 TargetAgent = Enemy,
                 Haste = 0.5f,
+                Posture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch,
                 Prio = defaultPrio,
                 Means = Means,
             };

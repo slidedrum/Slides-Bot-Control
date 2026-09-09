@@ -30,6 +30,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         }
         public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
+            //TODO: Make action not valid if locked in stealth without a lock melter
             //if (!zSmartSelect.MainSelection.AnySelectedBotsAlive())
             //    return false;
             LG_WeakDoor Door = candidate.TryCast<LG_WeakDoor>();

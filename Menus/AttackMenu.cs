@@ -83,7 +83,7 @@ namespace BotControl.Menus
             BulletMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "TODO: Make this per bot.");
             BulletMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "May take a while as I want per bot overrides to be global for all permisions, not just weapons.");
 
-            attackMenu.AddPannel(sMenu.sMenuPannel.Side.top, "This controls if the bots are allowed to atack");
+            attackMenu.AddPannel(sMenu.sMenuPannel.Side.top, "This controls if the bots are allowed to attack");
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.top, "And what they are allowed to attack with");
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "These settings should no longer be janky anymore.");
             attackMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "Even when changed in the middle of combat.");

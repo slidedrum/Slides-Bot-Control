@@ -30,8 +30,8 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         }
         public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
-            //if (DramaManager.CurrentStateEnum != DRAMA_State.Exploration && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking && DramaManager.CurrentStateEnum != DRAMA_State.Encounter)
-            //    return false;
+            if (DramaManager.CurrentStateEnum != DRAMA_State.Exploration && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking && DramaManager.CurrentStateEnum != DRAMA_State.Encounter)
+                return false;
             EnemyAgent Enemy = candidate.TryCast<EnemyAgent>();
             if (Enemy == null || BestBot == null) 
                 return false;

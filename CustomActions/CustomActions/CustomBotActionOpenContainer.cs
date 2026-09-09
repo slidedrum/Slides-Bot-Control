@@ -301,9 +301,10 @@ namespace BotControl.CustomActions.CustomActions
                 ParentActionBase = this,
                 Prio = m_desc.Prio,
                 Haste = Haste,
-                Persistent = true,
+                Persistent = false,
             };
             SafeStopAction(LookAction);
+            SafeStopAction(TravelAction);
             LookAction = null;
             if (this.m_bot.RequestAction(Desc))
             {
@@ -323,12 +324,21 @@ namespace BotControl.CustomActions.CustomActions
             if ((m_bot.transform.position - TargetLoction).magnitude < 0.1f)
             {
                 if (TargetContainer.m_weakLock == null)
+                {
                     state = State.StartOpening;
+                    return;
+                }
                 else
                 {
                     state = State.StartUnlock;
                     m_bot.StopAction(TravelAction);
+                    return;
                 }
+            }
+            else if (TravelAction.IsTerminated())
+            {
+                state = State.Idle;
+                return;
             }
         }
         private void UpdateStateStartUnlock()

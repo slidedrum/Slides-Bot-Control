@@ -1,7 +1,9 @@
-﻿// THIS IS ENTIRELY AI GENERATED.  
+﻿
 // It was way more complicated than I thought.
 // All this changes is let bots unlock with hacking
 
+using BotControl;
+using BotControl.CustomActions;
 using Gear;
 using HarmonyLib;
 using Il2CppInterop.Runtime;
@@ -94,12 +96,16 @@ public static class UnlockActionPatch
             {
                 action.m_method = resolved;
                 if (!TryAssignMethodDescriptor(action, resolved))
+                {
+                    MarkDescriptorFailed(action); 
                     return false;
+                }
 
                 return CommitChosenMethod(action);
             }
 
             action.m_method = PlayerBotActionUnlock.Descriptor.MethodEnum.None;
+            MarkDescriptorFailed(action);
             return false;
         }
 
@@ -107,12 +113,16 @@ public static class UnlockActionPatch
 
         if (descriptorMethod == 0)
         {
-            MarkDescriptorFailed(action);
+             MarkDescriptorFailed(action);
             return false;
         }
 
         if (!TryAssignMethodDescriptor(action, action.m_method))
+        {
+            MarkDescriptorFailed(action);
             return false;
+        }
+            
 
         return CommitChosenMethod(action);
     }
@@ -156,7 +166,7 @@ public static class UnlockActionPatch
         if (bot == null)
             throw new System.NullReferenceException();
 
-        if (!bot.WantsCrouch() && (methodFlags & (int)PlayerBotActionUnlock.Descriptor.MethodEnum.Melee) != 0)
+        if ((!bot.WantsCrouch() || zActions.isManualAction(action.DescBase)) && (methodFlags & (int)PlayerBotActionUnlock.Descriptor.MethodEnum.Melee) != 0)
         {
             if (bot.Backpack == null)
                 throw new System.NullReferenceException();
@@ -174,7 +184,7 @@ public static class UnlockActionPatch
             }
         }
 
-        if ((methodFlags & (int)PlayerBotActionUnlock.Descriptor.MethodEnum.Hack) != 0)
+        if ((!bot.WantsCrouch() || zActions.isManualAction(action.DescBase))&& (methodFlags & (int)PlayerBotActionUnlock.Descriptor.MethodEnum.Hack) != 0)
         {
             if (bot.Backpack == null)
                 throw new System.NullReferenceException();

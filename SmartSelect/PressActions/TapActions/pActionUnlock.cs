@@ -28,12 +28,13 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             if (!BestBot.Agent.Alive) return false;
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PLEASE);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Please.",1f);
-            zBotActions.SendbotToBreakLock(BestBot, Lock, MethodEnum.Melee | MethodEnum.Hack, zStaticRefrences.LocalPlayer, 0);
+            zBotActions.SendbotToBreakLock(BestBot, Lock, MethodEnum.Any, zStaticRefrences.LocalPlayer, 0);
             zChatHandler.sendChatMessage($"Unlocking.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
+            // TODO: Make action not valid in stealth without a lock melter
             LG_WeakLock Lock = candidate.TryCast<LG_WeakLock>();
             if(Lock == null) return false;
             //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();

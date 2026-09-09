@@ -9,7 +9,7 @@ using UnityEngine;
 namespace BotControl.CustomActions.CustomActions
 {
 
-    public class CustomBotActionSyncAttack : CustomActionBase
+    public class CustomBotActionSyncAttack : CustomActionBase // TODO make sure they line up a headshot, might reuqire bots to re-position.  might require my own implementation of findvunerabletarget
     {
         public enum State
         {
@@ -26,6 +26,7 @@ namespace BotControl.CustomActions.CustomActions
         private Descriptor m_desc;
         internal static float LastDamageDeltTimestamp = 0f;
         private EnemyAgent TargetAgent;
+        private PlayerBotActionWalk.Descriptor.PostureEnum Posture;
         private PlayerBotActionTravel.Descriptor TravelAction;
         private PlayerBotActionMelee.Descriptor MeleAction;
         private float Haste;
@@ -37,6 +38,7 @@ namespace BotControl.CustomActions.CustomActions
         {
             //This is an example of how you can set up your own custom descriptor!
             public float Haste = 1f;
+            public PlayerBotActionWalk.Descriptor.PostureEnum Posture;
             public EnemyAgent TargetAgent;
             public Descriptor() : base(ClassInjector.DerivedConstructorPointer<Descriptor>()) // Don't use this!  Needed for il2cpp nonsense.
             {
@@ -122,6 +124,7 @@ namespace BotControl.CustomActions.CustomActions
             this.TargetAgent = desc.TargetAgent;
             this.Haste = desc.Haste;
             this.state = State.Idle;
+            this.Posture = desc.Posture;
             //Use this constructor.
             //This means your action is starting!
         }
@@ -147,6 +150,11 @@ namespace BotControl.CustomActions.CustomActions
             if (!VerifyPosition())
             {
                 state = State.Move;
+                return false;
+            }
+            if (m_bot.Agent.m_attackers.Count != 0)
+            {
+                state = State.Failed;
                 return false;
             }
             return true;
@@ -242,6 +250,7 @@ namespace BotControl.CustomActions.CustomActions
                     Haste = Haste,
                     Radius = 0.7f * MeleDistance,
                     DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.GameObject,
+                    WalkPosture = Posture,
                     Persistent = false,
                     ParentActionBase = this,
                     Prio = m_desc.Prio,
@@ -267,7 +276,7 @@ namespace BotControl.CustomActions.CustomActions
                     Haste = m_desc.Haste,
                     Strike = false,
                     Travel = false,
-                    TargetGameObject = TargetAgent.EasyAimTarget.gameObject,
+                    TargetGameObject = TargetAgent.m_headLimb.gameObject,
                     Weapon = meleeWeapon,
                     ParentActionBase = this,
                     Prio = m_desc.Prio,
@@ -284,6 +293,11 @@ namespace BotControl.CustomActions.CustomActions
         {
             if (!Verify(true))
                 return;
+            if (!m_desc.TargetAgent.AI.IsHibernating(out bool _, out bool isWakingUp) || isWakingUp)
+            {
+                state = State.Strike;
+                return;
+            }
             if (MeleAction == null || MeleAction.IsTerminated())
             {
                 state = State.Charge;

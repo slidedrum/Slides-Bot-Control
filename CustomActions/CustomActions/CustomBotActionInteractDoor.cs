@@ -318,12 +318,14 @@ namespace BotControl.CustomActions.CustomActions
             if ((m_bot.transform.position - TargetLoction).magnitude < 1.5f)
             {
                 GetLock();
-                if (TargetLock == null)
+                if (TargetLock == null || !TargetLock.IsLocked())
+                {
                     state = State.Press;
+                }
                 else
                 {
                     state = State.StartUnlock;
-                    m_bot.StopAction(TravelAction);
+                    SafeStopAction(TravelAction);
                 }
             }
         }

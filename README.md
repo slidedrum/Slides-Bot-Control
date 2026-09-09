@@ -23,7 +23,7 @@ One of the major features of this mod is letting you change the priority of diff
  - Control if and when bots are allowed to pick up items
    - You can choose what items they do or don't pick up, or even change the priority of different items.
  - Control if and when bots are allowed to share items with others.
-   - You can choose exactly what threshold bots are allowed to share their resources.  Only want ammo when you're below 50%?  No problem.
+   - You can choose exactly what threshold bots are allowed to share their re0sources.  Only want ammo when you're below 50%?  No problem.
  - Control if bots are allowed to attack
    - Control what they are allowed to attack with, do you want them to save ammo and go melee only?  No problem! (this feature works, but seems to have issues not caused by this mod.)
  - Control if bots are allowed to revive players or bots.
@@ -92,15 +92,19 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
 
 ### Changelog
 v1.3
+ - When doing manual actions, Bots can now be detected just like players.  When doing automatic actions, bots still can not be detected no matter what.
  - You can now command unselected bots with smart sellect.  Commands will fall back to the nearest bot.
  - Added option to restrict what guns bots attack with, via a new sub menu in bullet attack menu.
  - Added Sync attack action to smart select.  Bots will charge a melee attack, and strike when any enemy takes damage.
-WIP - Moved sneak attack to tap instead of hold, hold now triggers a loud attack, even in stealth.  Allowing you to tell bots to snipe a scout.
  - Added new automatic action, open locker.
+ - Added new automatic action, explore.  When enabled, bots will explore the current area outside of their follow range.
  - Added new Zone override option in pickup permissions, letting you restict pickups by zone/area.
  - Changed how move action works, they will now return to that spot if they have to move.
  - Fixed some misalanious bugs with attack action restictions.
  - Removed excessive debug logging.
+ - TODO: Global restriction for walking in manual actions, so they respect sound
+ - TODO: They sometimes get stuck between follow and attack, not sure why, not sure how to repro
+ - TODO: Follow cancels all actions
 
 V1.2.6
  - Fixed and re-added the betterbots compatability layer.  Bots should behave when changing attack means now!

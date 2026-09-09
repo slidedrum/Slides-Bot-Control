@@ -592,7 +592,8 @@ namespace BotControl
                 if (zVisibilityManager.CheckObjectVisiblity(gameObject, agent.gameObject, settings) > visiblityThreshold)
                 {
                     findable.SetFound();
-                    GuiManager.AttemptSetPlayerPingStatus(agent, true, findable.box.Center, style: findable.pingSyle);
+                    if (ZiMain.debugMode)
+                        GuiManager.AttemptSetPlayerPingStatus(agent, true, findable.box.Center, style: findable.pingSyle);
                     ZiMain.log.LogInfo($"Found object {findable.type}! {gameObject.name}");
                     var levelItem = findable.gameObject.GetComponent<ItemInLevel>();
                     if (levelItem != null)
