@@ -6,7 +6,6 @@ using Player;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static Player.PlayerBotActionTravel;
 
 namespace BotControl.Patches
 {
@@ -39,6 +38,12 @@ namespace BotControl.Patches
         }
         private static List<DRAMA_State> loudStates = new List<DRAMA_State>() { DRAMA_State.Alert, DRAMA_State.Encounter, DRAMA_State.Combat, DRAMA_State.Survival, DRAMA_State.IntentionalCombat };
         public static bool IsLoud => loudStates.Contains(DramaManager.CurrentStateEnum);
+        private struct SavedWalkState
+        {
+            public float Haste;
+            public PlayerBotActionWalk.Descriptor.PostureEnum Posture;
+        }
+        private static Dictionary<IntPtr, SavedWalkState> savedWalkState = new();
         private class AgentData
         {
             public List<EnemyAgent> NearbyTwitchers = new();
@@ -59,14 +64,34 @@ namespace BotControl.Patches
         [HarmonyPrefix]
         private static bool Pre_UpdateMovement(PlayerBotActionWalk __instance)
         {
-            //return true;
             AgentData data = GetOrCreateData(__instance.m_bot.Pointer);
+            IntPtr descPtr = __instance.m_desc.Pointer;
+            bool overlay = !IsLoud && zActions.DoingAnyManualAction(__instance.m_bot.Agent) && __instance.m_bot.m_hasSleeperNearby;
+            if (overlay)
+            {
+                if (!savedWalkState.ContainsKey(descPtr))
+                {
+                    savedWalkState[descPtr] = new SavedWalkState
+                    {
+                        Haste = __instance.m_desc.Haste,
+                        Posture = __instance.m_desc.Posture,
+                    };
+                }
+                __instance.m_desc.Posture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch;
+                __instance.m_desc.Haste = 0.5f;
+            }
+            else if (savedWalkState.TryGetValue(descPtr, out SavedWalkState saved))
+            {
+                __instance.m_desc.Haste = saved.Haste;
+                __instance.m_desc.Posture = saved.Posture;
+                savedWalkState.Remove(descPtr);
+            }
             if (IsLoud)
             {
                 data.LastTimeNotWaitingForTwitcher = Time.time;
                 return true;
             }
-            bool HoldForTwicher = !IsLoud && zActions.DoingAnyManualAction(__instance.m_bot.Agent) && __instance.m_bot.m_hasTwitcherNearby;
+            bool HoldForTwicher = zActions.DoingAnyManualAction(__instance.m_bot.Agent) && __instance.m_bot.m_hasTwitcherNearby;
             if (!HoldForTwicher)
                 data.LastTimeNotWaitingForTwitcher = Time.time;
             else
@@ -76,25 +101,16 @@ namespace BotControl.Patches
                     data.LastTimeNotWaitingForTwitcher = Time.time + TwitcherMoveInterval;
                 }
             }
-            return !HoldForTwicher || data.LastTimeNotWaitingForTwitcher > Time.time;
+            bool allowMove = !HoldForTwicher || data.LastTimeNotWaitingForTwitcher > Time.time;
+            if (!allowMove)
+                __instance.m_bot.SyncValues.LocomotionState = PlayerLocomotion.PLOC_State.Crouch;
+            return allowMove;
         }
-        [HarmonyPatch(typeof(PlayerBotActionTravel), nameof(PlayerBotActionTravel.UpdateStateMove))]
-        [HarmonyPrefix]
-        public static bool Pre_PlayerBotActionTravel_UpdateStateMove_Patch(PlayerBotActionTravel __instance)
+        [HarmonyPatch(typeof(PlayerBotActionWalk), nameof(PlayerBotActionWalk.Stop))]
+        [HarmonyPostfix]
+        private static void Post_WalkStop(PlayerBotActionWalk __instance)
         {
-            if (__instance.m_journey.Count == 0)
-                return true;
-            JourneyPartBase part = __instance.m_journey[0];
-            if (part.Type == JourneyPartBase.TypeEnum.Walk)
-            {
-                JourneyPartWalk walkPart = part.TryCast<JourneyPartWalk>();
-                if (!IsLoud && CustomWakeManager.IsDetectable(__instance.m_bot) && __instance.m_bot.m_hasSleeperNearby)
-                {
-                    __instance.m_desc.WalkPosture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch;
-                    __instance.m_desc.Haste = 0.5f;
-                }
-            }
-            return true;
+            savedWalkState.Remove(__instance.m_desc.Pointer);
         }
         [HarmonyPatch(typeof(PlayerBotActionWalk), nameof(PlayerBotActionWalk.UpdateLookAction))]
         [HarmonyPrefix]
