@@ -27,7 +27,7 @@ namespace BotControl.CustomActions.CustomActions
         internal static float LastDamageDeltTimestamp = 0f;
         private EnemyAgent TargetAgent;
         private PlayerBotActionWalk.Descriptor.PostureEnum Posture;
-        private PlayerBotActionTravel.Descriptor TravelAction;
+        internal PlayerBotActionTravel.Descriptor TravelAction;
         private PlayerBotActionMelee.Descriptor MeleAction;
         private float Haste;
         public static new bool Setup() //This will be called when your class is regestered, it should return true if your action will even activate on it's own, or false if it's an exclusively manual action.
@@ -289,7 +289,7 @@ namespace BotControl.CustomActions.CustomActions
             if (MeleAction.IsCharged)
             {
                 if (m_desc.Sync)
-                    zChatHandler.sendChatMessage("Ready to strike!", "Sync" + IPressAction.chatPermSuffix, m_bot.Agent);
+                    zChatHandler.sendChatMessage("Ready to strike!", "Sync-Att" + IPressAction.chatPermSuffix, m_bot.Agent);
                 state = State.Wait;
             }
         }
@@ -305,7 +305,7 @@ namespace BotControl.CustomActions.CustomActions
             if (MeleAction == null || MeleAction.IsTerminated())
             {
                 if (m_desc.Sync)
-                    zChatHandler.sendChatMessage("No longer ready to strike!", "Sync" + IPressAction.chatPermSuffix, m_bot.Agent);
+                    zChatHandler.sendChatMessage("No longer ready to strike!", "Sync-Att" + IPressAction.chatPermSuffix, m_bot.Agent);
                 state = State.Move;
                 return;
             }

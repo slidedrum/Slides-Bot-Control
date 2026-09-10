@@ -5,6 +5,7 @@ using BotControl.Networking;
 using BotControl.Patches;
 using BotControl.SmartSelect;
 using BotControl.CustomActions;
+using BotControl.CustomActions.CustomActions;
 using CellMenu;
 using Enemies;
 using GTFO.API;
@@ -387,6 +388,29 @@ public class ZiMain : BasePlugin
                     zChatHandler.sendChatMessage($"I killed the {action?.Cast<PlayerBotActionAttack>()?.m_desc?.TargetAgent?.Cast<EnemyAgent>()?.EnemyData?.name ?? "enemy"}.", frinedlyIdent + ChatSettingsMenu.chatPermsString + ChatSettingsMenu.SuccessString, bot.Agent);
                 else
                     zChatHandler.sendChatMessage($"I couldn't kill the {action?.Cast<PlayerBotActionAttack>()?.m_desc?.TargetAgent?.Cast<EnemyAgent>()?.EnemyData?.name ?? "enemy"}.", frinedlyIdent + ChatSettingsMenu.chatPermsString + ChatSettingsMenu.FailString, bot.Agent);
+            }
+        }
+        else if (typeName == "CustomBotActionStealthAttack")
+        {
+            if (manualAction)
+            {
+                var desc = action.DescBase.TryCast<CustomBotActionStealthAttack.Descriptor>();
+                var stealth = action.TryCast<CustomBotActionStealthAttack>();
+                string enemyName = desc?.TargetAgent?.EnemyData?.name ?? "enemy";
+                string friendlyIdent = (desc != null && desc.Sync)
+                    ? PressActionManager.GetAction("Sync Attack").FriendlyIdentifier
+                    : PressActionManager.GetAction("Attack Enemy").FriendlyIdentifier;
+                bool ok = action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful;
+                string perm = friendlyIdent + ChatSettingsMenu.chatPermsString
+                    + (ok ? ChatSettingsMenu.SuccessString : ChatSettingsMenu.FailString);
+                string message;
+                if (ok)
+                    message = $"I killed the {enemyName}.";
+                else if (stealth?.TravelAction != null && stealth.TravelAction.Status != PlayerBotActionBase.Descriptor.StatusType.Successful)
+                    message = $"I couldn't reach the {enemyName}.";
+                else
+                    message = $"I couldn't kill the {enemyName}.";
+                zChatHandler.sendChatMessage(message, perm, bot.Agent);
             }
         }
     }
