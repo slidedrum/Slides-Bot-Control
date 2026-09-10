@@ -31,7 +31,7 @@ namespace BotControl.Menus
             debugHooksEnabled = sMenuManager.createMenu("UseHooks", debugMenu);
             debugMenu.AddNode("Show title prompt", InGameTitle.DisplayDefault).AddListener(sMenuManager.nodeEvent.OnUnpressedSelected, debugMenu.Close); ;
             
-            debugMenu.AddNode("ChecVis")
+            debugMenu.AddNode("CheckVis")
                 .AddListener(sMenuManager.nodeEvent.OnUnpressedSelected, zDebug.setCheckVizTarget)
                 .AddListener(sMenuManager.nodeEvent.OnUnpressedSelected, zDebug.debugCheckViz)
                 .AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zDebug.toggleVisCheck)
@@ -58,13 +58,13 @@ namespace BotControl.Menus
             var mapGridSizeNode = debugNodeSettingsMenu.AddNode("Map Grid Size");
             mapGridSizeNode.AddListener(sMenuManager.nodeEvent.WhileSelected, DebugMenuClass.ChangeValueBasedOnMouseWheel, [DebugValueToChange.NodeMapSize, mapGridSizeNode, 1f]);
             mapGridSizeNode.SetSubtitle($"{zVisitedManager.NodeMapGridSize}");
-            var visitDistanceNode = debugNodeSettingsMenu.AddNode("Visit distnace");
+            var visitDistanceNode = debugNodeSettingsMenu.AddNode("Visit distance");
             visitDistanceNode.AddListener(sMenuManager.nodeEvent.WhileSelected, DebugMenuClass.ChangeValueBasedOnMouseWheel, [DebugValueToChange.NodeVisitDistance, visitDistanceNode, 0.5f]);
             visitDistanceNode.SetSubtitle($"{zVisitedManager.NodeVisitDistance}");
-            var propigationAmmountNode = debugNodeSettingsMenu.AddNode("Propigation ammount");
+            var propigationAmmountNode = debugNodeSettingsMenu.AddNode("Propagation amount");
             propigationAmmountNode.AddListener(sMenuManager.nodeEvent.WhileSelected, DebugMenuClass.ChangeValueBasedOnMouseWheel, [DebugValueToChange.PropigationAmmount, propigationAmmountNode, 1f]);
             propigationAmmountNode.SetSubtitle($"{zVisitedManager.propigationAmmount}");
-            var propigationSameCountNode = debugNodeSettingsMenu.AddNode("Propigation sample count");
+            var propigationSameCountNode = debugNodeSettingsMenu.AddNode("Propagation sample count");
             propigationSameCountNode.AddListener(sMenuManager.nodeEvent.WhileSelected, DebugMenuClass.ChangeValueBasedOnMouseWheel, [DebugValueToChange.PropigationSampleCount, propigationSameCountNode, 1f]);
             propigationSameCountNode.SetSubtitle($"{zVisitedManager.propigationSampleCount}");
             var nodesPerFrameNode = debugNodeSettingsMenu.AddNode("Nodes per frame");

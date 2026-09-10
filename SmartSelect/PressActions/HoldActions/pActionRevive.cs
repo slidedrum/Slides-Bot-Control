@@ -26,7 +26,7 @@ namespace BotControl.SmartSelect.PressActions
             if (BestBot == null) return false;
             zBotActions.SendBotToReviveAgent(BestBot, Agent, zStaticRefrences.LocalPlayer, 0);
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, EVENTS.PLAY_CL_INEEDHELP);
-            zChatHandler.sendChatMessage($"Reving {Agent.PlayerName}.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            zChatHandler.sendChatMessage($"Reviving {Agent.PlayerName}.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;
         }
         public bool IsActionValid(Component candidate, PlayerAIBot BestBot)

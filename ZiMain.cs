@@ -352,7 +352,7 @@ public class ZiMain : BasePlugin
             else
             {
                 if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Failed)
-                    zChatHandler.sendChatMessage($"I coul't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%).", frinedlyIdent + ChatSettingsMenu.chatPermsString + ChatSettingsMenu.FailString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I couldn't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%).", frinedlyIdent + ChatSettingsMenu.chatPermsString + ChatSettingsMenu.FailString, bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Interrupted)
                     zChatHandler.sendChatMessage($"I can't give {receverOrMyslef} {article} {descriptor.Item.PublicName} ({ammoLeft}%) right now.", frinedlyIdent + ChatSettingsMenu.chatPermsString + ChatSettingsMenu.FailString, bot.Agent);
                 else if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Aborted)
@@ -374,7 +374,7 @@ public class ZiMain : BasePlugin
                     if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
                         zChatHandler.sendChatMessage($"I arrived at the location.", frinedlyIdent + ChatSettingsMenu.chatPermsString + ChatSettingsMenu.SuccessString, bot.Agent);
                     else
-                        zChatHandler.sendChatMessage($"I could't make it to the location.", frinedlyIdent + ChatSettingsMenu.chatPermsString +ChatSettingsMenu.FailString, bot.Agent);
+                        zChatHandler.sendChatMessage($"I couldn't make it to the location.", frinedlyIdent + ChatSettingsMenu.chatPermsString +ChatSettingsMenu.FailString, bot.Agent);
                 }
             }
         }
@@ -386,7 +386,7 @@ public class ZiMain : BasePlugin
                 if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
                     zChatHandler.sendChatMessage($"I killed the {action?.Cast<PlayerBotActionAttack>()?.m_desc?.TargetAgent?.Cast<EnemyAgent>()?.EnemyData?.name ?? "enemy"}.", frinedlyIdent + ChatSettingsMenu.chatPermsString + ChatSettingsMenu.SuccessString, bot.Agent);
                 else
-                    zChatHandler.sendChatMessage($"I could't kill the {action?.Cast<PlayerBotActionAttack>()?.m_desc?.TargetAgent?.Cast<EnemyAgent>()?.EnemyData?.name ?? "enemy"}.", frinedlyIdent + ChatSettingsMenu.chatPermsString + ChatSettingsMenu.FailString, bot.Agent);
+                    zChatHandler.sendChatMessage($"I couldn't kill the {action?.Cast<PlayerBotActionAttack>()?.m_desc?.TargetAgent?.Cast<EnemyAgent>()?.EnemyData?.name ?? "enemy"}.", frinedlyIdent + ChatSettingsMenu.chatPermsString + ChatSettingsMenu.FailString, bot.Agent);
             }
         }
     }

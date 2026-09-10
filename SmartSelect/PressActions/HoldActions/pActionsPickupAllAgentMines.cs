@@ -9,7 +9,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     {
         public string FriendlyName => "Pickup All Agent Mines";
         public string _FriendlyNameShort => "Pickup-A";
-        public string FriendlyIdentifier => "Pickup Equipmenet";
+        public string FriendlyIdentifier => "Pickup Equipment";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);

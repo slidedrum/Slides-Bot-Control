@@ -72,7 +72,7 @@ namespace BotControl.Menus
             followMenu.AddNodeToCatagory("Basic", "Exploring");
             followMenu.AddCatagory("Advanced");
 
-            followMenu.AddPannel(sMenu.sMenuPannel.Side.top, "Controlls when and how closely the bots follow their leader.");
+            followMenu.AddPannel(sMenu.sMenuPannel.Side.top, "Controls when and how closely the bots follow their leader.");
             followMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "Top: Priority, how important is staying in range?");
             followMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "Bottom left: Range, how close should the bots be?");
             followMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "Bottom right: Max distance, When should bots sprint?");

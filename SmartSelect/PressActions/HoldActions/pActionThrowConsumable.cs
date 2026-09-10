@@ -42,7 +42,7 @@ namespace BotControl.SmartSelect.PressActions
             {
                 //ThrowType = Networking.pStructs.pThrowType.FogRepeller;
                 PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PUTAFOGREPELLERHERE);
-                zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Put a fog reppeler here.", 1f);
+                zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Put a fog repeller here.", 1f);
             }
             zBotActions.SendBotToThrowItem(LocalPlayer, BestBot.Agent, LocalPlayer.transform.position, LocalPlayer.FPSCamera.CameraRayPos);
             //zBotActions.SendBotToThrowItem(LocalPlayer, BestBot.Agent, ThrowType, LocalPlayer.transform.position, LocalPlayer.FPSCamera.CameraRayPos);

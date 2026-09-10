@@ -19,7 +19,9 @@ These were wrongly “fixed” once. Leave them as they are:
 
 **Substring trap:** do **not** replace `Controll` → `Control` with a blind replace. `PlayerCharacterController` contains `Controll` and becomes `PlayerCharacterControler`. Only rename the identifier `playerInControll`.
 
-Replace **longer / more specific** names first (`Followeee` before `Folowee`, `HasParrentAndValue` before `HasParrent`, `ReciveSetBoolOverideTree` before `Recive` / `Overide`).
+Same for `Hacket` → `Hackett`: `Hackett` already appears in voice IDs (`HACKETT`). A blind replace turns it into `Hackettt`. Only change the README player-name typo.
+
+Replace **longer / more specific** names first (`Followeee` before `Folowee`, `HasParrentAndValue` before `HasParrent`, `ReciveSetBoolOverideTree` before `Recive` / `Overide`). Also `intialized` is **not** the same token as `initalized` — fix each separately.
 
 ---
 
@@ -29,25 +31,54 @@ On-screen menu text, HUD labels, chat, and settings keys the player can see.
 
 ### Menus
 
-| File | From | To |
-|---|---|---|
-| `Menus/FollowMenu.cs` | `Controlls when and how closely the bots follow their leader.` | `Controls when and how closely the bots follow their leader.` |
-| `Menus/AttackMenu.cs` | `This controls if the bots are allowed to atack` | `This controls if the bots are allowed to attack` |
-| `Menus/AutomaticActionMenuClass.cs` | `Scroll in center => change catagory` | `Scroll in center => change category` |
-| `Menus/BioTrackerMenu.cs` | `Does nothing if no bots have a biotracker equiped.` | `Does nothing if no bots have a biotracker equipped.` |
-| `Menus/ChatSettingsMenu.cs` | node / label `Acknowlage` | `Acknowledge` |
-| `Menus/ReviveMenu.cs` | `I plan to add a way to control revives of spesific plaers` | `I plan to add a way to control revives of specific players` |
-| `Menus/DebugMenu.cs` | `ChecVis` | `CheckVis` |
-| `Menus/DebugMenu.cs` | `Visit distnace` | `Visit distance` |
-| `Menus/DebugMenu.cs` | `Propigation ammount` | `Propagation amount` |
-| `Menus/DebugMenu.cs` | `Propigation sample count` | `Propagation sample count` |
-| `smenu/sMenu.cs` | HUD rich text `{catagory}` | `{category}` |
+| File                                | From                                                            | To                                                              |
+| ----------------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
+| `Menus/FollowMenu.cs`               | `Controlls when and how closely the bots follow their leader.`  | `Controls when and how closely the bots follow their leader.`   |
+| `Menus/AttackMenu.cs`               | `...global for all permisions, not just weapons.`               | `...global for all permissions, not just weapons.`              |
+| `Menus/AutomaticActionMenuClass.cs` | `Scroll in center => change catagory`                           | `Scroll in center => change category`                           |
+| `Menus/BioTrackerMenu.cs`           | `Does nothing if no bots have a biotracker equiped.`            | `Does nothing if no bots have a biotracker equipped.`           |
+| `Menus/ChatSettingsMenu.cs`         | node / label `Acknowlage`                                       | `Acknowledge`                                                   |
+| `Menus/ReviveMenu.cs`               | `I plan to add a way to control revives of spesific players`    | `I plan to add a way to control revives of specific players`    |
+| `Menus/DebugMenu.cs`                | `ChecVis`                                                       | `CheckVis`                                                      |
+| `Menus/DebugMenu.cs`                | `Visit distnace`                                                | `Visit distance`                                                |
+| `Menus/DebugMenu.cs`                | `Propigation ammount`                                           | `Propagation amount`                                            |
+| `Menus/DebugMenu.cs`                | `Propigation sample count`                                      | `Propagation sample count`                                      |
+| `Menus/ExploreMenu.cs`              | `This will be used to let you customzie the new explore action` | `This will be used to let you customize the new explore action` |
+| `smenu/sMenu.cs`                    | HUD rich text `{catagory}`                                      | `{category}`                                                    |
 
 Leave `Menus/PickupMenu.cs` `"Controls what bots will pickup."` as **pickup** (one word).
 
 Leave BioTracker `"Also controls their voicelines for nearby enemies."` as **voicelines**.
 
 Leave BioTracker `"This controls if bots will ping active enemies with a bio tracker."` as **bio tracker** (that is the original).
+
+### README.md (Thunderstore / repo docs)
+
+| From | To |
+|---|---|
+| `spesific` (howto + changelog) | `specific` |
+| `automtaiclly` | `automatically` |
+| `re0sources` | `resources` |
+| `untill` | `until` |
+| `distnace` | `distance` |
+| `fllow` | `follow` |
+| `inconsistant` | `inconsistent` |
+| `arround` | `around` |
+| `suppoted` | `supported` |
+| `mecanic` | `mechanic` |
+| `sellect` | `select` |
+| `Hacket` (player name; GTFO uses Hackett) | `Hackett` |
+| `restict` | `restrict` |
+| `misalanious` | `miscellaneous` |
+| `restictions` | `restrictions` |
+| `compatability` | `compatibility` |
+| `unintental` | `unintentional` |
+| `dependancy` | `dependency` |
+| `would't` | `wouldn't` |
+| `pacs` (disinfect packs) | `packs` |
+| `and and item pickups` | `and item pickups` |
+
+Leave `infront` as one word (do not split compounds). Leave `it's sub menu` / `it's features` (grammar, not letter typos).
 
 ### Chat / HUD (player-visible)
 
@@ -93,6 +124,9 @@ Logs, exceptions, comments, TODOs, debug object names, network event name string
 | `tried to get resoruce share perms for unkown item id` | `tried to get resource share perms for unknown item id` |
 | `UpdateDebugCube: ... PropigatedText` | `PropagatedText` |
 | `Got receiver or myself {receverOrMyslef}` | `{receiverOrMyself}` |
+| `PlayerAiBot not found on revier` | `PlayerAIBot not found on reviver` |
+| `sender, reciver or commander is null` | `sender, receiver or commander is null` |
+| `Remotely canceld` | `Remotely canceled` |
 
 ### Network event name strings (RegisterEvent / InvokeEvent)
 
@@ -135,6 +169,7 @@ Apply these words wherever they appear in comments (mostly `ZiMain.cs` TODOs, pl
 | `seprate` | `separate` |
 | `visualy` | `visually` |
 | `consistant` | `consistent` |
+| `inconsistant` | `inconsistent` |
 | `arange` | `arrange` |
 | `offests` | `offsets` |
 | `aragement` | `arrangement` |
@@ -171,8 +206,23 @@ Apply these words wherever they appear in comments (mostly `ZiMain.cs` TODOs, pl
 | `Menues` (in `CloseAllMenues`) | `Menus` |
 | `Visiblity` / `visiblity` | `Visibility` / `visibility` |
 | `emmisivenessOn` / `emmisivenessOff` (in comments) | `emissivenessOn` / `emissivenessOff` |
+| `interuption` | `interruption` |
+| `permisions` | `permissions` |
+| `accomidate` | `accommodate` |
+| `Alow` (start of “Alow you to supply”) | `Allow` |
+| `bunlded` | `bundled` |
+| `defintions` | `definitions` |
+| `Not jus actions` | `Not just actions` |
+| `transfering` | `transferring` |
+| `whenenever` | `whenever` |
+| `added to the que.` | `added to the queue.` |
+| `inludes` | `includes` |
+| `resourcesActions` | `resources` |
+| `sendbottopickupitem` | `SendBotToPickupItem` |
+| `customzie` | `customize` |
+| `canceld` | `canceled` |
 
-Custom-action template comments: `when your class is regestered` → `registered`; `does not need any paramaters` → `parameters`.
+Custom-action template comments: `when your class is regestered` → `registered`; `Any paramaters` → `parameters`; `interuption` → `interruption`; `to the que` → `to the queue`; `inludes` → `includes`.
 
 ---
 
@@ -239,7 +289,7 @@ Fields, properties, locals, parameters, enum members, structs, and types. Rename
 | `followSettingsOverides` | `followSettingsOverrides` | `FollowActionPatch` |
 | `myFollowSettingsOverides` | `myFollowSettingsOverrides` | `FollowActionPatch` |
 | `overideTrees` | `overrideTrees` | `FollowActionPatch` |
-| `overidesMenu` | `overridesMenu` | Follow menu |
+| `overidesMenu` | `overridesMenu` | `ReviveMenu` |
 | `PickupZoneOveridesMenu` | `PickupZoneOverridesMenu` | `PickupMenu.ZoneOverrides` |
 | `AcknowlageString` | `AcknowledgeString` | `ChatSettingsMenu` |
 | `AcknowlageNode` / `subAcknowlageNode` | `AcknowledgeNode` / `subAcknowledgeNode` | |
@@ -257,9 +307,17 @@ Fields, properties, locals, parameters, enum members, structs, and types. Rename
 | `visiblityTexture` | `visibilityTexture` | |
 | `visiblityThreshold` | `visibilityThreshold` | |
 | `totalVisblePixels` | `totalVisiblePixels` | |
-| `emmisivenessOn` / `emmisivenessOff` | `emissivenessOn` / `emissivenessOff` | `zVisibilityManager` |
+| `emmisivenessOn` / `emmisivenessOff` | `emissivenessOn` / `emissivenessOff` | `zVisibilityManager`, `zVisiblityManagerMessy` |
 | `toleranceCeling` | `toleranceCeiling` | `zVisibilityManagerMessy` |
 | `refrence` (parameter name) | `reference` | `Get_pStructFromRefrence` overloads |
+| `ActonKey` | `ActionKey` | `ChatSettingsMenu.ResetToDefault` param |
+| `intialized` | `initialized` | `CustomBotActionGuard` field — different misspelling than `initalized` |
+| `MovePostion` | `MovePosition` | `zNetworking.ReciveRequestToThrowItem` / `ReciveRequestToUseCfoam` locals |
+| `observerOffest` | `observerOffset` | `zVisibilityManager.visSettings` + `zFindableManager` |
+| `observerExteriroCamera` | `observerExteriorCamera` | `zVisibilityManager` |
+| `Botlist` | `BotList` | `pActionAllFollow`, `pActionPickupAllSentries` locals |
+| `ammocount` | `ammoCount` | `ZiMain` local |
+| `localtimestamp` | `localTimestamp` | `zChatHandler.ChatMessage` |
 
 ---
 
@@ -318,6 +376,7 @@ Rename the method and every call site (including commented-out calls).
 - `ReciveActionTerminated`
 - `ReciveRequestActionCancel`
 - `ReciveRequestToKillSleeper`
+- `ReciveRequestToStealthAttack`
 - `ReciveRequestToDropHere`
 - `ReciveRequestToInsertCell`
 - `ReciveRequestToOpenContainer`
@@ -327,6 +386,8 @@ Rename the method and every call site (including commented-out calls).
 - `ReciveSetPickupPermission`
 - `ReciveSetResourceThresholdDisable`
 - `ReciveSetSharePermission`
+
+(`ReciveSetItemPrio` / pickup / share / resource-threshold names exist only as commented `zDebug.cs` wrappers now, not live `zNetworking.cs` handlers.)
 
 Debug test wrappers: `TestRecive...` → `TestReceive...` (all of the `TestReciveSet*` / `TestReciveRequest*` names in `zDebug.cs`).
 
@@ -347,12 +408,13 @@ Debug test wrappers: `TestRecive...` → `TestReceive...` (all of the `TestReciv
 | `FindBestAlignedComponenet` | `FindBestAlignedComponent` |
 | `CheckObjectVisiblity` (all overloads) | `CheckObjectVisibility` |
 | `CandidateMataches` | `CandidateMatches` |
-| `Initalize` | `Initialize` (`PressTypeManager`; also `initalized` → `initialized` nearby) |
+| `Initalize` | `Initialize` (`PressTypeManager`; also `initalized` → `initialized` nearby). `CustomBotActionGuard.intialized` is a **different** misspelling (`intialized` → `initialized`). |
 | `CreatelitMaterial` | `CreateLitMaterial` |
 | `SetPropigationAmmount` | `SetPropagationAmount` |
 | `SetPropigationSampleCount` | `SetPropagationSampleCount` |
 | `Propigate` | `Propagate` (`zVisitedManager`) |
 | `propigate` | `propagate` (`zFindableManager.VisitSearchNode`) |
+| `SetUpMaterals` / `StoreMaterals` / `RestoreMaterals` | `SetUpMaterials` / `StoreMaterials` / `RestoreMaterials` (`zVisibilityManager`) |
 
 ---
 
@@ -385,7 +447,7 @@ If a token still matches the left side after the lists above, it is the same typ
 | `Controlls` | `Controls` |
 | `Deffinition` | `Definition` |
 | `Equipmenet` | `Equipment` |
-| `Initalize` / `initalized` / `inital` | `Initialize` / `initialized` / `initial` |
+| `Initalize` / `initalized` / `inital` / `intialized` | `Initialize` / `initialized` / `initial` / `initialized` |
 | `Overide` / `overide` | `Override` / `override` |
 | `Pannel` / `pannel` | `Panel` / `panel` |
 | `Parrent` / `parrent` | `Parent` / `parent` |
@@ -397,9 +459,11 @@ If a token still matches the left side after the lists above, it is the same typ
 | `Visiblity` / `visiblity` / `visble` | `Visibility` / `visibility` / `visible` |
 | `ammount` / `Ammount` | `amount` / `Amount` |
 | `atack` | `attack` |
+| `inconsistant` | `inconsistent` |
 | `conntected` | `connected` |
 | `coul't` / `could't` | `couldn't` |
 | `distnace` | `distance` |
+| `distnce` | `distance` |
 | `encouter` | `encounter` |
 | `equiped` | `equipped` |
 | `existant` | `existent` |
@@ -413,3 +477,38 @@ If a token still matches the left side after the lists above, it is the same typ
 | `spesific` | `specific` |
 | `unkown` | `unknown` |
 | `untill` | `until` |
+| `accomidate` | `accommodate` |
+| `Alow` | `Allow` |
+| `automtaiclly` | `automatically` |
+| `bunlded` | `bundled` |
+| `canceld` | `canceled` |
+| `compatability` | `compatibility` |
+| `customzie` | `customize` |
+| `defintions` | `definitions` |
+| `dependancy` | `dependency` |
+| `Exteriro` | `Exterior` |
+| `fllow` | `follow` |
+| `Hacket` | `Hackett` |
+| `inludes` | `includes` |
+| `intialized` | `initialized` |
+| `interuption` | `interruption` |
+| `Materals` | `Materials` |
+| `mecanic` | `mechanic` |
+| `misalanious` | `miscellaneous` |
+| `Offest` | `Offset` |
+| `pacs` | `packs` |
+| `permisions` | `permissions` |
+| `Postion` | `Position` |
+| `que.` (end of “to the que.”) | `queue.` |
+| `re0sources` | `resources` |
+| `reciver` | `receiver` |
+| `resourcesActions` | `resources` |
+| `restict` | `restrict` |
+| `restictions` | `restrictions` |
+| `revier` | `reviver` |
+| `sellect` | `select` |
+| `suppoted` | `supported` |
+| `transfering` | `transferring` |
+| `unintental` | `unintentional` |
+| `whenenever` | `whenever` |
+| `would't` | `wouldn't` |

@@ -34,7 +34,7 @@ namespace BotControl.Menus
             playersNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, AutomaticActionMenuClass.GenericResetSettings, args: [playersNode, false, "RevivePlayers"]);
 
             reviveMenu.AddPannel(sMenu.sMenuPannel.Side.top, "Controls who the bots are allowed to revive");
-            reviveMenu.AddPannel(sMenu.sMenuPannel.Side.top, "I plan to add a way to control revives of spesific players");
+            reviveMenu.AddPannel(sMenu.sMenuPannel.Side.top, "I plan to add a way to control revives of specific players");
             reviveMenu.AddPannel(sMenu.sMenuPannel.Side.top, "Maybe an option to only revive their leader?");
         }
         public static void UpdateNodeDisplay(string actionKey, sMenu.sMenuNode node)

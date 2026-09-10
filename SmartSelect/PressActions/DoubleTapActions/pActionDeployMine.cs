@@ -11,7 +11,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
-        public string FriendlyIdentifier => "Deploy Equipmenet";
+        public string FriendlyIdentifier => "Deploy Equipment";
         public Il2CppSystem.Type Type => null;
         public string pressTypeIdentifier => "Double Tap";
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)

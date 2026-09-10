@@ -80,7 +80,7 @@ namespace BotControl.Menus
             AutoActionMenu.centerNode.ClearListeners(sMenuManager.nodeEvent.OnUnpressedSelected);
             AutoActionMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnTapped, AutoActionMenu.parrentMenu.Open);
 
-            AutoActionMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "Scroll in center => change catagory");
+            AutoActionMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "Scroll in center => change category");
             AutoActionMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "Scroll on node => change priority");
             AutoActionMenu.AddPannel(sMenu.sMenuPannel.Side.right, "Tap => toggle");
             AutoActionMenu.AddPannel(sMenu.sMenuPannel.Side.right, "Double tap => submenu");
@@ -95,6 +95,7 @@ namespace BotControl.Menus
             AttackMenuClass.Setup(attackMenu);
             ReviveMenuClass.Setup(reviveMenu);
             OpenMenuClass.Setup(openMenu);
+            ExploreMenuClass.Setup(exploreMenu);
 
             AutoActionMenu.AddCatagory("All");
             AutoActionMenu.AddCatagory("Favorites");

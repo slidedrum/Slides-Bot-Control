@@ -345,7 +345,7 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pReviveAgentInfo>("RequestToReviveAgent", info);
                 return;
             }
-            zChatHandler.sendChatMessage($"Reving {Downed.PlayerName}", PressActionManager.GetAction("Revive Agent").FriendlyIdentifier + IPressAction.chatPermSuffix, Reviver.Agent, Commander);
+            zChatHandler.sendChatMessage($"Reviving {Downed.PlayerName}", PressActionManager.GetAction("Revive Agent").FriendlyIdentifier + IPressAction.chatPermSuffix, Reviver.Agent, Commander);
 
             ZiMain.BotBarkBack(Reviver.Agent.CharacterID, AK.EVENTS.PLAY_CL_IWILLDOIT, "I will do it.", 1f);
             //ZiMain.sendChatMessage($"I would have revived {downedAgent.PlayerName}, but I'm stupid.", aiBot.Agent, commander);

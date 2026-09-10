@@ -28,13 +28,13 @@ namespace BotControl.Menus
             // TODO fix the network spam whenenever you do anything here.
             sMenu.sMenuNode FailNode = _Menu.AddNode("Fail");
             sMenu.sMenuNode SuccessNode = _Menu.AddNode("Success");
-            sMenu.sMenuNode AcknowlageNode = _Menu.AddNode("Acknowlage");
+            sMenu.sMenuNode AcknowlageNode = _Menu.AddNode("Acknowledge");
 
             _Menu.AddCatagory("States");
             _Menu.AddCatagory("Actions");
             _Menu.AddNodeToCatagory("States", "Fail");
             _Menu.AddNodeToCatagory("States", "Success");
-            _Menu.AddNodeToCatagory("States", "Acknowlage");
+            _Menu.AddNodeToCatagory("States", "Acknowledge");
 
             FailNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [FailString, FailNode]);
             FailNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: [FailString]);
@@ -114,7 +114,7 @@ namespace BotControl.Menus
             zSlideComputer.ActionPermissions.AddNode(actionKey + SuccessString, null, actionKey, defaultValue: null, hasDefaultValue: true).onChanged.Listen(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [actionKey + SuccessString, subSuccessNode]);
             subNodes.Add((subSuccessNode, actionKey + SuccessString));
 
-            sMenu.sMenuNode subAcknowlageNode = subMenu.AddNode("Acknowlage");
+            sMenu.sMenuNode subAcknowlageNode = subMenu.AddNode("Acknowledge");
             subAcknowlageNode.AddListener(sMenuManager.nodeEvent.OnTapped, zSlideComputer.GenericToggleAllowed, args: [actionKey + AcknowlageString, subAcknowlageNode]);
             subAcknowlageNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, zSlideComputer.ActionPermissions.ResetToDefault, args: [actionKey + AcknowlageString]);
             subMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetToDefault, args: [subAcknowlageNode, actionKey + AcknowlageString]);
