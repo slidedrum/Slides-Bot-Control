@@ -100,9 +100,11 @@ v1.3
  - Added new automatic action, explore.  When enabled, bots will explore the current area outside of their follow range.
  - Added new Zone override option in pickup permissions, letting you restict pickups by zone/area.
  - Changed how move action works, they will now return to that spot if they have to move.
- - Fixed some misalanious bugs with attack action restictions.
- - Removed excessive debug logging.
  - Follow now cancels all actions, if they somehow get stuck or have problems, try telling the bot to follow you.  This should reset their brain.
+ - Fixed some misalanious bugs with attack action restictions.
+ - Fixed menu node backgrounds rendering 1 frame late.
+ - Removed excessive debug logging.
+
 
 V1.2.6
  - Fixed and re-added the betterbots compatability layer.  Bots should behave when changing attack means now!
