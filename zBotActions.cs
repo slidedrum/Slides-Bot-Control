@@ -610,14 +610,15 @@ namespace BotControl
                     break;
             }
         }
-        public static void SendBotToSyncAttack(PlayerAIBot aiBot, EnemyAgent Enemy, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
+        public static void SendBotToStealthAttack(PlayerAIBot aiBot, EnemyAgent Enemy, bool Sync, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToSyncAttack{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
-            CustomBotActionSyncAttack.Descriptor desc = new CustomBotActionSyncAttack.Descriptor(aiBot)
+            CustomBotActionStealthAttack.Descriptor desc = new CustomBotActionStealthAttack.Descriptor(aiBot)
             {
                 TargetAgent = Enemy,
                 Haste = 0.5f,
+                Sync = Sync,
                 Posture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch,
                 Prio = defaultPrio
             };
@@ -636,35 +637,35 @@ namespace BotControl
             }
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
         }
-        public static void SendBotToAttackSleeper(PlayerAIBot aiBot, EnemyAgent Enemy, PlayerBotActionAttack.AttackMeansEnum Means, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
-        {
-            if (actionID == 0)
-                actionID = zHelpers.HashString($"RequestToAttackSleeper{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
-            CustomBotActionManualAttack.Descriptor desc = new CustomBotActionManualAttack.Descriptor(aiBot)
-            {
-                TargetAgent = Enemy,
-                Haste = 0.5f,
-                Posture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch,
-                Prio = defaultPrio,
-                Means = Means,
-            };
-            StartAction(aiBot, desc, Commander, actionID);
-            if (!SNet.IsMaster) //Are we a client?
-            {
-                if (netsender != 0) //Is this request coming from a different client?
-                    return;
-                pAttackEnemyInfo info = new pAttackEnemyInfo();
-                info.Commander = pStructs.Get_pStructFromRefrence(Commander);
-                info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
-                info.Enemy = pStructs.Get_pStructFromRefrence(Enemy);
-                info.Means = Means;
-                info.ID = actionID;
-                NetworkAPI.InvokeEvent<pAttackEnemyInfo>("RequestToAttackSleeper", info);
-                return;
-            }
+        //public static void SendBotToAttackSleeper(PlayerAIBot aiBot, EnemyAgent Enemy, PlayerBotActionAttack.AttackMeansEnum Means, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
+        //{
+        //    if (actionID == 0)
+        //        actionID = zHelpers.HashString($"RequestToAttackSleeper{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+        //    CustomBotActionManualAttack.Descriptor desc = new CustomBotActionManualAttack.Descriptor(aiBot)
+        //    {
+        //        TargetAgent = Enemy,
+        //        Haste = 0.5f,
+        //        Posture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch,
+        //        Prio = defaultPrio,
+        //        Means = Means,
+        //    };
+        //    StartAction(aiBot, desc, Commander, actionID);
+        //    if (!SNet.IsMaster) //Are we a client?
+        //    {
+        //        if (netsender != 0) //Is this request coming from a different client?
+        //            return;
+        //        pAttackEnemyInfo info = new pAttackEnemyInfo();
+        //        info.Commander = pStructs.Get_pStructFromRefrence(Commander);
+        //        info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
+        //        info.Enemy = pStructs.Get_pStructFromRefrence(Enemy);
+        //        info.Means = Means;
+        //        info.ID = actionID;
+        //        NetworkAPI.InvokeEvent<pAttackEnemyInfo>("RequestToAttackSleeper", info);
+        //        return;
+        //    }
 
-            ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
-        }
+        //    ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
+        //}
         public static void SendBotToDropHere(PlayerAIBot aiBot, Vector3 DropPosition, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0)

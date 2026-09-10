@@ -9,7 +9,7 @@ using UnityEngine;
 namespace BotControl.CustomActions.CustomActions
 {
 
-    public class CustomBotActionSyncAttack : CustomActionBase // TODO make sure they line up a headshot, might reuqire bots to re-position.  might require my own implementation of findvunerabletarget
+    public class CustomBotActionStealthAttack : CustomActionBase // TODO make sure they line up a headshot, might reuqire bots to re-position.  might require my own implementation of findvunerabletarget
     {
         public enum State
         {
@@ -40,6 +40,7 @@ namespace BotControl.CustomActions.CustomActions
             public float Haste = 1f;
             public PlayerBotActionWalk.Descriptor.PostureEnum Posture;
             public EnemyAgent TargetAgent;
+            public bool Sync = true;
             public Descriptor() : base(ClassInjector.DerivedConstructorPointer<Descriptor>()) // Don't use this!  Needed for il2cpp nonsense.
             {
                 ClassInjector.DerivedConstructorBody(this);
@@ -53,6 +54,7 @@ namespace BotControl.CustomActions.CustomActions
                 ClassInjector.DerivedConstructorBody(this);
                 InitDescriptor(bot);
                 this.RequiredLayers = AccessLayers.None;
+                this.Sync = true;
                 //Use this is your descriptor constructor.
                 //The descriptor is used to describe everything about your action.
                 //Any paramaters are set up by the calling class.  
@@ -64,7 +66,7 @@ namespace BotControl.CustomActions.CustomActions
                 //This converts your descriptor into an action instance.
                 //This means your action is starting!
                 //You probably won't need to do anything else here.
-                return new CustomBotActionSyncAttack(this);
+                return new CustomBotActionStealthAttack(this);
             }
             public override bool IsActionAllowed(PlayerBotActionBase.Descriptor desc)
             {
@@ -105,17 +107,17 @@ namespace BotControl.CustomActions.CustomActions
 
         private static float MeleDistance = 2f;//PlayerBotActionMelee.s_distanceCheckThresholdSQ * PlayerBotActionMelee.s_chargeMaxDistanceSQ;
 
-        public CustomBotActionSyncAttack() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionSyncAttack>())// Don't use this!  Needed for il2cpp nonsense.
+        public CustomBotActionStealthAttack() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionStealthAttack>())// Don't use this!  Needed for il2cpp nonsense.
         {
             ClassInjector.DerivedConstructorBody(this);
 
         }// Don't use this!  Needed for il2cpp nonsense.
-        public CustomBotActionSyncAttack(IntPtr ptr) : base(ptr) // Don't use this!  Needed for il2cpp nonsense.
+        public CustomBotActionStealthAttack(IntPtr ptr) : base(ptr) // Don't use this!  Needed for il2cpp nonsense.
         {
             ClassInjector.DerivedConstructorBody(this);
 
         }// Don't use this!  Needed for il2cpp nonsense.
-        public CustomBotActionSyncAttack(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<CustomBotActionSyncAttack>())
+        public CustomBotActionStealthAttack(Descriptor desc) : base(ClassInjector.DerivedConstructorPointer<CustomBotActionStealthAttack>())
         {
             ClassInjector.DerivedConstructorBody(this);
             InitFromDescriptor(desc);
@@ -267,8 +269,10 @@ namespace BotControl.CustomActions.CustomActions
             {
                 PlayerAgent agent = m_bot.Agent;
                 if (!m_bot.m_backpack.TryGetBackpackItem(InventorySlot.GearMelee, out BackpackItem meleeBackpackItem))
+                {
                     Stop();
-                // ...
+                    return;
+                }
                 MeleeWeaponThirdPerson meleeWeapon = meleeBackpackItem.Instance.TryCast<MeleeWeaponThirdPerson>();
                 MeleAction = new(m_bot)
                 {
@@ -285,7 +289,8 @@ namespace BotControl.CustomActions.CustomActions
             }
             if (MeleAction.IsCharged)
             {
-                zChatHandler.sendChatMessage("Ready to strike!", "Sync" + IPressAction.chatPermSuffix, m_bot.Agent);
+                if (m_desc.Sync)
+                    zChatHandler.sendChatMessage("Ready to strike!", "Sync" + IPressAction.chatPermSuffix, m_bot.Agent);
                 state = State.Wait;
             }
         }
@@ -300,11 +305,18 @@ namespace BotControl.CustomActions.CustomActions
             }
             if (MeleAction == null || MeleAction.IsTerminated())
             {
-                zChatHandler.sendChatMessage("No longer ready to strike!", "Sync" + IPressAction.chatPermSuffix, m_bot.Agent);
-                state = State.Charge;
+                if (m_desc.Sync)
+                    zChatHandler.sendChatMessage("No longer ready to strike!", "Sync" + IPressAction.chatPermSuffix, m_bot.Agent);
+                state = State.Move;
                 return;
             }
-            if (Time.time - LastDamageDeltTimestamp < 1)
+            if (m_desc.Sync)
+            {
+                if (Time.time - LastDamageDeltTimestamp < 1)
+                    state = State.Strike;
+                return;
+            }
+            if (!m_bot.m_hasTwitcherNearby)
                 state = State.Strike;
         }
         private void UpdateStateStrike()
@@ -375,7 +387,7 @@ namespace BotControl.CustomActions.CustomActions
         [HarmonyPostfix]
         public static void PostOnTakeDamagePatch(EnemyAgent __instance)
         {
-            CustomBotActionSyncAttack.LastDamageDeltTimestamp = Time.time;
+            CustomBotActionStealthAttack.LastDamageDeltTimestamp = Time.time;
         }
     }
 }

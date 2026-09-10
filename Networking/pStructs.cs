@@ -110,6 +110,7 @@ namespace BotControl.Networking
             public pEnemyAgent Enemy;
             public PlayerBotActionAttack.AttackMeansEnum Means;
             public pPlayerAgent BotAgent;
+            public bool Sync;
             public pPlayerAgent Commander;
             internal uint ID;
         }

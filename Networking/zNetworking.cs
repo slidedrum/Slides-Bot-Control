@@ -209,30 +209,30 @@ namespace BotControl.Networking
             PlayerAIBot aiBot = sender.gameObject.GetComponent<PlayerAIBot>();
             zBotActions.SendBotToShareResourcePack(aiBot, receiver, commander, netSender, info.ID);
         }
-        [Obsolete]
-        internal static void ReciveRequestToKillEnemy(ulong netSender, pStructs.pAttackEnemyInfo info)
-        {
-            //ZiMain.log.LogInfo("Recived request to kill enemy!");
-            //if (!SNet.IsMaster)
-            //    return;
-            //PlayerAgent aiBotAgent = pStructs.Get_RefFrom_pStruct(info.aiBot);
-            //PlayerAgent commander = pStructs.Get_RefFrom_pStruct(info.commander);
-            //EnemyAgent enemy = pStructs.Get_RefFrom_pStruct(info.enemy);
+        //[Obsolete]
+        //internal static void ReciveRequestToKillEnemy(ulong netSender, pStructs.pAttackEnemyInfo info)
+        //{
+        //    //ZiMain.log.LogInfo("Recived request to kill enemy!");
+        //    //if (!SNet.IsMaster)
+        //    //    return;
+        //    //PlayerAgent aiBotAgent = pStructs.Get_RefFrom_pStruct(info.aiBot);
+        //    //PlayerAgent commander = pStructs.Get_RefFrom_pStruct(info.commander);
+        //    //EnemyAgent enemy = pStructs.Get_RefFrom_pStruct(info.enemy);
 
-            //if (aiBotAgent == null || enemy == null || commander == null)
-            //{
-            //    ZiMain.log.LogError("Invalid request to share resource: aiBot, reciver or enemy is null.");
-            //    return;
-            //}
-            //ZiMain.log.LogInfo($"{commander.PlayerName} wants to tell {aiBotAgent.PlayerName} to kill an enemy.");
-            //if (!aiBotAgent.Owner.IsBot)
-            //{
-            //    ZiMain.log.LogWarning("Invalid request to kill enemy, You can't tell a player what to do.");
-            //    return;
-            //}
-            //PlayerAIBot aiBot = aiBotAgent.gameObject.GetComponent<PlayerAIBot>();
-            //zBotActions.SendBotToKillEnemy(aiBot, enemy, commander, netSender);
-        }
+        //    //if (aiBotAgent == null || enemy == null || commander == null)
+        //    //{
+        //    //    ZiMain.log.LogError("Invalid request to share resource: aiBot, reciver or enemy is null.");
+        //    //    return;
+        //    //}
+        //    //ZiMain.log.LogInfo($"{commander.PlayerName} wants to tell {aiBotAgent.PlayerName} to kill an enemy.");
+        //    //if (!aiBotAgent.Owner.IsBot)
+        //    //{
+        //    //    ZiMain.log.LogWarning("Invalid request to kill enemy, You can't tell a player what to do.");
+        //    //    return;
+        //    //}
+        //    //PlayerAIBot aiBot = aiBotAgent.gameObject.GetComponent<PlayerAIBot>();
+        //    //zBotActions.SendBotToKillEnemy(aiBot, enemy, commander, netSender);
+        //}
         internal static void ReciveRequestToPickupSentry(ulong netSender, pStructs.pPickupSentryInfo info)
         {
             ZiMain.log.LogInfo("Recived request to pick up sentry!");
@@ -397,24 +397,24 @@ namespace BotControl.Networking
             }
             ZiMain.log.LogWarning($"Could not find action {info.ID}");
         }
-        internal static void ReciveRequestToKillSleeper(ulong netSender, pStructs.pAttackEnemyInfo info)
-        {
-            ZiMain.log.LogInfo("Recived request to kill sleeper!");
-            if (!SNet.IsMaster)
-                return;
-            PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.Commander);
-            PlayerAgent BotAgent = pStructs.Get_RefFrom_pStruct(info.BotAgent);
-            EnemyAgent Enemy = pStructs.Get_RefFrom_pStruct(info.Enemy);
-            PlayerBotActionAttack.AttackMeansEnum Means = info.Means;
-            ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to kill the {Enemy.EnemyData.name} at {Enemy.transform.position}");
-            if (!BotAgent.Owner.IsBot)
-            {
-                ZiMain.log.LogWarning("Invalid request to attack sleeper, You can't tell a player what to do.");
-                return;
-            }
-            zBotActions.SendBotToAttackSleeper(BotAgent.GetComponent<PlayerAIBot>(), Enemy, Means, Commander, netSender, info.ID);
-        }
-        internal static void ReciveRequestToSyncAttack(ulong netSender, pStructs.pAttackEnemyInfo info)
+        //internal static void ReciveRequestToKillSleeper(ulong netSender, pStructs.pAttackEnemyInfo info)
+        //{
+        //    ZiMain.log.LogInfo("Recived request to kill sleeper!");
+        //    if (!SNet.IsMaster)
+        //        return;
+        //    PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.Commander);
+        //    PlayerAgent BotAgent = pStructs.Get_RefFrom_pStruct(info.BotAgent);
+        //    EnemyAgent Enemy = pStructs.Get_RefFrom_pStruct(info.Enemy);
+        //    PlayerBotActionAttack.AttackMeansEnum Means = info.Means;
+        //    ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to kill the {Enemy.EnemyData.name} at {Enemy.transform.position}");
+        //    if (!BotAgent.Owner.IsBot)
+        //    {
+        //        ZiMain.log.LogWarning("Invalid request to attack sleeper, You can't tell a player what to do.");
+        //        return;
+        //    }
+        //    zBotActions.SendBotToAttackSleeper(BotAgent.GetComponent<PlayerAIBot>(), Enemy, Means, Commander, netSender, info.ID);
+        //}
+        internal static void ReciveRequestToStealthAttack(ulong netSender, pStructs.pAttackEnemyInfo info)
         {
             ZiMain.log.LogInfo("Recived request to sync attack!");
             if (!SNet.IsMaster)
@@ -422,13 +422,15 @@ namespace BotControl.Networking
             PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.Commander);
             PlayerAgent BotAgent = pStructs.Get_RefFrom_pStruct(info.BotAgent);
             EnemyAgent Enemy = pStructs.Get_RefFrom_pStruct(info.Enemy);
-            ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to sync attack the {Enemy.EnemyData.name} at {Enemy.transform.position}");
+            bool Sync = info.Sync;
+            string syncString = Sync ? "sync" : "";
+            ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to stealth {syncString} attack the {Enemy.EnemyData.name} at {Enemy.transform.position}");
             if (!BotAgent.Owner.IsBot)
             {
                 ZiMain.log.LogWarning("Invalid request to sync attack, You can't tell a player what to do.");
                 return;
             }
-            zBotActions.SendBotToSyncAttack(BotAgent.GetComponent<PlayerAIBot>(), Enemy, Commander, netSender, info.ID);
+            zBotActions.SendBotToStealthAttack(BotAgent.GetComponent<PlayerAIBot>(), Enemy, Sync, Commander, netSender, info.ID);
         }
         internal static void ReciveRequestToDropHere(ulong netSender, pStructs.pLocationInfo info)
         {
