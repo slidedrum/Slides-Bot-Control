@@ -75,12 +75,7 @@ One of the major features of this mod is letting you change the priority of diff
  - Allow bots to remember where items are, and you could say "I need ammo" and they would go looking for ammo, or directly to the ammo if they remember where it is.
  
 ## Known issues:
- - Changing attack means mid combat can cause some jank.  TODO look into what's actually going on.
  - Bots will have trouble reaching some containers, FIXED?  Let me know if you still find a spot where this happens.
-
-## Features I'd like to add:
- - Option to dynamically ignore specific lockers, or lockers in a specific room, or prioritize/deprioritize lockers near a point.
- - Custom bot actions like "explore" or "find ammo" or even "use terminal to ping for items"
 
 Here's an unscripted preview video:
 
