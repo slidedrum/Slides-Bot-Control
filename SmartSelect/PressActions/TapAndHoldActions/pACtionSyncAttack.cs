@@ -8,13 +8,13 @@ namespace BotControl.SmartSelect.PressActions
     internal class pActionSyncAttack : IPressAction
     {
         public string FriendlyName => "Sync Attack";
-        private string _FriendlyNameShort = "Sync";
+        private string _FriendlyNameShort = "Sync-Att";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public Il2CppSystem.Type Type => Il2CppType.Of<EnemyAgent>();
         public string pressTypeIdentifier => "Tap and Hold";
-        public string FriendlyIdentifier => "Sync";
+        public string FriendlyIdentifier => "Sync-Att";
         public bool Enabled => true;
 
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
