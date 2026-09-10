@@ -15,15 +15,17 @@ namespace BotControl.Patches
         {
             EnableCarve(__instance.m_enemyAgent);
         }
-        [HarmonyPatch(typeof(ES_HibernateWakeUp), nameof(ES_HibernateWakeUp.Enter))]
+        [HarmonyPatch(typeof(ES_Hibernate), "CommonExit")]
         [HarmonyPostfix]
-        static void Post_WakeUpEnter(ES_HibernateWakeUp __instance)
+        static void Post_HibernateCommonExit(ES_Hibernate __instance)
         {
             DisableCarve(__instance.m_enemyAgent);
         }
 
         private static void EnableCarve(EnemyAgent m_enemyAgent)
         {
+            if (m_enemyAgent == null)
+                return;
             var obstacle = m_enemyAgent.gameObject.GetComponent<NavMeshObstacle>() ?? m_enemyAgent.gameObject.AddComponent<NavMeshObstacle>();
             obstacle.shape = NavMeshObstacleShape.Capsule;
             obstacle.radius = carveRadius;  // carveRadius + botRadius must be > 1 m
@@ -35,6 +37,8 @@ namespace BotControl.Patches
         }
         private static void DisableCarve(EnemyAgent m_enemyAgent)
         {
+            if (m_enemyAgent == null)
+                return;
             var obstacle = m_enemyAgent.gameObject.GetComponent<NavMeshObstacle>();
             if (obstacle == null)
                 return;
