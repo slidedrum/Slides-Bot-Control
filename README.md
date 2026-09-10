@@ -102,9 +102,7 @@ v1.3
  - Changed how move action works, they will now return to that spot if they have to move.
  - Fixed some misalanious bugs with attack action restictions.
  - Removed excessive debug logging.
- - TODO: Global restriction for walking in manual actions, so they respect sound
- - TODO: They sometimes get stuck between follow and attack, not sure why, not sure how to repro
- - TODO: Follow cancels all actions
+ - Follow now cancels all actions, if they somehow get stuck or have problems, try telling the bot to follow you.  This should reset their brain.
 
 V1.2.6
  - Fixed and re-added the betterbots compatability layer.  Bots should behave when changing attack means now!
