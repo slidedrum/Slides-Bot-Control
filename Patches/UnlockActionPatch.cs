@@ -4,6 +4,7 @@
 
 using BotControl;
 using BotControl.CustomActions;
+using BotControl.Menus;
 using Gear;
 using HarmonyLib;
 using Il2CppInterop.Runtime;
@@ -50,7 +51,7 @@ public static class UnlockActionPatch
             }
         }
 
-        if ((Method & MethodEnum.Melt) == MethodEnum.Melt)
+        if (AutomaticMeltAllowed() && (Method & MethodEnum.Melt) == MethodEnum.Melt)
         {
             if (PlayerBotActionUseLockMelter.Descriptor.Evaluate(bot, testLock))
             {
@@ -208,7 +209,7 @@ public static class UnlockActionPatch
             }
         }
 
-        if ((methodFlags & (int)PlayerBotActionUnlock.Descriptor.MethodEnum.Melt) != 0)
+        if (AutomaticMeltAllowed(action.DescBase) && (methodFlags & (int)PlayerBotActionUnlock.Descriptor.MethodEnum.Melt) != 0)
         {
             if (bot.Backpack == null)
                 throw new System.NullReferenceException();
@@ -253,6 +254,9 @@ public static class UnlockActionPatch
                 action.m_chosenMethod = CreateHackDescriptor(action);
                 return true;
             case PlayerBotActionUnlock.Descriptor.MethodEnum.Melt:
+                if (!AutomaticMeltAllowed(action.DescBase))
+                    return false;
+
                 action.m_chosenMethod = CreateMeltDescriptor(action);
                 return true;
             default:
@@ -346,5 +350,12 @@ public static class UnlockActionPatch
         meltDesc.Lock = action.m_desc.Lock;
 
         return meltDesc;
+    }
+
+    private static bool AutomaticMeltAllowed(PlayerBotActionBase.Descriptor descriptor = null)
+    {
+        if (descriptor != null && zActions.isManualAction(descriptor) != null)
+            return true;
+        return (bool)zSlideComputer.ActionPermissions.ValueAt(UnlockMenuClass.UnlockMethodMeltKey);
     }
 }

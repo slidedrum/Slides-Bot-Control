@@ -1,4 +1,5 @@
-﻿using Il2CppInterop.Runtime;
+﻿using BotControl.Menus;
+using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
 using LevelGeneration;
 using Player;
@@ -132,7 +133,9 @@ namespace BotControl.CustomActions.CustomActions
                 {
                     if (Method == PlayerBotActionUnlock.Descriptor.MethodEnum.None || Method == PlayerBotActionUnlock.Descriptor.MethodEnum.Any)
                         continue;
-                    if ((bool)zSlideComputer.ActionPermissions.ValueAt("openMethod" + Method.ToString()))
+                    if ((bool)zSlideComputer.ActionPermissions.ValueAt("openMethod" + Method.ToString())
+                        && (Method != PlayerBotActionUnlock.Descriptor.MethodEnum.Melt
+                            || (bool)zSlideComputer.ActionPermissions.ValueAt(UnlockMenuClass.UnlockMethodMeltKey)))
                     {
                         method |= Method;
                         if (DramaManager.CurrentStateEnum == DRAMA_State.Sneaking)
@@ -323,7 +326,7 @@ namespace BotControl.CustomActions.CustomActions
             UpdateLookAction();
             if ((m_bot.transform.position - TargetLoction).magnitude < 0.1f)
             {
-                if (TargetContainer.m_weakLock == null)
+                if (!NeedsUnlock())
                 {
                     state = State.StartOpening;
                     return;
@@ -343,6 +346,11 @@ namespace BotControl.CustomActions.CustomActions
         }
         private void UpdateStateStartUnlock()
         {
+            if (!NeedsUnlock())
+            {
+                state = State.StartOpening;
+                return;
+            }
             //UpdateLookAction();
             float Prop = m_desc.Prio;
             PlayerBotActionUnlock.Descriptor.TargetTypeEnum targetType;
@@ -405,7 +413,7 @@ namespace BotControl.CustomActions.CustomActions
         }
         public void OnUnlockCompleted(PlayerBotActionBase.Descriptor descBase)
         {
-            if (descBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
+            if (descBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful || !NeedsUnlock())
             {
                 this.state = State.StartOpening;
             }
@@ -445,6 +453,15 @@ namespace BotControl.CustomActions.CustomActions
             {
                 this.LookAction = null;
             }
+        }
+        private bool NeedsUnlock()
+        {
+            if (TargetContainer == null)
+                return false;
+            LG_WeakLock weakLock = TargetContainer.m_weakLock;
+            if (weakLock == null || !weakLock.IsLocked())
+                return false;
+            return weakLock.Status != eWeakLockStatus.LockMelterApplied;
         }
         private bool VerifyTarget()
         {
