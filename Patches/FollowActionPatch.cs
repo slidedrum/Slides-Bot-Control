@@ -1,5 +1,3 @@
-using BotControl.CustomActions;
-using BotControl.CustomActions.CustomActions;
 using BotControl.Menus;
 using HarmonyLib;
 using Player;
@@ -78,17 +76,6 @@ namespace BotControl.Patches
             return true;
         }
 
-        public static bool IsRecalling(RootPlayerBotAction root)
-        {
-            var follow = root.m_followLeaderAction;
-            var agent = root.m_bot.Agent;
-            return follow.Client != null
-                && !zActions.DoingAnyManualAction(agent)
-                && !zActions.AnyCustomActionRunning(root.m_bot)
-                && (follow.Client.Position - agent.Position).sqrMagnitude
-                    > RootPlayerBotAction.s_followLeaderMaxDistance
-                    * RootPlayerBotAction.s_followLeaderMaxDistance;
-        }
         [HarmonyPatch(typeof(RootPlayerBotAction), nameof(RootPlayerBotAction.UpdateActionFollowPlayer))]
         [HarmonyPrefix]
         [HarmonyPriority(Priority.Last)] //Needed for betterbots compat

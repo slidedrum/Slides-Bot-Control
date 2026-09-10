@@ -21,41 +21,6 @@ namespace BotControl.CustomActions
         {
             return zActions.DoingAnyManualAction(bot.Agent);
         }
-        internal static void WalkNoiseCheck(PlayerAgent Agent)
-        {
-            if (UnityEngine.Random.value < walkNoiseChance)
-                MakePlayerNoise(Agent);
-        }
-        internal static void HitNoiseCheck(PlayerAgent Agent, float Multiplier = 1f)
-        {
-            if (UnityEngine.Random.value < hitNoiseChance)
-            {
-                MakePlayerNoise(Agent);
-            }
-        }
-        private static void MakePlayerNoise(PlayerAgent player, float radius = 15f)
-        {
-            if (player == null || !player.Alive)
-                return;
-
-            AIG_CourseNode node = player.CourseNode;
-            if (node == null)
-                return;
-
-            NM_NoiseData noise = new();
-            noise.noiseMaker = player.Cast<INM_NoiseMaker>();
-            noise.position = player.transform.position;
-            noise.radiusMin = 0f;
-            noise.radiusMax = radius;
-            noise.yScale = 1f;
-            noise.node = node;
-            noise.type = NM_NoiseType.InstaDetect;
-            noise.includeToNeightbourAreas = true;
-            noise.raycastFirstNode = false;
-
-            NoiseManager.MakeNoise(noise);
-        }
-
         internal static void ApplyToExistingTargets(PlayerAgent bot, bool detectable)
         {
             var nodes = AIG_CourseNode.s_allNodes;
@@ -91,6 +56,7 @@ namespace BotControl.CustomActions
                 Transform aim = bot.AimTarget;
                 if (aim != null)
                     target.m_aimTargetPosition = aim.position;
+                target.m_autoDetect = false;
             }
             else
             {
@@ -113,6 +79,19 @@ namespace BotControl.CustomActions
 
                 CustomWakeManager.Apply(__result, player, zActions.DoingAnyManualAction(player));
             }
+        }
+        [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.InjectPropagatedTarget))]
+        [HarmonyPostfix]
+        static void PostInject(EnemyAI __instance, Agent agent)
+        {
+            PlayerAgent player = agent.TryCast<PlayerAgent>();
+            if (player?.Owner == null || !player.Owner.IsBot)
+                return;
+            if (!__instance.IsHibernating(out _, out bool waking) || waking)
+                return;
+            __instance.SetTarget(agent);
+            AgentTarget target = __instance.Target;
+            __instance.m_locomotion.HibernateWakeup.ActivateState(target.m_dir, target.m_distance, 0f, true);
         }
     }
 }
