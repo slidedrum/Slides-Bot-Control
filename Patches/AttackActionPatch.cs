@@ -22,9 +22,14 @@ namespace BotControl.Patches
         [HarmonyPatch(typeof(RootPlayerBotAction), nameof(RootPlayerBotAction.UpdateActionAttack))]
         [HarmonyPrefix]
         [HarmonyPriority(Priority.Last)] //Needed for betterbots compat?
-        public static void PreUpdateActionAttack(RootPlayerBotAction __instance, ref PlayerBotActionBase.Descriptor bestAction)
+        public static bool PreUpdateActionAttack(RootPlayerBotAction __instance, ref PlayerBotActionBase.Descriptor bestAction)
         {
             originalBestAction = bestAction;
+            if (!FollowActionPatch.IsRecalling(__instance))
+                return true;
+            if (!__instance.m_attackAction.IsTerminated())
+                __instance.m_bot.StopAction(__instance.m_attackAction);
+            return false;
         }
         [HarmonyPatch(typeof(RootPlayerBotAction), nameof(RootPlayerBotAction.UpdateActionAttack))]
         [HarmonyPostfix]
@@ -57,18 +62,24 @@ namespace BotControl.Patches
             __instance.m_attackAction.Means = newMeans;
             //zSlideComputer.RemoveActionsOfType(__instance.m_agent, typeof(PlayerBotActionAttack));
         }
-        [HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.IsWithinMeleeReach))]
-        [HarmonyPrefix]
-        public static bool PreIsWithinMeleeReach(PlayerBotActionAttack __instance, Vector3 testPosition, float reachMultiplier, ref bool __result) // Why did I do this?
-        {
-            if ((__instance.m_desc.Means & PlayerBotActionAttack.AttackMeansEnum.Bullet) == 0)
+            [HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.IsWithinMeleeReach))]
+            [HarmonyPrefix]
+            public static bool PreIsWithinMeleeReach(PlayerBotActionAttack __instance, Vector3 testPosition, float reachMultiplier, ref bool __result) // Why did I do this?
             {
-                //__result = Vector3.Distance(testPosition, __instance.m_bot.SyncValues.Leader.Position) < RootPlayerBotAction.s_followLeaderMaxDistance;
-                __result = true;
+                if ((__instance.m_desc.Means & PlayerBotActionAttack.AttackMeansEnum.Bullet) != 0)
+                    return true; // guns on: vanilla
+
+                var leader = __instance?.m_bot?.SyncValues?.Leader;
+                if (leader == null)
+                {
+                    __result = true;
+                    return false;
+                }
+
+                float max = RootPlayerBotAction.s_followLeaderMaxDistance;
+                __result = (__instance.m_bot.Agent.Position - leader.Position).sqrMagnitude <= max * max;
                 return false;
             }
-            return true;
-        }
         [HarmonyPatch(typeof(PlayerBotActionAttack.__c__DisplayClass27_0) , nameof(PlayerBotActionAttack.__c__DisplayClass27_0._ChooseAttackOption_b__1))] //PlayerBotActionAttack.ChooseAttackOptionLocals.ScoreBullet
         [HarmonyPrefix]
         public static bool PreChooseBulletPatch(PlayerBotActionAttack.__c__DisplayClass27_0 __instance, BulletWeaponSynced weapon, ref float __result)  // Restrict the weapon to only ones in the list.

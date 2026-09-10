@@ -34,8 +34,9 @@ namespace BotControl
         }
         public static void StopAllActions(PlayerAIBot bot)
         {
-            foreach (var action in bot.Actions)
+            for(int i = 1; i < bot.Actions.Count; i++) // Start at 1 to skip root.
             {
+                PlayerBotActionBase action = bot.Actions[i];
                 bot.StopAction(action.DescBase);
             }
         }
