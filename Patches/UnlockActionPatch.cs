@@ -325,7 +325,7 @@ public static class UnlockActionPatch
             throw new System.NullReferenceException();
 
         hackDesc.Lock = action.m_desc.Lock;
-        hackDesc.MaxNrFaults = s_hackMaxNrFaults;
+        hackDesc.MaxNrFaults = zActions.isManualAction(action.DescBase) != null ? -1 : s_hackMaxNrFaults;
         hackDesc.SuccessChance = s_hackSuccessChance;
 
         return hackDesc;
