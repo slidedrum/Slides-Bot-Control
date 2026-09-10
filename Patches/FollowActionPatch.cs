@@ -1,4 +1,4 @@
-﻿using BotControl.CustomActions;
+using BotControl.CustomActions;
 using BotControl.CustomActions.CustomActions;
 using BotControl.Menus;
 using HarmonyLib;

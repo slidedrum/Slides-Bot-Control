@@ -1,4 +1,4 @@
-﻿using BotControl.CustomActions.CustomActions;
+using BotControl.CustomActions.CustomActions;
 using Player;
 using SlideDrum;
 using SlideMenu;
@@ -15,11 +15,10 @@ namespace BotControl.Menus
         {
             unlockMenu = menu;
             unlockNode = unlockMenu.GetNode();
-            unlockMenu.centerNode.ClearListeners(sMenuManager.nodeEvent.OnUnpressedSelected);
-            unlockMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnTapped, unlockMenu.parrentMenu.Open);
             unlockNode.ClearListeners(sMenuManager.nodeEvent.OnUnpressedSelected);
             unlockNode.AddListener(sMenuManager.nodeEvent.OnDoubleTapped, unlockMenu.Open);
             unlockMenu.AddPannel(sMenu.sMenuPannel.Side.top, "This controls if the bots are allowed to smash locks on doors/containers");
+            unlockMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "Melee and Lock Melter only affect automatic use. A direct lock-melter order still works.");
             unlockMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, "TODO: Control if bots will auto unlock containers or doors or both");
 
             AddMethodNode(UnlockMethodMeleeKey, "Melee");

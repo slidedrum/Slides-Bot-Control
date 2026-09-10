@@ -1,4 +1,4 @@
-﻿using AIGraph;
+using AIGraph;
 using BotControl.CustomActions;
 using Enemies;
 using HarmonyLib;

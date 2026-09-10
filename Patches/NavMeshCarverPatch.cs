@@ -1,4 +1,4 @@
-﻿using Enemies;
+using Enemies;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.AI;

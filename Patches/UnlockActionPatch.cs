@@ -1,4 +1,4 @@
-﻿
+
 // It was way more complicated than I thought.
 // All this changes is let bots unlock with hacking
 

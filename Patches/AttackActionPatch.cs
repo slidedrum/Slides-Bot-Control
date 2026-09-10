@@ -1,4 +1,4 @@
-﻿using Gear;
+using Gear;
 using HarmonyLib;
 using Player;
 using System;

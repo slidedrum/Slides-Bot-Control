@@ -1,4 +1,4 @@
-﻿using BotControl.CustomActions.CustomActions;
+using BotControl.CustomActions.CustomActions;
 using Player;
 using SlideDrum;
 using SlideMenu;

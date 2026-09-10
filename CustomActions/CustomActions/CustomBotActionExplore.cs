@@ -1,4 +1,4 @@
-﻿using Il2CppInterop.Runtime.Injection;
+using Il2CppInterop.Runtime.Injection;
 using Player;
 using SlideMenu;
 using System;

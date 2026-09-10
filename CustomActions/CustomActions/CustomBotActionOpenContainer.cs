@@ -1,4 +1,4 @@
-﻿using BotControl.Menus;
+using BotControl.Menus;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
 using LevelGeneration;

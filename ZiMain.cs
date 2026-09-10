@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using BotControl.Networking;
