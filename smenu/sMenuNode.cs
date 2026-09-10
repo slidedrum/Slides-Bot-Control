@@ -135,7 +135,7 @@ namespace SlideMenu
             private GameObject TextPartGameObject;
             private RectTransform rect;
             internal GameObject backgroundObject;
-            internal RawImage backgroundImage;
+            internal MeshRenderer backgroundRenderer;
             private SelectionColorHandler selectionColorHandler;
             private bool hasHoverText = false;
             private Color _color;
@@ -179,8 +179,11 @@ namespace SlideMenu
                 TextPartGameObject.transform.SetParent(gameObject.transform, false);
                 backgroundObject.transform.SetParent(gameObject.transform, false);
                 backgroundObject.transform.localPosition = new Vector3(0,0,30f); //Move background behind text
-                backgroundImage = backgroundObject.AddComponent<RawImage>();
-                backgroundImage.texture = sMenuManager.DefaultBackgroundImage;
+                backgroundObject.AddComponent<MeshFilter>().sharedMesh = sMenuManager.BackgroundQuad;
+                backgroundRenderer = backgroundObject.AddComponent<MeshRenderer>();
+                backgroundRenderer.sharedMaterial = sMenuManager.BackgroundMaterial;
+                backgroundRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                backgroundRenderer.receiveShadows = false;
 
 
                 rect = gameObject.AddComponent<RectTransform>();

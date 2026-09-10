@@ -26,6 +26,51 @@ namespace SlideMenu
                 _defaultBackgroundImage = value;
             }
         }
+        private static Mesh _backgroundQuad;
+        private static Material _backgroundMaterial;
+        internal static Mesh BackgroundQuad
+        {
+            get
+            {
+                if (_backgroundQuad == null)
+                {
+                    float h = 50f;
+                    _backgroundQuad = new Mesh { name = "sMenuNodeBackground" };
+                    _backgroundQuad.vertices = new[]
+                    {
+                        new Vector3(-h, -h, 0f),
+                        new Vector3( h, -h, 0f),
+                        new Vector3(-h,  h, 0f),
+                        new Vector3( h,  h, 0f),
+                    };
+                    _backgroundQuad.uv = new[]
+                    {
+                        new Vector2(0f, 0f),
+                        new Vector2(1f, 0f),
+                        new Vector2(0f, 1f),
+                        new Vector2(1f, 1f),
+                    };
+                    _backgroundQuad.colors = new[] { Color.white, Color.white, Color.white, Color.white };
+                    _backgroundQuad.triangles = new[] { 0, 2, 1, 2, 3, 1 };
+                    _backgroundQuad.RecalculateBounds();
+                }
+                return _backgroundQuad;
+            }
+        }
+        internal static Material BackgroundMaterial
+        {
+            get
+            {
+                if (_backgroundMaterial == null)
+                {
+                    Shader shader = Shader.Find("Sprites/Default") ?? Shader.Find("Unlit/Transparent") ?? Shader.Find("Unlit/Texture");
+                    _backgroundMaterial = new Material(shader);
+                    _backgroundMaterial.mainTexture = DefaultBackgroundImage;
+                    _backgroundMaterial.renderQueue = 3000;
+                }
+                return _backgroundMaterial;
+            }
+        }
         public static sMenu mainMenu { get; private set; }
         public static sMenu currentMenu { get; internal set; }
         public static sMenu previousMenu { get; internal set; }
@@ -345,6 +390,7 @@ namespace SlideMenu
                 }
             }
 
+            backgroundImage.wrapMode = TextureWrapMode.Clamp;
             backgroundImage.SetPixels32(pixels);
             backgroundImage.Apply();
             return backgroundImage;
