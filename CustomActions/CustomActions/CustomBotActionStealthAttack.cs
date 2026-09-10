@@ -102,7 +102,6 @@ namespace BotControl.CustomActions.CustomActions
                 //Best action inludes vanilla actions.
                 //Be sure to not set this to best action if it's already active.
             }
-
         }
 
         private static float MeleDistance = 2f;//PlayerBotActionMelee.s_distanceCheckThresholdSQ * PlayerBotActionMelee.s_chargeMaxDistanceSQ;
@@ -178,7 +177,7 @@ namespace BotControl.CustomActions.CustomActions
         }
         private bool VerifyPosition()
         {
-            float Distance = (m_agent.transform.position - TargetAgent.Position).sqrMagnitude;
+            float Distance = (m_agent.Position - TargetAgent.Position).sqrMagnitude;
             return Distance <= MeleDistance * MeleDistance;
         }
         public override bool Update()
@@ -250,7 +249,7 @@ namespace BotControl.CustomActions.CustomActions
                 {
                     DestinationObject = TargetAgent.gameObject,
                     Haste = Haste,
-                    Radius = 0.7f * MeleDistance,
+                    Radius = 0.2f * MeleDistance,
                     DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.GameObject,
                     WalkPosture = Posture,
                     Persistent = false,
