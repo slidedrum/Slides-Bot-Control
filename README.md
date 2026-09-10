@@ -90,8 +90,12 @@ https://www.youtube.com/watch?v=lrDWroqC-R0
 There is A LOT of unused code and extra stuff in this mod.  I got a little bit too ambitious with some features. I may or may not return to some of them later.
 
 
+## AI Usage in this project:
+ - This project is **not** vibe coded, but it would not have been possible without AI.  When I do use AI 90% of the time it's to understand GTFO's code, I ask it things like "How does this mecanic work" And then write the code myself.  Occasionally I will ask it to write a small method, or at most a single class.  When I do, I always read the code and make sure I understand what it's doing.  I do (or did at the time it was written) understand how 99% of the code in this project works.
+
+
 ### Changelog
-v1.3
+ v1.3
  - When doing manual actions, Bots can now be detected just like players.  When doing automatic actions, bots still can not be detected no matter what.
  - You can now command unselected bots with smart sellect.  Commands will fall back to the nearest bot.
  - Added option to restrict what guns bots attack with, via a new sub menu in bullet attack menu.
