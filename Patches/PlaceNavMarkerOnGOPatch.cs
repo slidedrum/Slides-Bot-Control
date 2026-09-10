@@ -50,6 +50,8 @@ namespace BotControl.Patches
         }
         internal static void UpdateNavMarker(PlaceNavMarkerOnGO navMarker, string newText) 
         {
+            if (navMarker == null)
+                return;
             s_lines[navMarker.Pointer] = newText;
             navMarker.OnPlayerInfoUpdated(true);
         }
