@@ -67,7 +67,7 @@ One of the major features of this mod is letting you change the priority of diff
    - Key rebinding
    - Default settings
    - Favorite settings
-   - binding specific toggles to a hotkey
+   - Binding specific toggles to a hotkey
  - Show what the bot is currently doing above their head.
  - Allow you to have per bot permissions, so Dauda is allowed to use ammo but Hacket is not for example.
  - Optionally replace the Q menu entirely with my menu with all of it's features.
@@ -76,6 +76,8 @@ One of the major features of this mod is letting you change the priority of diff
  
 ## Known issues:
  - Bots will have trouble reaching some containers, FIXED?  Let me know if you still find a spot where this happens.
+ - Bots leaving joining mid game is untested and may break things.  This will be supported "soon"
+ - Checkpoints are untested and may have unexpected results.  But should be fine. This will be suppoted "soon"
 
 Here's an unscripted preview video:
 
