@@ -38,7 +38,7 @@ namespace BotControl.Patches
             }
         }
         private static List<DRAMA_State> loudStates = new List<DRAMA_State>() { DRAMA_State.Alert, DRAMA_State.Encounter, DRAMA_State.Combat, DRAMA_State.Survival, DRAMA_State.IntentionalCombat };
-        private static bool IsLoud => loudStates.Contains(DramaManager.CurrentStateEnum);
+        public static bool IsLoud => loudStates.Contains(DramaManager.CurrentStateEnum);
         private class AgentData
         {
             public List<EnemyAgent> NearbyTwitchers = new();
