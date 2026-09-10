@@ -22,16 +22,34 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             if (Enemy == null || BestBot == null) return false;
             if (BestBot == null) return false;
             if (BestBot.Agent.Alive == false) return false;
-            zBotActions.SendBotToStealthAttack(BestBot, Enemy, false, zStaticRefrences.LocalPlayer);
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_HURRY);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Hurry.", 1f);
-            zChatHandler.sendChatMessage("Attacking sleeper.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            if (DramaManager.CurrentStateEnum == DRAMA_State.Exploration || DramaManager.CurrentStateEnum == DRAMA_State.Sneaking || DramaManager.CurrentStateEnum == DRAMA_State.Encounter)
+            {
+                zBotActions.SendBotToStealthAttack(BestBot, Enemy, false, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage("Attacking sleeper.", "Attack" + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+            }
+            else
+            {
+                var AttackAction = BestBot.m_rootAction.ActionBase.TryCast<RootPlayerBotAction>()?.m_attackAction;
+                if (AttackAction == null)
+                    return false;
+                AttackAction.TargetAgent = Enemy;
+                if (AttackAction.IsTerminated())
+                {
+                    BestBot.RequestAction(AttackAction);
+                    zChatHandler.sendChatMessage("Attacking target.", "Attack" + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+                }
+                else 
+                {
+                    zChatHandler.sendChatMessage("Switching target.", "Attack" + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
+                }
+            }
             return true;
         }
         public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
-            if (DramaManager.CurrentStateEnum != DRAMA_State.Exploration && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking && DramaManager.CurrentStateEnum != DRAMA_State.Encounter)
-                return false;
+
             EnemyAgent Enemy = candidate.TryCast<EnemyAgent>();
             if (Enemy == null || BestBot == null) 
                 return false;
@@ -44,6 +62,10 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             if (!zHelpers.CanBotReach(BestBot, Enemy.transform.position)) 
                 return false;
             Color = BestBot.Agent.Owner.PlayerColor;
+            if (DramaManager.CurrentStateEnum == DRAMA_State.Exploration || DramaManager.CurrentStateEnum == DRAMA_State.Sneaking || DramaManager.CurrentStateEnum == DRAMA_State.Encounter)
+                _FriendlyNameShort = "S-Attack";
+            else 
+                _FriendlyNameShort = "Attack";
             return true;
         }
     }
