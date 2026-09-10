@@ -135,7 +135,9 @@ namespace BotControl.CustomActions.CustomActions
                         continue;
                     if ((bool)zSlideComputer.ActionPermissions.ValueAt("openMethod" + Method.ToString())
                         && (Method != PlayerBotActionUnlock.Descriptor.MethodEnum.Melt
-                            || (bool)zSlideComputer.ActionPermissions.ValueAt(UnlockMenuClass.UnlockMethodMeltKey)))
+                            || (bool)zSlideComputer.ActionPermissions.ValueAt(UnlockMenuClass.UnlockMethodMeltKey))
+                        && (Method != PlayerBotActionUnlock.Descriptor.MethodEnum.Melee
+                            || (bool)zSlideComputer.ActionPermissions.ValueAt(UnlockMenuClass.UnlockMethodMeleeKey)))
                     {
                         method |= Method;
                         if (DramaManager.CurrentStateEnum == DRAMA_State.Sneaking)

@@ -37,7 +37,7 @@ public static class UnlockActionPatch
     [HarmonyPrefix]
     public static bool Evaluate(PlayerBotActionUnlock.Descriptor __instance, PlayerAIBot bot, LG_WeakLock testLock, ref MethodEnum Method, ref bool __result)
     {
-        if (!bot.WantsCrouch() && (Method & MethodEnum.Melee) == MethodEnum.Melee)
+        if (AutomaticMethodAllowed(UnlockMenuClass.UnlockMethodMeleeKey) && !bot.WantsCrouch() && (Method & MethodEnum.Melee) == MethodEnum.Melee)
         {
             BackpackItem backpackItem;
             if (bot.Backpack.TryGetBackpackItem(InventorySlot.GearMelee, out backpackItem))
@@ -167,7 +167,7 @@ public static class UnlockActionPatch
         if (bot == null)
             throw new System.NullReferenceException();
 
-        if ((!bot.WantsCrouch() || zActions.isManualAction(action.DescBase)) && (methodFlags & (int)PlayerBotActionUnlock.Descriptor.MethodEnum.Melee) != 0)
+        if (AutomaticMethodAllowed(UnlockMenuClass.UnlockMethodMeleeKey, action.DescBase) && (!bot.WantsCrouch() || zActions.isManualAction(action.DescBase)) && (methodFlags & (int)PlayerBotActionUnlock.Descriptor.MethodEnum.Melee) != 0)
         {
             if (bot.Backpack == null)
                 throw new System.NullReferenceException();
@@ -245,6 +245,9 @@ public static class UnlockActionPatch
         switch (method)
         {
             case PlayerBotActionUnlock.Descriptor.MethodEnum.Melee:
+                if (!AutomaticMethodAllowed(UnlockMenuClass.UnlockMethodMeleeKey, action.DescBase))
+                    return false;
+
                 if (!TryCreateMeleeDescriptor(action, out PlayerBotActionBase.Descriptor meleeDesc))
                     return false;
 
@@ -354,8 +357,13 @@ public static class UnlockActionPatch
 
     private static bool AutomaticMeltAllowed(PlayerBotActionBase.Descriptor descriptor = null)
     {
+        return AutomaticMethodAllowed(UnlockMenuClass.UnlockMethodMeltKey, descriptor);
+    }
+
+    private static bool AutomaticMethodAllowed(string permissionKey, PlayerBotActionBase.Descriptor descriptor = null)
+    {
         if (descriptor != null && zActions.isManualAction(descriptor) != null)
             return true;
-        return (bool)zSlideComputer.ActionPermissions.ValueAt(UnlockMenuClass.UnlockMethodMeltKey);
+        return (bool)zSlideComputer.ActionPermissions.ValueAt(permissionKey);
     }
 }
