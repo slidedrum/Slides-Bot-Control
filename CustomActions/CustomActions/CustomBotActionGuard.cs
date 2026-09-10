@@ -211,7 +211,7 @@ namespace BotControl.CustomActions.CustomActions
             mode          = desc.mode;
             Haste         = desc.Haste;
             Prio          = desc.Prio;
-
+            TravelAction  = null;
             //Use this constructor.
             //This means your action is starting!
         }
@@ -262,14 +262,17 @@ namespace BotControl.CustomActions.CustomActions
         }
         private void UpdateStateIdle()
         {
+            if (TravelAction == null)
+            {
+                ReturnToPosition();
+                return;
+            }
             float DistanceToTarget = Vector3.Distance(TargetPos, m_bot.transform.position);
-            //if (DistanceToTarget > maxDistance)
-            //    ReturnToPosition(minDistance);
             if (DistanceToTarget < minDistance)
                 return;
             if (Vector3.Distance(lastMovedPosition, m_bot.transform.position) > 0.01)
                 UpdateLastMoved();
-                
+
             if (Time.time - LastMovedTimestamp > resetTime)
                 ReturnToPosition();
         }
