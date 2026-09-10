@@ -1,13 +1,12 @@
-﻿using AIGraph;
+﻿using BotControl.Patches;
 using Enemies;
-using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Player;
 using System;
 using UnityEngine;
 namespace BotControl.CustomActions.CustomActions
 {
-
+    // TODO make it so they wait to attack for no other enemies nearby will wake up from it.
     public class CustomBotActionManualAttack : CustomActionBase
     {
         //This is an example of how you can set up your own custom action!
@@ -92,6 +91,7 @@ namespace BotControl.CustomActions.CustomActions
         {
             Idle,
             Move,
+            InPosition,
             Attack,
             Finished,
             Failed,
@@ -112,6 +112,7 @@ namespace BotControl.CustomActions.CustomActions
         private bool wasCooldownState = false;
         private bool startedMoving = false;
         private int framesWaitingForMoveToStart = 0;
+        private float InPositionSince = 0;
 
         public CustomBotActionManualAttack() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionManualAttack>())// Don't use this!  Needed for il2cpp nonsense.
         {
@@ -157,6 +158,9 @@ namespace BotControl.CustomActions.CustomActions
                     break;
                 case State.Move:
                     UpdateStateMove();
+                    break;
+                case State.InPosition:
+                    UpdateStateInPosition();
                     break;
                 case State.Attack:
                     UpdateStateAttack();
@@ -224,15 +228,15 @@ namespace BotControl.CustomActions.CustomActions
 
         private bool VerifyTarget()
         {
-            if (TargetAgent == null)
-                return false;
-            if (!TargetAgent.gameObject.activeInHierarchy)
+            if (TargetAgent == null || !TargetAgent.gameObject.activeInHierarchy || !zHelpers.CanBotReach(m_bot, TargetAgent.transform.position))
                 return false;
             if (Commander == null)
                 Commander = m_bot.SyncValues.Leader;
-            if (!zHelpers.CanBotReach(m_bot, TargetAgent.transform.position))
-                return false;
             return true;
+        }
+        private bool VerifyPosition()
+        {
+            return Vector3.Distance(m_bot.transform.position, TargetAgent.transform.position) < PlayerBotActionMelee.s_strikeMaxDistance;
         }
         
         private void UpdateStateMove()
@@ -262,17 +266,36 @@ namespace BotControl.CustomActions.CustomActions
 
                 }
             }
+            MeleAction.Strike = false;
             framesWaitingForMoveToStart = 0;
             startedMoving = true;
             if (TravelAction == null || TravelAction.IsTerminated())
-                if (Vector3.Distance(m_bot.transform.position, TargetAgent.transform.position) < PlayerBotActionMelee.s_strikeMaxDistance)
-                    state = State.Attack;
+                if (VerifyPosition())
+                {
+                    InPositionSince = Time.time;
+                    state = State.InPosition;
+                }
                 else
                     state = State.Idle;
             if (TravelAction != null)
                 TravelAction.WalkPosture = PlayerBotActionWalk.Descriptor.PostureEnum.Crouch;
         }
-
+        private void UpdateStateInPosition()
+        {
+            if (!VerifyTarget())
+            {
+                state = State.Failed;
+                return;
+            }
+            if (!VerifyPosition())
+            {
+                state = State.Move;
+                return;
+            }
+            bool HoldForTwicher = !TravelActionPatch.IsLoud && zActions.DoingAnyManualAction(m_bot.Agent) && m_bot.m_hasTwitcherNearby;
+            if (!HoldForTwicher || Time.time - InPositionSince > 4)
+                state = State.Attack;
+        }
         private void UpdateStateAttack()
         {
             if (MeleAction == null)
@@ -299,7 +322,6 @@ namespace BotControl.CustomActions.CustomActions
             }
             if (MeleAction.State != PlayerBotActionMelee.Descriptor.StateEnum.Cooldown)
                 wasCooldownState = false;
-
         }
 
         public override bool IsActionAllowed(PlayerBotActionBase.Descriptor desc)
@@ -328,19 +350,19 @@ namespace BotControl.CustomActions.CustomActions
             base.OnWarped(position);
         }
     }
-    [HarmonyPatch]
-    public static class StrikeFix
-    {
-        [HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.UpdateMeleeAttack))]
-        [HarmonyPostfix]
-        public static void PostUpdateMeleeAttack(PlayerBotActionAttack __instance) // This is needed to fix the "staring at an enemy" bug
-        {
-            if (__instance.m_meleeAction == null)
-                return;
-            if (__instance.m_desc?.ParentActionBase?.TryCast<CustomBotActionManualAttack>() == null)
-                return;
-            if (__instance.m_meleeAction.Strike == false)
-                __instance.m_meleeAction.Strike = true;
-        }
-    }
+    //[HarmonyPatch]
+    //public static class StrikeFix
+    //{
+    //    [HarmonyPatch(typeof(PlayerBotActionAttack), nameof(PlayerBotActionAttack.UpdateMeleeAttack))]
+    //    [HarmonyPostfix]
+    //    public static void PostUpdateMeleeAttack(PlayerBotActionAttack __instance) // This is needed to fix the "staring at an enemy" bug
+    //    {
+    //        if (__instance.m_meleeAction == null)
+    //            return;
+    //        if (__instance.m_desc?.ParentActionBase?.TryCast<CustomBotActionManualAttack>() == null) // TODO
+    //            return;
+    //        if (__instance.m_meleeAction.Strike == false)
+    //            __instance.m_meleeAction.Strike = true;
+    //    }
+    //}
 }
