@@ -213,6 +213,7 @@ public class ZiMain : BasePlugin
         zActionSub.addOnAdded((bot, action) => PlaceNavMarkerOnGOPatch.OnBotActionChanged(bot));
         zActionSub.addOnRemoved((bot, action) => PlaceNavMarkerOnGOPatch.OnBotActionChanged(bot));
         UseBioscanEvaluatePatches.ApplyNativePatch();
+        CalculateTargetPrioPatch.ApplyNativePatch();
         //Il2CppInteropNativePatches.ApplyNativePatch();
         EventAPI.OnManagersSetup += () =>
         {
