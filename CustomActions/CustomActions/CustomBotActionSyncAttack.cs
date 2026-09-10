@@ -300,6 +300,7 @@ namespace BotControl.CustomActions.CustomActions
             }
             if (MeleAction == null || MeleAction.IsTerminated())
             {
+                zChatHandler.sendChatMessage("No longer ready to strike!", "Sync" + IPressAction.chatPermSuffix, m_bot.Agent);
                 state = State.Charge;
                 return;
             }
@@ -372,7 +373,7 @@ namespace BotControl.CustomActions.CustomActions
     {
         [HarmonyPatch(typeof(EnemyAgent), nameof(EnemyAgent.OnTakeDamage))]
         [HarmonyPostfix]
-        public static void PostOnTakeDamagePatch(PlayerBotActionAttack __instance)
+        public static void PostOnTakeDamagePatch(EnemyAgent __instance)
         {
             CustomBotActionSyncAttack.LastDamageDeltTimestamp = Time.time;
         }
