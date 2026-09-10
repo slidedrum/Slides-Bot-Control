@@ -57,7 +57,7 @@ namespace BotControl.Menus
             zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Unlock", true, menu: unlockMenu, node: unlockMenu.GetNode(), ActionTypeToCull: typeof(PlayerBotActionUnlock), defaultPriority: 4.1f);
             zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Open", false, menu: openMenu, node: openMenu.GetNode(), ActionTypeToCull: typeof(CustomBotActionOpenContainer), defaultPriority: CustomBotActionOpenContainer.Prio);
             zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Move", true, null, ActionTypeToCull: typeof(PlayerBotActionWalk), defaultPriority: CustomBotActionExplore.Prio);
-            zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Explore", false, menu: exploreMenu, node: exploreMenu.GetNode(), ActionTypeToCull: typeof(CustomBotActionExplore));
+            zSlideComputer.PermissionDefinitions.CreatePermissionDeffinition("Explore", false, menu: exploreMenu, node: exploreMenu.GetNode(), ActionTypeToCull: typeof(CustomBotActionExplore), defaultPriority: CustomBotActionExplore.Prio);
 
 
             foreach (sMenu menu in autoActionMenus)

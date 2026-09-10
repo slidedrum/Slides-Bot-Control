@@ -25,6 +25,10 @@ namespace BotControl.CustomActions.CustomActions
         {
             return (bool)zSlideComputer.ActionPermissions.ValueAt("Explore");
         }
+        public static float GetExplorePrio()
+        {
+            return (float)zSlideComputer.ActionPriorities.ValueAt("Explore");
+        }
         public PlayerBotActionTravel.Descriptor travelAction = null;
         public new class Descriptor : CustomActionBase.Descriptor
         {
@@ -90,14 +94,15 @@ namespace BotControl.CustomActions.CustomActions
                     var desc = act.DescBase;
                     maxprio = Math.Max(desc.Prio, maxprio);
                 }
-                if (maxprio > CustomBotActionExplore.Prio)
+                float prio = GetExplorePrio();
+                if (maxprio > prio)
                     return;
                 if (zVisitedManager.GetUnexploredLocation(Bot.Agent.Position, 0, 30) == null)
                     return;
-                if (bestAction == null || CustomBotActionExplore.Prio > bestAction.Prio)
+                if (bestAction == null || prio > bestAction.Prio)
                 {
                     bestAction = this;
-                    this.Prio = CustomBotActionExplore.Prio;
+                    this.Prio = prio;
                     lastLooked = Time.time;
                 }
             }
@@ -180,7 +185,7 @@ namespace BotControl.CustomActions.CustomActions
                         DestinationType = PlayerBotActionTravel.Descriptor.DestinationEnum.Position,
                         Persistent = false,
                         ParentActionBase = this,
-                        Prio = CustomBotActionExplore.Prio,
+                        Prio = GetExplorePrio(),
                     };
                     m_bot.StartAction(travelAction);
                     //FlexibleMethodDefinition callback = new(OnTravelActionEvent, [travelAction]);
