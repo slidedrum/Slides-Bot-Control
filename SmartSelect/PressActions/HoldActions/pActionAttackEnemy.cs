@@ -16,6 +16,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         public string FriendlyIdentifier => "Attack";
         public Il2CppSystem.Type Type => Il2CppType.Of<EnemyAgent>();
         public string pressTypeIdentifier => "Hold";
+        public int? Priority => 5;
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             EnemyAgent Enemy = BestComponent.TryCast<EnemyAgent>();

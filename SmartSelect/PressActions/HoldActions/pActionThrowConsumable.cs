@@ -14,6 +14,7 @@ namespace BotControl.SmartSelect.PressActions
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public Il2CppSystem.Type Type => null;
+        public int? Priority => -5;
         public string pressTypeIdentifier => "Hold";
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {

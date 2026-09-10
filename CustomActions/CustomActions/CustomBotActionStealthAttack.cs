@@ -53,7 +53,7 @@ namespace BotControl.CustomActions.CustomActions
             {
                 ClassInjector.DerivedConstructorBody(this);
                 InitDescriptor(bot);
-                this.RequiredLayers = AccessLayers.None;
+                this.RequiredLayers = PlayerBotActionBase.AccessLayers.LeftArm | PlayerBotActionBase.AccessLayers.RightArm | PlayerBotActionBase.AccessLayers.LookDirection | PlayerBotActionBase.AccessLayers.WieldPrimary | AccessLayers.RootPosition;
                 this.Sync = true;
                 //Use this is your descriptor constructor.
                 //The descriptor is used to describe everything about your action.
@@ -321,7 +321,21 @@ namespace BotControl.CustomActions.CustomActions
         private void UpdateStateStrike()
         {
             if (!Verify())
+            {
+                if (MeleAction != null 
+                    && !MeleAction.IsTerminated() 
+                    && MeleAction.IsCharged
+                    && TargetAgent != null 
+                    && TargetAgent.Alive
+                    && TargetAgent.gameObject.activeInHierarchy
+                    && zHelpers.CanBotReach(m_bot, TargetAgent.transform.position))
+                {
+                    MeleAction.Strike = true;
+                    state = State.Striking;
+                }
                 return;
+            }
+                
             if (MeleAction == null || MeleAction.IsTerminated())
             {
                 state = State.Charge;
@@ -332,8 +346,7 @@ namespace BotControl.CustomActions.CustomActions
         }
         private void UpdateStateStriking()
         {
-            if (!Verify())
-                return;
+
             if (MeleAction.IsTerminated())
             {
                 if (MeleAction.IsCompleted())
@@ -342,6 +355,10 @@ namespace BotControl.CustomActions.CustomActions
                     state = State.Failed;
                 return;
             }
+            //if (!VerifyPosition())
+            //{
+            //    return;
+            //}
         }
         private void UpdateStateFinished()
         {

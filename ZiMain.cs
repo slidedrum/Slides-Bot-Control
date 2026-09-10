@@ -405,7 +405,13 @@ public class ZiMain : BasePlugin
                     + (ok ? ChatSettingsMenu.SuccessString : ChatSettingsMenu.FailString);
                 string message;
                 if (ok)
-                    message = $"I killed the {enemyName}.";
+                {
+                    if (desc?.TargetAgent == null || !desc.TargetAgent.Alive)
+                        message = $"I killed the {enemyName}.";
+                    else
+                        message = $"I attacked the {enemyName}.";
+                }
+                    
                 else if (stealth?.TravelAction != null && stealth.TravelAction.Status != PlayerBotActionBase.Descriptor.StatusType.Successful)
                     message = $"I couldn't reach the {enemyName}.";
                 else
