@@ -49,6 +49,12 @@ namespace BotControl
 
             debugSphere.transform.position = position;
             debugSphere.transform.localScale = Vector3.one * (radius * 2f); // scale to match search radius
+            debugSphere.SetActive(true);
+        }
+        internal static void HideDebugSphere()
+        {
+            if (debugSphere != null)
+                debugSphere.SetActive(false);
         }
         private static void printallbotactionpriorities()
         {

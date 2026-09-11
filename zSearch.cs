@@ -90,8 +90,14 @@ namespace BotControl
         public static HashSet<Component> FindAllInView(Transform Look, HashSet<Il2CppSystem.Type> types, float MaxDistance = 10000f, float radius = 3)
         {
             Ray ray = new Ray(Look.position, Look.forward);
-            if (!Physics.Raycast(ray, out RaycastHit hit, MaxDistance))
+            if (!Physics.Raycast(ray, out RaycastHit hit, MaxDistance, LayerManager.MASK_CAMERA_RAY))
+            {
+                if (ZiMain.debugMode)
+                    zDebug.HideDebugSphere();
                 return new(new ComponentInstanceIdComparer());
+            }
+            if (ZiMain.debugMode)
+                zDebug.ShowDebugSphere(hit.point, radius);
             HashSet<Component> Candidates = FindAllNearby(hit.point, types, radius);
             return Candidates;
         }
