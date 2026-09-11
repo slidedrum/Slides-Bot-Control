@@ -83,7 +83,7 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
  Enemy/Loud ( ------------ / ---Target---- / ------------- / *All Target*- )
   Generator ( ------------ / -Place Cell-- / ------------- / ------------- )
     Look Up ( Cancel Last- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
-  Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- ) 
+  Look Down ( ---Follow--- / -Share Self-- / ------------- / -All Follow-- ) 
 ```
  - Items surrounded by * mean that it's not in the current version, but coming eventually.
  - When you tell a bot to move to a location, they will no longer follow you.  You must double tap them to tell them to follow you again, they will never come back until you do. I plan to make some sort of option to have they return to you if you go some distance away, or if they get attacked.  That will come eventually.
