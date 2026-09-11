@@ -163,7 +163,7 @@ public class ZiMain : BasePlugin
     public static int approachWakeChance = 5;
     public static int wakeChancePerSecond = 20;
 
-    internal const bool debugMode = true;
+    internal const bool debugMode = false;
     internal const bool customActions = false;
     internal static bool VoiceMenu = false;
     internal static bool extraActionMenus =false;

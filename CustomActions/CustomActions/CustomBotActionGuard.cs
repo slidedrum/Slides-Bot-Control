@@ -125,9 +125,10 @@ namespace BotControl.CustomActions.CustomActions
             {
                 //Does your action play nice with desc?
                 if (desc.TryCast<PlayerBotActionFollow.Descriptor>() != null)
-                {
                     return false;
-                }
+                var Travel = desc.TryCast<PlayerBotActionTravel.Descriptor>();
+                if (Travel != null && Travel.ParentActionBase?.TryCast<PlayerBotActionIdle>() != null)
+                    return false;
                 return base.IsActionAllowed(desc);
             }
             public override bool CheckCollision(PlayerBotActionBase.Descriptor desc)
@@ -187,6 +188,7 @@ namespace BotControl.CustomActions.CustomActions
         private GameObject GuardObject;
         private Vector3 GuardPosition;
         private Descriptor.Mode mode;
+        private PlayerAgent OriginalLeader = null;
 
         public CustomBotActionGuard() : base(ClassInjector.DerivedConstructorPointer<CustomBotActionGuard>())// Don't use this!  Needed for il2cpp nonsense.
         {
@@ -223,6 +225,8 @@ namespace BotControl.CustomActions.CustomActions
             if (TravelAction != null && !TravelAction.IsTerminated())
                 m_bot.StopAction(TravelAction);
             intialized = false;
+            if (m_bot.SyncValues.Leader == m_bot.Agent && OriginalLeader != m_bot.Agent)
+                zBotActions.SetLeader(m_bot.Agent, OriginalLeader, zStaticRefrences.LocalPlayer, 0);
             base.Stop();
         }
         public override bool Update()
@@ -232,15 +236,15 @@ namespace BotControl.CustomActions.CustomActions
                 return true;
 
             var root = m_bot.m_rootAction.ActionBase.TryCast<RootPlayerBotAction>();
-            if (root != null)
+            if (root != null && !intialized)
             {
                 var follow = root.m_followLeaderAction;
-                if (!intialized)
-                {
-                    intialized = true;
-                    m_bot.StopAction(follow);
-                    zBotActions.SetLeader(m_bot.Agent, m_bot.Agent, zStaticRefrences.LocalPlayer, 0);
-                }
+                var idle = root.m_idleAction;
+                intialized = true;
+                m_bot.StopAction(follow);
+                m_bot.StopAction(idle);
+                OriginalLeader = m_bot.SyncValues.Leader;
+                zBotActions.SetLeader(m_bot.Agent, m_bot.Agent, zStaticRefrences.LocalPlayer, 0);
             }
             if (m_bot.SyncValues.Leader != m_bot.Agent)
             {
