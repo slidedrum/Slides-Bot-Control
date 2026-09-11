@@ -71,7 +71,7 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
 ```
             (      TAP     /     HOLD      /   DOUBLE TAP  /  TAP & HOLD   ) 
             ( ------------------------------------------------------------ ) 
- Player/Bot ( ---Select--- / ----Share---- / Follow/Cancel / ---Send To--- )
+ Player/Bot ( ---Select--- / ----Share---- / -Follow/Stop- / ---Send To--- )
        Item ( ------------ / ---Pickup---- / ------------- / ------------- )
   Equipment ( ---Pickup--- / ---Refill---- / -Pickup All-- / ------------- )
   Container ( ----Open---- / ------------- / --*Place?*--- / ------------- )
@@ -101,6 +101,10 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
 ### Explore action
  - When the team doesn't know about any alive enemies, bots will leave the follow radius and explore the area!  They will do this untill everything reachable has been explored, or an alive enemy has been found.  Then they will return to their leader.
  - Dissabled by default to match vanilla behavior.  You can enable it in the automatic actions menu.
+
+### Stop command
+ - This command resets the bots brain, stopping all current actions, automatic and manual.
+ - If the bots are doing something weird, try this.
 
 ## AI Usage in this project:
  - This project is **not** vibe coded, but it would not have been possible without AI.  When I do use AI 90% of the time it's to understand GTFO's code, I ask it things like "How does this mechanic work" And then write the code myself.  Occasionally I will ask it to write a small method, or at most a single class.  When I do, I always read the code and make sure I understand what it's doing.  I do (or did at the time it was written) understand how 99% of the code in this project works.

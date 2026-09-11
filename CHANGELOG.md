@@ -12,7 +12,7 @@
  - Added new Zone override option in pickup permissions, letting you restrict pickups by zone/area.
  - Stationary sleepers are now nav mesh carvers.  This was done so that bots don't walk over and wake up enemies durring manual actions. This may have some unexpected consiquences with other mods.
  - Changed how move action works, they will now return to that spot if they have to move.
- - Follow now cancels all actions, if they somehow get stuck or have problems, try telling the bot to follow you.  This should reset their brain.
+ - Follow now stops all actions, if they somehow get stuck or have problems, try telling the bot to follow you.  This should reset their brain.
  - Fixed some miscellaneous bugs with attack action restrictions.
  - Fixed menu node backgrounds rendering 1 frame late.
  - Fixed SO MANY edge cases where bots would misbehave, or act unintuitively.
