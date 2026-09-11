@@ -1,6 +1,7 @@
- ## v1.3 - The Automatic Actions update!
- ### This update's headline feature is two new automatic actions, Open and Explore.  Along with more manual actions, the most notable being the Sync attack! And a TON of backend fixes.
+ ## v1.3 - The Action Expansion update!
+ ### This update's headline feature is the first ever new automatic actions, Open and Explore.  Along with more manual actions, the most notable being the Sync attack! And a TON of backend fixes.
  ### Please give me some feedback on how balanced the new sync/stealth attack is.  When bots do *any* manual action, they follow the exact same detection rules as players now, so they can and will be detected sometimes.  When not doing manual actions, bots still can't be detected, so they will only mess you up if you tell them to!
+ ### These new action types are only possible because of the groundwork layed in the Custom Actions update.  Letting me give bots brand new behavor exactly the same way the devs did.
  
  - When doing manual actions, Bots can now be detected just like players.  When doing automatic actions, bots still can not be detected no matter what.
  - You can now command unselected bots with smart select.  Commands will fall back to the nearest bot.
@@ -34,7 +35,7 @@
  - Made it so you can no longer send bots to attack anything other than standard enemies. (other enemy types coming eventually)
 
 ## V1.2.0 - The Custom Actions update!
-### This update's headline feature is the brand new actions the bots could never do before, and the groundwork to easly add more in the future!
+### This update's headline feature is the brand new actions the bots could never do before, and the groundwork to easly add more in the future! Letting me give bots brand new behavor exactly the same way the devs did.
 
  - Added completely modded actions the bots can do, things like opening doors, or inserting cells.
  - This lays the groundwork for huge potential in the future!
