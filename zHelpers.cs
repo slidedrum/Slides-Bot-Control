@@ -259,7 +259,7 @@ namespace BotControl
                 return false;
             return true;
         }
-        public static bool CanBotReach(PlayerAIBot bot, Vector3 location, float maxDistance = 6f)
+        public static bool CanBotReach(PlayerAIBot bot, Vector3 location, float maxDistance = 6f) // This can have trouble going arround sleepers with the new nav mesh carvers.  TODO look into that.
         {
             if (!NavMesh.SamplePosition(location, out NavMeshHit hit, 3f, 17))
                 return false;

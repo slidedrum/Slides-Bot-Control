@@ -569,7 +569,7 @@ namespace BotControl
                 TargetType = targetType,
                 TargetGO = targetObject,
                 Prio = 13,
-                //TargetPosition = targetObject.transform.position,
+                TargetPosition = targetObject.transform.position,
                 Method = method,
                 Lock = Lock,
             };

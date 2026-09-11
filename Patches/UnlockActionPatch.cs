@@ -11,6 +11,7 @@ using Il2CppInterop.Runtime;
 using LevelGeneration;
 using Player;
 using System;
+using UnityEngine;
 using static Player.PlayerBotActionUnlock.Descriptor;
 
 [HarmonyPatch]
@@ -33,10 +34,28 @@ public static class UnlockActionPatch
         __result = ChooseMethod(__instance);
         return false;
     }
+    [HarmonyPatch(typeof(PlayerBotActionUnlock), nameof(PlayerBotActionUnlock.Update))]
+    [HarmonyPrefix]
+    public static bool PreUpdate(PlayerBotActionUnlock __instance, ref bool __result)
+    {
+        if (zActions.isManualAction(__instance.DescBase) != null)
+            return true;
+        if (!IsLockOutOfFollowRange(__instance.m_bot, __instance.m_desc != null ? __instance.m_desc.Lock : null))
+            return true;
+        MarkDescriptorFailed(__instance);
+        __result = true;
+        return false;
+    }
     [HarmonyPatch(typeof(PlayerBotActionUnlock.Descriptor), nameof(PlayerBotActionUnlock.Descriptor.Evaluate))]
     [HarmonyPrefix]
     public static bool Evaluate(PlayerBotActionUnlock.Descriptor __instance, PlayerAIBot bot, LG_WeakLock testLock, ref MethodEnum Method, ref bool __result)
     {
+        if (IsLockOutOfFollowRange(bot, testLock))
+        {
+            Method = MethodEnum.None;
+            __result = false;
+            return false;
+        }
         if (AutomaticMethodAllowed(UnlockMenuClass.UnlockMethodMeleeKey) && !bot.WantsCrouch() && (Method & MethodEnum.Melee) == MethodEnum.Melee)
         {
             BackpackItem backpackItem;
@@ -143,6 +162,14 @@ public static class UnlockActionPatch
             throw new System.NullReferenceException();
 
         action.m_desc.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Failed);
+    }
+    private static bool IsLockOutOfFollowRange(PlayerAIBot bot, LG_WeakLock testLock)
+    {
+        if (bot.SyncValues == null || bot.SyncValues.Leader == null)
+            return false;
+        if (bot == null|| testLock == null)
+            return true;
+        return Vector3.Distance(bot.SyncValues.Leader.Position, testLock.transform.position) > RootPlayerBotAction.s_followLeaderMaxDistance;
     }
 
     private static bool UsesFlagResolution(int descriptorMethod)

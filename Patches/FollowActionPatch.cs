@@ -72,6 +72,8 @@ namespace BotControl.Patches
             RootPlayerBotAction.m_prioSettings.FollowLeaderRadius = (float)FollowMenuClass.followRadius.GetValue();
             RootPlayerBotAction.s_followLeaderRadius =              (float)FollowMenuClass.followRadius.GetValue();
             RootPlayerBotAction.s_followLeaderMaxDistance =         (float)FollowMenuClass.maxDistance.GetValue();
+            RootPlayerBotAction.s_unlockLeaderProximity =           RootPlayerBotAction.s_followLeaderMaxDistance;
+            RootPlayerBotAction.s_unlockLeaderProximitySQ =         RootPlayerBotAction.s_followLeaderMaxDistance * RootPlayerBotAction.s_followLeaderMaxDistance;
             //follow.FormationPrio = recall ? follow.Prio : RootPlayerBotAction.m_prioSettings.FollowLeaderFormation;
             return true;
         }
