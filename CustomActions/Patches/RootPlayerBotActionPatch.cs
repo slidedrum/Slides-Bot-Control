@@ -1,9 +1,5 @@
-﻿using BotControl.CustomActions;
-using BotControl.CustomActions.CustomActions;
-using HarmonyLib;
-using Il2CppMono.Security.Interface;
+﻿using HarmonyLib;
 using Player;
-using System.Diagnostics.Metrics;
 
 namespace BotControl.CustomActions.Patches
 {
@@ -14,91 +10,56 @@ namespace BotControl.CustomActions.Patches
         [HarmonyPrefix]
         public static bool PreUpdate(RootPlayerBotAction __instance, ref bool __result)
         {
-            //We need to reset the best action watcher before we start calling vanilla actions.
             var data = zActions.GetOrCreateData(__instance);
             data.bestAction = null;
-            //switch (DramaManager.CurrentStateEnum)
-            //{
-            //    case DRAMA_State.Exploration:
-            //        {
-            //            __instance.m_followLeaderAction.Prio = 1;
-            //            RootPlayerBotAction.m_prioSettings.FollowLeaderRadius = 15;
-            //            RootPlayerBotAction.s_followLeaderRadius = 15;
-            //            RootPlayerBotAction.s_followLeaderMaxDistance = 30;
-            //            break;
-            //        }
-            //    case DRAMA_State.Alert:
-            //        {
-            //            __instance.m_followLeaderAction.Prio = 5;
-            //            RootPlayerBotAction.m_prioSettings.FollowLeaderRadius = 10;
-            //            RootPlayerBotAction.s_followLeaderRadius = 10;
-            //            RootPlayerBotAction.s_followLeaderMaxDistance = 30;
-            //            break;
-            //        }
-            //    case DRAMA_State.Sneaking:
-            //        {
-            //            __instance.m_followLeaderAction.Prio = 2;
-            //            RootPlayerBotAction.m_prioSettings.FollowLeaderRadius = 5;
-            //            RootPlayerBotAction.s_followLeaderRadius = 5;
-            //            RootPlayerBotAction.s_followLeaderMaxDistance = 30;
-
-            //            break;
-            //        }
-            //    case DRAMA_State.Encounter:
-            //        {
-            //            __instance.m_followLeaderAction.Prio = 7;
-            //            RootPlayerBotAction.m_prioSettings.FollowLeaderRadius = 4;
-            //            RootPlayerBotAction.s_followLeaderRadius = 4;
-            //            RootPlayerBotAction.s_followLeaderMaxDistance = 5;
-            //            break;
-            //        }
-            //    case DRAMA_State.Combat:
-            //        {
-            //            __instance.m_followLeaderAction.Prio = 14;
-            //            RootPlayerBotAction.m_prioSettings.FollowLeaderRadius = 7;
-            //            RootPlayerBotAction.s_followLeaderRadius = 7;
-            //            RootPlayerBotAction.s_followLeaderMaxDistance = 10;
-            //            break;
-            //        }
-            //    case DRAMA_State.Survival:
-            //        {
-            //            __instance.m_followLeaderAction.Prio = 14;
-            //            RootPlayerBotAction.m_prioSettings.FollowLeaderRadius = 7;
-            //            RootPlayerBotAction.s_followLeaderRadius = 7;
-            //            RootPlayerBotAction.s_followLeaderMaxDistance = 10;
-            //            break;
-            //        }
-            //    case DRAMA_State.IntentionalCombat:
-            //        {
-            //            __instance.m_followLeaderAction.Prio = 14;
-            //            RootPlayerBotAction.m_prioSettings.FollowLeaderRadius = 7;
-            //            RootPlayerBotAction.s_followLeaderMaxDistance = 10;
-            //            break;
-            //        }
-            //    default:
-            //        {
-            //            break;
-            //        }
-            //}
-            
-            
-            return true;
-        }
-        [HarmonyPatch(typeof(RootPlayerBotAction), nameof(RootPlayerBotAction.Update))]
-        [HarmonyPostfix]
-        public static void PostUpdate(RootPlayerBotAction __instance, ref bool __result)
-        {
-            //after vanilla actions eval we need to eval custom actions.
-            //Whatever vanilla action is best still gets called no matter what, might want to chagne that?  Might not be a problem?
-            var data = zActions.GetOrCreateData(__instance);
+            if (!__instance.IsActive()) // Mirrors base.update
+            {
+                __result = true;
+                return false;
+            }
+            __instance.RefreshGearAvailability();
+            data.bestAction = null;
+            __instance.UpdateActionEvadeProjectiles(ref data.bestAction);
+            __instance.UpdateActionTagEnemies(ref data.bestAction);
+            __instance.UpdateActionAttack(ref data.bestAction);
+            __instance.UpdateActionReviveTeammate(ref data.bestAction);
+            __instance.UpdateActionUseBioscan(ref data.bestAction);
+            __instance.UpdateActionShareResoursePack(ref data.bestAction);
+            __instance.UpdateActionHighlight(ref data.bestAction);
+            __instance.UpdateActionUseEnemyScanner(ref data.bestAction);
+            __instance.UpdateActionCollectItem(ref data.bestAction);
+            __instance.UpdateActionUnlock(ref data.bestAction);
+            __instance.UpdateActionFollowPlayer(ref data.bestAction);
+            __instance.UpdateActionIdle(ref data.bestAction);
+            __instance.UpdateFlashlightState();
+            __instance.UpdateDropExpeditionItem();
             foreach (var act in data.customActionDescriptors)
             {
-                act.CompareAction(__instance.m_bot, ref data.bestAction);
+                if (!__instance.m_bot.IsActionForbidden(act))
+                    act.CompareAction(__instance.m_bot, ref data.bestAction);
             }
             if (data.bestAction != null && data.bestAction.IsTerminated())
             {
-                __instance.m_bot.StartAction(data.bestAction);
+                __instance.StartAction(data.bestAction);
             }
+            __result = !__instance.IsActive();
+            return false;
         }
+        //[HarmonyPatch(typeof(RootPlayerBotAction), nameof(RootPlayerBotAction.Update))]
+        //[HarmonyPostfix]
+        //public static void PostUpdate(RootPlayerBotAction __instance, ref bool __result)
+        //{
+        //    //after vanilla actions eval we need to eval custom actions.
+        //    //Whatever vanilla action is best still gets called no matter what, might want to chagne that?  Might not be a problem?
+        //    var data = zActions.GetOrCreateData(__instance);
+        //    foreach (var act in data.customActionDescriptors)
+        //    {
+        //        act.CompareAction(__instance.m_bot, ref data.bestAction);
+        //    }
+        //    if (data.bestAction != null && data.bestAction.IsTerminated())
+        //    {
+        //        __instance.m_bot.StartAction(data.bestAction);
+        //    }
+        //}
     }
 }

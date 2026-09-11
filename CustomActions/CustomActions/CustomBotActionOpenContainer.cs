@@ -6,6 +6,7 @@ using Player;
 using SlideMenu;
 using System;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static Player.PlayerBotActionUnlock.Descriptor;
 namespace BotControl.CustomActions.CustomActions
 {
@@ -286,9 +287,11 @@ namespace BotControl.CustomActions.CustomActions
                     break;
                 case State.Finished:
                     this.m_desc.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Successful);
+                    Stop();
                     return true;
                 case State.Failed:
                     this.m_desc.SetCompletionStatus(PlayerBotActionBase.Descriptor.StatusType.Failed);
+                    Stop();
                     return true;
             }
             return !base.IsActive();
@@ -385,7 +388,10 @@ namespace BotControl.CustomActions.CustomActions
         private void UpdateStateUnlocking()
         {
             //UpdateLookAction();
-
+            if (Vector3.Distance(m_bot.SyncValues.Leader.Position, m_bot.Agent.Position) > RootPlayerBotAction.s_followLeaderMaxDistance && zActions.isManualAction(m_desc))
+            {
+                state = State.Failed;
+            }
         }
         private void UpdateStateStartOpening()
         {

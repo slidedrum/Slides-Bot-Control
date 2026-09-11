@@ -279,6 +279,7 @@ namespace BotControl.CustomActions.CustomActions
                     Haste = m_desc.Haste,
                     Strike = false,
                     Travel = false,
+                    Loop = true,
                     TargetGameObject = TargetAgent.m_headLimb.gameObject,
                     Weapon = meleeWeapon,
                     ParentActionBase = this,
@@ -355,6 +356,14 @@ namespace BotControl.CustomActions.CustomActions
                     state = State.Failed;
                 return;
             }
+            if (TargetAgent == null)
+                state = State.Failed;
+            if (!TargetAgent.gameObject.activeInHierarchy)
+                state = State.Failed;
+            if (!zHelpers.CanBotReach(m_bot, TargetAgent.transform.position))
+                state = State.Failed;
+            if (!m_desc.TargetAgent.Alive)
+                state = State.Finished;
             //if (!VerifyPosition())
             //{
             //    return;

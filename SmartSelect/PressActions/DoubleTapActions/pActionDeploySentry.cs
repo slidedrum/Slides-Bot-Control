@@ -1,4 +1,5 @@
 ﻿using Player;
+using Steamworks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -13,6 +14,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public string FriendlyIdentifier => "Deploy Equipment";
         public Il2CppSystem.Type Type => null;
+        public int Priority => 5;
         public string pressTypeIdentifier => "Double Tap";
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         { // This logic should not be done on client, send to host over network.  Maybe works now?
