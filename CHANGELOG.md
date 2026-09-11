@@ -15,6 +15,7 @@
  - Follow now stops all actions, if they somehow get stuck or have problems, try telling the bot to follow you.  This should reset their brain.
  - Fixed some miscellaneous bugs with attack action restrictions.
  - Fixed menu node backgrounds rendering 1 frame late.
+ - Fixed smart select colliding with your own player model, making it difficult to select things below you.
  - Fixed SO MANY edge cases where bots would misbehave, or act unintuitively.
  - Removed excessive debug logging.
  - Moved changelog into it's own file. (This file!)
