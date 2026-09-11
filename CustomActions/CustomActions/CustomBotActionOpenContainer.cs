@@ -141,7 +141,7 @@ namespace BotControl.CustomActions.CustomActions
                             || (bool)zSlideComputer.ActionPermissions.ValueAt(UnlockMenuClass.UnlockMethodMeleeKey)))
                     {
                         method |= Method;
-                        if (DramaManager.CurrentStateEnum == DRAMA_State.Sneaking)
+                        if (DramaManager.CurrentStateEnum == DRAMA_State.Sneaking) // TODO maybe change this to be sleepers nearby?
                             method &= ~PlayerBotActionUnlock.Descriptor.MethodEnum.Hack;
                     }
                     else
@@ -329,25 +329,38 @@ namespace BotControl.CustomActions.CustomActions
         private void UpdateStateMove()
         {
             UpdateLookAction();
-            if ((m_bot.transform.position - TargetLoction).magnitude < 0.1f)
+
+            float distance = (m_bot.transform.position - TargetLoction).magnitude;
+
+            if (distance < 0.1f)
             {
-                if (!NeedsUnlock())
-                {
-                    state = State.StartOpening;
-                    return;
-                }
-                else
-                {
-                    state = State.StartUnlock;
-                    m_bot.StopAction(TravelAction);
-                    return;
-                }
+                MovedToTargetState();
+                return;
             }
-            else if (TravelAction.IsTerminated())
+
+            if (!TravelAction.IsTerminated())
+                return;
+
+            if (distance > 2f)
             {
                 state = State.Idle;
                 return;
             }
+
+            MovedToTargetState();
+        }
+
+        private void MovedToTargetState()
+        {
+            if (NeedsUnlock())
+            {
+                state = State.StartUnlock;
+            }
+            else
+            {
+                state = State.StartOpening;
+            }
+            m_bot.StopAction(TravelAction);
         }
         private void UpdateStateStartUnlock()
         {

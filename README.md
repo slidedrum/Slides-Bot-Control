@@ -109,6 +109,7 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
  - Follow now cancels all actions, if they somehow get stuck or have problems, try telling the bot to follow you.  This should reset their brain.
  - Fixed some miscellaneous bugs with attack action restrictions.
  - Fixed menu node backgrounds rendering 1 frame late.
+ - Fixed SO MANY edge cases where bots would misbehave, or act unintuitively.
  - Removed excessive debug logging.
 
 
