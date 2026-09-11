@@ -32,34 +32,7 @@ One of the major features of this mod is letting you change the priority of diff
  - Control if bots are allowed to smash locks and use lock melters
  - All disabled actions can still be done if you manually tell a bot to do that with smart select!
  
-## How to use Smart select!
- - Depending on what you're looking at and context, you can tell the bots to do one of 4 different actions at any given time.  Tap V while looking at a bot to select them, then you can see what they can do at any time on the bottom of your screen.  You can command them by (from left to right) Tapping V, Holding V, Double tapping V, and Tapping then holding V.  There are about 2 dozen different things you can tell them to do!  With more coming eventually.  Below is the full chart of what they can do and how to tell them to do it:
-```
-            (      TAP     /     HOLD      /   DOUBLE TAP  /  TAP & HOLD   ) 
-            ( ------------------------------------------------------------ ) 
- Player/Bot ( ---Select--- / ----Share---- / Follow/Cancel / ---Send To--- )
-       Item ( ------------ / ---Pickup---- / ------------- / ------------- )
-  Equipment ( ---Pickup--- / ---Refill---- / -Pickup All-- / ------------- )
-  Container ( ----Open---- / ------------- / --*Place?*--- / ------------- )
- Floor/Wall ( ------------ / -Consumable-- / --Equipment-- / ----Move----- )
-    Holding ( ------------ / --Drop Here-- / --Drop Now--- / ------------- )
-       Door ( -Open/Close- / -Throw cFoam- / --*Break?*--- / ------------- )
-       Lock ( ---Unlock--- / -Lock Melter- / ------------- / ------------- )
- Enemy/Quiet( ------------ / Sneak Attack- / -*All Sync*-- / ----Sync----- )
- Enemy/Loud ( ------------ / --*Target*--- / ------------- / *All Target*- )
-  Generator ( ------------ / -Place Cell-- / ------------- / ------------- )
-    Look Up ( Cancel Last- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
-  Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- ) 
-```
- - Items surrounded by * mean that it's not in the current version, but coming eventually.
- - When you tell a bot to move to a location, they will no longer follow you.  You must double tap them to tell them to follow you again, they will never come back until you do. I plan to make some sort of option to have they return to you if you go some distance away, or if they get attacked.  That will come eventually.
- - When you tell a bot to follow you, they will stop all other actions, try this if a bot gets stuck for some reason.
 
-### Important note about how Smart Select works under the hood.
- - This system may seem to be inconsistent or not pick up on things you think you're looking at, here's why:
- - The system checks a sphere around the point you're looking at, NOT a cone infront of you.  This allows the system to run faster and perform better.
- - The system only updates about 10 times per second. 
- - Keep this in mind if you feel like selection is inconsistent.
  
 ## Planned features:
  - Better in game explanation of how to use the menu and what it can do.
@@ -91,64 +64,39 @@ https://www.youtube.com/watch?v=lrDWroqC-R0
 
 There is A LOT of unused code and extra stuff in this mod.  I got a little bit too ambitious with some features. I may or may not return to some of them later.
 
+## Feature details:
+
+### Smart select!
+ - Depending on what you're looking at and context, you can tell the bots to do one of 4 different actions at any given time.  Tap V while looking at a bot to select them, then you can see what they can do at any time on the bottom of your screen.  You can command them by (from left to right) Tapping V, Holding V, Double tapping V, and Tapping then holding V.  There are about 2 dozen different things you can tell them to do!  With more coming eventually.  Below is the full chart of what they can do and how to tell them to do it:
+```
+            (      TAP     /     HOLD      /   DOUBLE TAP  /  TAP & HOLD   ) 
+            ( ------------------------------------------------------------ ) 
+ Player/Bot ( ---Select--- / ----Share---- / Follow/Cancel / ---Send To--- )
+       Item ( ------------ / ---Pickup---- / ------------- / ------------- )
+  Equipment ( ---Pickup--- / ---Refill---- / -Pickup All-- / ------------- )
+  Container ( ----Open---- / ------------- / --*Place?*--- / ------------- )
+ Floor/Wall ( ------------ / -Consumable-- / --Equipment-- / ----Move----- )
+    Holding ( ------------ / --Drop Here-- / --Drop Now--- / ------------- )
+       Door ( -Open/Close- / -Throw cFoam- / --*Break?*--- / ------------- )
+       Lock ( ---Unlock--- / -Lock Melter- / ------------- / ------------- )
+ Enemy/Quiet( ------------ / Sneak Attack- / --All Sync--- / ----Sync----- )
+ Enemy/Loud ( ------------ / ---Target---- / ------------- / *All Target*- )
+  Generator ( ------------ / -Place Cell-- / ------------- / ------------- )
+    Look Up ( Cancel Last- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
+  Look Down ( ---Follow--- / -Share Self-- / ------------- / --A Follow--- ) 
+```
+ - Items surrounded by * mean that it's not in the current version, but coming eventually.
+ - When you tell a bot to move to a location, they will no longer follow you.  You must double tap them to tell them to follow you again, they will never come back until you do. I plan to make some sort of option to have they return to you if you go some distance away, or if they get attacked.  That will come eventually.
+ - When you tell a bot to follow you, they will stop all other actions, try this if a bot gets stuck for some reason.
+
+#### Important note about how Smart Select works under the hood.
+ - This system may seem to be inconsistent or not pick up on things you think you're looking at, here's why:
+ - The system checks a sphere around the point you're looking at, NOT a cone infront of you.  This allows the system to run faster and perform better.
+ - The system only updates about 10 times per second. 
+ - Keep this in mind if you feel like selection is inconsistent.
+
+### Sync attack
+ - Tap then hold on an enemy and a bot will walk up to that enemy without attacking.  As soon as any other enemy takes damage from any source, the bot will attack!  You can use this to make sure bots attack at the same time.
 
 ## AI Usage in this project:
  - This project is **not** vibe coded, but it would not have been possible without AI.  When I do use AI 90% of the time it's to understand GTFO's code, I ask it things like "How does this mechanic work" And then write the code myself.  Occasionally I will ask it to write a small method, or at most a single class.  When I do, I always read the code and make sure I understand what it's doing.  I do (or did at the time it was written) understand how 99% of the code in this project works.
-
-
-### Changelog
- v1.3
- - When doing manual actions, Bots can now be detected just like players.  When doing automatic actions, bots still can not be detected no matter what.
- - You can now command unselected bots with smart select.  Commands will fall back to the nearest bot.
- - Added option to restrict what guns bots attack with, via a new sub menu in bullet attack menu.
- - Added Sync attack action to smart select.  Bots will charge a melee attack, and strike when any enemy takes damage.
- - Added new automatic action, open locker.
- - Added new automatic action, explore.  When enabled, bots will explore the current area outside of their follow range.
- - Added new Zone override option in pickup permissions, letting you restrict pickups by zone/area.
- - Changed how move action works, they will now return to that spot if they have to move.
- - Follow now cancels all actions, if they somehow get stuck or have problems, try telling the bot to follow you.  This should reset their brain.
- - Fixed some miscellaneous bugs with attack action restrictions.
- - Fixed menu node backgrounds rendering 1 frame late.
- - Fixed SO MANY edge cases where bots would misbehave, or act unintuitively.
- - Removed excessive debug logging.
-
-
-V1.2.6
- - Fixed and re-added the betterbots compatibility layer.  Bots should behave when changing attack means now!
-
-V1.2.5
- - Temporarily removed misbehaving better bots compatibility patch that was causing bots not to attack.
-
-V1.2.4
- - Fixed unintentional better bots dependency. 
-
-V1.2.3
- - Fixed readme chart
-
-V1.2.2
- - Made it so you can no longer send bots to attack anything other than standard enemies. (other enemy types coming eventually)
-
-V1.2.0 - The Custom Actions update!
- - Added completely modded actions the bots can do, things like opening doors, or inserting cells.
- - This lays the groundwork for huge potential in the future!
- - Currently limited to smart select only.  Will look into making them trigger automatically eventually.
- - Updated what the bots say in chat to be more specific.
-
-V1.1.0 - The Smart Select Update.
- - Completely overhauled the smart select system!  
- - Added (possibly too many) options to control when the bots talk in chat.
-
-V1.0.3
- - Stopped bots from repeatedly spamming chat with failed actions.
- - Added submenu for 'bots talking settings', letting you disable individual things they say.
- - Added drop permissions to the pickup submenu. This will let you tell bots to only replace their resource packs once they are gone.
- - Fixed a compatibility bug with Better Bots where bots wouldn't revive you after you go down.
- - Fixed minor typo.
-
-V1.0.2
- - Fixed disinfect pickup threshold being inverted.
- - Bots no longer use auto disinfect packs in fog.  
- - Added a (WIP) option to stop bots from dropping their items in the pickup submenu.
-
-V1.0.1
- - Updated readme.
