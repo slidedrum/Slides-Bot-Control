@@ -15,6 +15,7 @@ namespace BotControl.SmartSelect.PressActions
         public Il2CppSystem.Type Type => Il2CppType.Of<EnemyAgent>();
         public string pressTypeIdentifier => "Tap and Hold";
         public string FriendlyIdentifier => "Sync-Att";
+        public int? Priority => 15;
         public bool Enabled => true;
 
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
@@ -30,8 +31,7 @@ namespace BotControl.SmartSelect.PressActions
         }
         public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
-            if (DramaManager.CurrentStateEnum != DRAMA_State.Exploration && DramaManager.CurrentStateEnum != DRAMA_State.Sneaking)
-                return false;
+
             EnemyAgent Enemy = candidate.TryCast<EnemyAgent>();
             if (Enemy == null || BestBot == null)
                 return false;
@@ -40,6 +40,8 @@ namespace BotControl.SmartSelect.PressActions
             if (!Enemy.Alive)
                 return false;
             if (!zHelpers.CanBotReach(BestBot, Enemy.transform.position))
+                return false;
+            if (!Enemy.AI.IsHibernating(out bool isDisturbed, out bool isWakingUp) || isWakingUp)
                 return false;
             Color = BestBot.Agent.Owner.PlayerColor;
             return true;

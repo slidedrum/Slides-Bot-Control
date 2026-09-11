@@ -20,7 +20,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         private static List<PlayerAIBot> NonFollowingBots = new();
         private int cycleOffset;
         public Il2CppSystem.Type Type => null;
-        public int? Priority => 20;
+        public int? Priority => 25;
         public string pressTypeIdentifier => "Tap and Hold";
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {

@@ -17,7 +17,7 @@ namespace BotControl.SmartSelect.PressActions.TapAndHoldActions
         private Color TargetColor = new Color(1f, 1f, 1f, 0.25f);
         private string TargetColorHex => ColorUtility.ToHtmlStringRGB(TargetColor);
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
-        public int? Priority => 15;
+        public int? Priority => 20;
         public string pressTypeIdentifier => "Tap and Hold";
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
