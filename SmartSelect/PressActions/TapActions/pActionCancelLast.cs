@@ -13,11 +13,12 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         public Il2CppSystem.Type Type => null;
         public bool Enabled => true;
         public string pressTypeIdentifier => "Tap";
-        public bool Invoke(Component BestComponent, PlayerAIBot BestBot) // Todo handle this on clients.  // TODO keep track of WHO gave the command and only cancel your actions.
+        public bool Invoke(Component BestComponent, PlayerAIBot BestBot) 
         {
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CANCELTHAT);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Cancel that.", 1);
             if (zActions.manualActions.Count == 0) return false;
+            if (zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Count == 0) return false;
             ManualAction mAction = zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Last();
             zBotActions.CancelBotAction(mAction.ID);
             zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + IPressAction.chatPermSuffix, mAction.Bot.Agent, zStaticRefrences.LocalPlayer);

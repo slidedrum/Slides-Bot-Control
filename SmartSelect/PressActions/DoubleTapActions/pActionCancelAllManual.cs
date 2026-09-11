@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
 {
-    public class pActionCancelAll : IPressAction
+    public class pActionCancelAllManual : IPressAction
     {
         public string FriendlyName => "Cancel All";
         public string FriendlyNameShort => "Cancel-A";

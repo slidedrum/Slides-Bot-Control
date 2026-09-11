@@ -29,7 +29,7 @@ namespace BotControl
         }
         public static void StartAction(PlayerAIBot aiBot, PlayerBotActionBase.Descriptor Desc, PlayerAgent Commander, uint ID)
         {
-            ManualAction manualAction = new ManualAction(Desc, Commander, aiBot, ID);
+            ManualAction manualAction = new ManualAction(Desc, Commander, aiBot, Time.time, ID);
             StartAction(manualAction);
         }
         public static void StopAllActions(PlayerAIBot bot)
@@ -595,7 +595,6 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pActionTerminatedInfo>("RequestActionCancel", info);
                 return;
             }
-            bool found = false;
             foreach (var key in zActions.manualActions.Keys)
             {
                 foreach (ManualAction mAction in zActions.manualActions[key])
@@ -603,12 +602,9 @@ namespace BotControl
                     if (actionID == mAction.ID)
                     {
                         mAction.Bot.StopAction(mAction.ActionDescriptor);
-                        found = true;
-                        break;
+                        return;
                     }
                 }
-                if (found)
-                    break;
             }
         }
         public static void SendBotToStealthAttack(PlayerAIBot aiBot, EnemyAgent Enemy, bool Sync, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)

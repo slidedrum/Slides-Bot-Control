@@ -19,13 +19,15 @@ namespace BotControl.CustomActions
         public PlayerAgent Commander;
         public PlayerAIBot Bot;
         public uint ID;
+        public float StartTimestamp;
         private ManualAction() { }
-        public ManualAction(PlayerBotActionBase.Descriptor ActionDescriptor, PlayerAgent Commander, PlayerAIBot Bot, uint ID)
+        public ManualAction(PlayerBotActionBase.Descriptor ActionDescriptor, PlayerAgent Commander, PlayerAIBot Bot, float StartTimestamp, uint ID)
         {
             this.ActionDescriptor = ActionDescriptor;
             this.Commander = Commander;
             this.Bot = Bot;
             this.ID = ID;
+            this.StartTimestamp = StartTimestamp;
         }
     }
     public static class zActions
