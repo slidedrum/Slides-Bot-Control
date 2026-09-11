@@ -365,6 +365,27 @@ namespace BotControl.Networking
             ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {Follower.PlayerName} to follow {Leader.PlayerName}");
             zBotActions.SetLeader(Follower, Leader, Commander, netSender);
         }
+        internal static void ReciveRequestToStopAllActions(ulong netSender, pStructs.pStopAllInfo info)
+        {
+            ZiMain.log.LogInfo("Recived request to stop all actions!");
+            if (!SNet.IsMaster)
+                return;
+            PlayerAgent BotAgent = pStructs.Get_RefFrom_pStruct(info.BotAgent);
+            if (BotAgent == null)
+            {
+                ZiMain.log.LogError("Invalid request to stop all: bot agent is null.");
+                return;
+            }
+            if (!BotAgent.Owner.IsBot)
+            {
+                ZiMain.log.LogWarning("Invalid request to stop all, You can't tell a player what to do.");
+                return;
+            }
+            PlayerAIBot aiBot = BotAgent.GetComponent<PlayerAIBot>();
+            if (aiBot == null) return;
+            ZiMain.log.LogInfo($"Stopping all actions on {BotAgent.PlayerName}");
+            zBotActions.StopAllActions(aiBot, netSender);
+        }
         internal static void ReciveActionTerminated(ulong netsender, pStructs.pActionTerminatedInfo info) // TODO confirm this works.
         {
             if (SNet.IsMaster)

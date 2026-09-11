@@ -32,9 +32,21 @@ namespace BotControl
             ManualAction manualAction = new ManualAction(Desc, Commander, aiBot, Time.time, ID);
             StartAction(manualAction);
         }
-        public static void StopAllActions(PlayerAIBot bot)
+        public static void StopAllActions(PlayerAIBot bot, ulong netsender = 0)
         {
-            for(int i = 1; i < bot.Actions.Count; i++) // Start at 1 to skip root.
+            if (bot == null) return;
+            if (!SNet.IsMaster)
+            {
+                if (netsender != 0)
+                    return;
+                pStopAllInfo info = new()
+                {
+                    BotAgent = Get_pStructFromRefrence(bot.Agent),
+                };
+                NetworkAPI.InvokeEvent<pStopAllInfo>("RequestToStopAllActions", info);
+                return;
+            }
+            for (int i = bot.Actions.Count - 1; i >= 1; i--) // Start at 1 to skip root. Reverse so StopAction removals don't skip entries.
             {
                 PlayerBotActionBase action = bot.Actions[i];
                 bot.StopAction(action.DescBase);

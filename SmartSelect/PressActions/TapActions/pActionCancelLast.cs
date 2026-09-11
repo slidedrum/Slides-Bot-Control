@@ -1,4 +1,5 @@
 ﻿using BotControl.CustomActions;
+using FluffyUnderware.DevTools.Extensions;
 using Player;
 using System.Linq;
 using UnityEngine;
@@ -8,7 +9,10 @@ namespace BotControl.SmartSelect.PressActions.TapActions
     public class pActionCancelLast : IPressAction
     {
         public string FriendlyName => "Cancel Last";
-        public string FriendlyNameShort => "Cancel";
+        private string _FriendlyNameShort = "Cancel";
+        public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
+        private Color Color = new Color(1f, 1f, 1f, 0.25f);
+        private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public string FriendlyIdentifier => "Cancel Action";
         public Il2CppSystem.Type Type => null;
         public bool Enabled => true;
@@ -31,6 +35,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             if (!facingUp) return false;
             if (zActions.manualActions.Count == 0) return false;
             if (zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Count == 0) return false;
+            Color = zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Last().Bot.Agent.Owner.PlayerColor;
             //if (zActions.manualActions.Last().IsTerminated()) return false;
             return true;
         }

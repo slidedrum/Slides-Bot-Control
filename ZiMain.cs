@@ -204,6 +204,7 @@ public class ZiMain : BasePlugin
         NetworkAPI.RegisterEvent<pIntOverideTreeInfo>       ("SetIntOverideTree",                 zNetworking.ReciveSetIntOverideTree);
         NetworkAPI.RegisterEvent<pFloatOverideTreeInfo>     ("SetFloatOverideTree",               zNetworking.ReciveSetFloatOverideTree);
         NetworkAPI.RegisterEvent<pLeaderInfo>               ("RequestToSetLeader",                zNetworking.ReciveRequestToSetLeader);
+        NetworkAPI.RegisterEvent<pStopAllInfo>              ("RequestToStopAllActions",           zNetworking.ReciveRequestToStopAllActions);
         NetworkAPI.RegisterEvent<pActionTerminatedInfo>     ("NotifyActionTerminated",            zNetworking.ReciveActionTerminated);
         NetworkAPI.RegisterEvent<pActionTerminatedInfo>     ("RequestActionCancel",               zNetworking.ReciveRequestActionCancel);
 

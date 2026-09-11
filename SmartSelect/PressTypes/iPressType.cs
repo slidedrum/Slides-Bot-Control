@@ -129,43 +129,60 @@ namespace BotControl.SmartSelect.PressTypes
         }
         private bool TryFindAction(PrioritySet<Component> candidates, PlayerAIBot Bot)
         {
-            Component candidate = null;
+            IPressAction bestAction = null;
+            Component bestComponent = null;
+            int bestPriority = int.MinValue;
+            int bestCandidateIndex = int.MaxValue;
             for (int i = 0; i < candidates.Count; i++) // loop through them all in order of how close they are to the center of the screen.
             {
-                candidate = candidates[i];
-                Il2CppSystem.Type candidateType = candidate.GetIl2CppType();
-                for (Il2CppSystem.Type type = candidateType; type != null; type = type.BaseType) // Also check against parrent types
-                {
-                    foreach (Il2CppSystem.Type typeToMatch in SelectableTypes)
-                    {
-                        if (typeToMatch.Pointer == type.Pointer)
-                        {
-                            candidateType = type;
-                            break;
-                        }
-                    }
-                }
+                Component candidate = candidates[i];
+                Il2CppSystem.Type candidateType = GetSelectableType(candidate);
                 if (!TypeActionMap.TryGetValue(candidateType, out var actionSet) || actionSet == null)
                     continue;
-                foreach (IPressAction action in actionSet) // loop through all of the actions for that type with the selected bot
+                foreach (IPressAction action in actionSet)
+                    ConsiderAction(action, candidate, i, Bot, ref bestAction, ref bestComponent, ref bestPriority, ref bestCandidateIndex);
+            }
+            foreach (IPressAction action in NullTypeActions)
+                ConsiderAction(action, null, int.MaxValue, Bot, ref bestAction, ref bestComponent, ref bestPriority, ref bestCandidateIndex);
+            if (bestAction != null)
+            {
+                CurrentAction = bestAction;
+                CurrentComponent = bestComponent;
+                return true;
+            }
+            return TryFindFallbackAction(Bot);
+        }
+        private Il2CppSystem.Type GetSelectableType(Component candidate)
+        {
+            Il2CppSystem.Type candidateType = candidate.GetIl2CppType();
+            for (Il2CppSystem.Type type = candidateType; type != null; type = type.BaseType) // Also check against parrent types
+            {
+                foreach (Il2CppSystem.Type typeToMatch in SelectableTypes)
                 {
-                    if (action.IsActionValid(candidate, Bot))
+                    if (typeToMatch.Pointer == type.Pointer)
                     {
-                        CurrentAction = action; // if it's valid, then we're good we can set and stop.
-                        CurrentComponent = candidate;
-                        return true;
+                        candidateType = type;
+                        break;
                     }
                 }
             }
-            foreach (IPressAction action in NullTypeActions)
-            {
-                if (action.IsActionValid(null, Bot))
-                {
-                    CurrentAction = action;
-                    CurrentComponent = null;
-                    return true;
-                }
-            }
+            return candidateType;
+        }
+        private void ConsiderAction(IPressAction action, Component candidate, int candidateIndex, PlayerAIBot Bot, ref IPressAction bestAction, ref Component bestComponent, ref int bestPriority, ref int bestCandidateIndex)
+        {
+            if (!action.IsActionValid(candidate, Bot))
+                return;
+            int priority = action.Priority ?? 0;
+            if (bestAction != null && (priority < bestPriority || (priority == bestPriority && candidateIndex >= bestCandidateIndex)))
+                return;
+            bestAction = action;
+            bestComponent = candidate;
+            bestPriority = priority;
+            bestCandidateIndex = candidateIndex;
+        }
+        private bool TryFindFallbackAction(PlayerAIBot Bot)
+        {
+            Component candidate = null;
             PrioritySet<IPressAction> set = new(); // if we didn't find anything we need to check the fallback type.
             switch (FallbackType)
             {

@@ -120,6 +120,10 @@ namespace BotControl.Networking
             public pPlayerAgent follower;
             public pPlayerAgent Commander;
         }
+        public struct pStopAllInfo
+        {
+            public pPlayerAgent BotAgent;
+        }
         public struct pBreakLockInfo
         {
             public pStateReplicatorProvider Lock;
