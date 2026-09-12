@@ -8,7 +8,7 @@ namespace BotControl.SmartSelect
 {
     public class Selection
     {
-        private HashSet<Component> SelectedObjects = new();
+        private HashSet<Component> SelectedObjects = new(new ComponentInstanceIdComparer());
 
         public Selection() { }
         public void Select(Component component, bool oneBot = true)
@@ -26,7 +26,7 @@ namespace BotControl.SmartSelect
         public bool Deselect(Component component)
         {
             SelectedObjects.RemoveWhere(x => x == null);
-            return SelectedObjects.Remove(component);
+            return SelectedObjects.RemoveWhere(obj => obj == component) > 0;
         }
         public bool Selected<T>(T candidate) where T : Component
         {
