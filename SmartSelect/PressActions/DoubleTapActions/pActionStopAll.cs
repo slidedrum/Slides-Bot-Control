@@ -15,9 +15,18 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
         public bool Enabled => true;
-        public int? Priority => 5;
+        public int? Priority => 24;
         public string pressTypeIdentifier => "Double Tap";
-        internal static float MaxLookAngle = 5f;
+        internal static float FarLookAngle = 5f;
+        internal static float NearLookAngle = 30f;
+        internal static float FarLookDistance = 2f;
+        internal static float NearLookDistance = 0.2f;
+        internal static float AllowedLookAngle(PlayerAgent agent)
+        {
+            float dist = Vector3.Distance(zStaticRefrences.CameraTransform.position, agent.EyePosition);
+            float t = Mathf.InverseLerp(FarLookDistance, NearLookDistance, dist);
+            return Mathf.Lerp(FarLookAngle, NearLookAngle, t);
+        }
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             PlayerAgent Agent = BestComponent.TryCast<PlayerAgent>();
@@ -36,7 +45,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             if (Agent == null) return false;
             if (!Agent.Alive) return false;
             if (!Agent.Owner.IsBot) return false;
-            if (Vector3.Angle(zStaticRefrences.CameraTransform.forward, Agent.EyePosition - zStaticRefrences.CameraTransform.position) > MaxLookAngle)
+            if (Vector3.Angle(zStaticRefrences.CameraTransform.forward, Agent.EyePosition - zStaticRefrences.CameraTransform.position) > AllowedLookAngle(Agent))
                 return false;
             Color = Agent.Owner.PlayerColor;
             return true;

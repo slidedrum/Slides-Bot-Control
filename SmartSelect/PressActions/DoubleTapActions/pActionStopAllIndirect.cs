@@ -31,7 +31,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
             if (Agent == null) return false;
             if (!Agent.Alive) return false;
             if (!Agent.Owner.IsBot) return false;
-            if (Vector3.Angle(zStaticRefrences.CameraTransform.forward, Agent.EyePosition - zStaticRefrences.CameraTransform.position) > pActionStopAll.MaxLookAngle)
+            if (Vector3.Angle(zStaticRefrences.CameraTransform.forward, Agent.EyePosition - zStaticRefrences.CameraTransform.position) > pActionStopAll.AllowedLookAngle(Agent))
                 return false;
             Color = Agent.Owner.PlayerColor;
             return true;
