@@ -34,6 +34,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             bool facingUp = Vector3.Angle(zStaticRefrences.CameraTransform.forward, Vector3.up) < 15f;
             if (!facingUp) return false;
             if (zActions.manualActions.Count == 0) return false;
+            if (!zActions.manualActions.ContainsKey(zStaticRefrences.LocalPlayer.CharacterID)) return false;
             if (zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Count == 0) return false;
             Color = zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Last().Bot.Agent.Owner.PlayerColor;
             //if (zActions.manualActions.Last().IsTerminated()) return false;

@@ -184,7 +184,7 @@ namespace BotControl.CustomActions.CustomActions
 
                     if (PlayerManager.Current.IsObjectReserved(tempObj))
                         continue;
-                    if (Vector3.Distance(bot.SyncValues.Leader.Position, core.transform.position) > RootPlayerBotAction.s_followLeaderMaxDistance)
+                    if (bot.SyncValues?.Leader != null && Vector3.Distance(bot.SyncValues.Leader.Position, core.transform.position) > RootPlayerBotAction.s_followLeaderMaxDistance)
                         continue;
                     if (core.IsLocked() && !Evaluate(bot, core.WeakLockComponent, ref method))
                         continue;
@@ -401,7 +401,7 @@ namespace BotControl.CustomActions.CustomActions
         private void UpdateStateUnlocking()
         {
             //UpdateLookAction();
-            if (Vector3.Distance(m_bot.SyncValues.Leader.Position, m_bot.Agent.Position) > RootPlayerBotAction.s_followLeaderMaxDistance && zActions.isManualAction(m_desc))
+            if (Vector3.Distance(m_bot.SyncValues.Leader.Position, m_bot.Agent.Position) > RootPlayerBotAction.s_followLeaderMaxDistance && !zActions.isManualAction(m_desc))
             {
                 state = State.Failed;
             }

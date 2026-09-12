@@ -386,9 +386,11 @@ namespace BotControl.Networking
             ZiMain.log.LogInfo($"Stopping all actions on {BotAgent.PlayerName}");
             zBotActions.StopAllActions(aiBot, netSender);
         }
-        internal static void ReciveActionTerminated(ulong netsender, pStructs.pActionTerminatedInfo info) // TODO confirm this works.
+        internal static void ReciveActionTerminated(ulong netsender, pStructs.pActionTerminatedInfo info)
         {
             if (SNet.IsMaster)
+                return;
+            if (!zActions.manualActions.ContainsKey(zStaticRefrences.LocalPlayer.CharacterID))
                 return;
             foreach (ManualAction action in zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID])
             {
