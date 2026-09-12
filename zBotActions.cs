@@ -2,6 +2,7 @@
 using BotControl.CustomActions;
 using BotControl.CustomActions.CustomActions;
 using BotControl.Networking;
+using BotControl.Patches;
 using BotControl.SmartSelect.PressActions;
 using Enemies;
 using GTFO.API;
@@ -514,6 +515,7 @@ namespace BotControl
                 Item = item.Instance.Cast<ItemEquippable>(),
                 MovementAllowed = true
             };
+            ThrowItemPatch.standPos[desc.Pointer] = MovePosition;
             StartAction(aiBot, desc, Commander, actionID);
             if (!SNet.IsMaster)
             {

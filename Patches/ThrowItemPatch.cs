@@ -24,6 +24,7 @@ namespace BotControl.Patches
         // and hook into FindPositionWithView to set the position the bot moves to.
         // UpdateStateTravel also seems to start the throw as soon as at has sight of the target, we'll need to change that.
         public static Dictionary<int, PlayerBotActionThrowItem.Descriptor> throwDescriptions = new();
+        public static Dictionary<IntPtr, Vector3> standPos = new();
         //public static readonly Dictionary<pStructs.pThrowType, string> ThrowMappings = new()
         //{
         //    { pStructs.pThrowType.FogRepeller, "Fog Repeller" },
@@ -33,6 +34,8 @@ namespace BotControl.Patches
 
         public static Vector3 GetMovePosition(PlayerBotActionThrowItem __instance)
         {
+            if (standPos.TryGetValue(__instance.m_desc.Pointer, out var pos))
+                return pos;
             Vector3 MovePosition = __instance.m_bot.transform.position;
             var TargetType = __instance.m_desc.TargetType;
             switch (TargetType)

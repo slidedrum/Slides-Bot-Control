@@ -25,23 +25,27 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             if (Door == null || BestBot == null) return false;
             if (Door.Gate.IsTraversable) return false; //if the door is open, don't do anything.
             // todo have the bot interact with the door to close it before securing it.
-            Vector3 MovePosition = BestBot.Agent.Position;
             LG_Gate gate = Door.Gate;
             Vector3 vecToGate = gate.transform.position - BestBot.Agent.Position;
-            Vector3 forward = gate.transform.forward;
-            if (Vector3.Dot(forward, vecToGate) > 0f)
-                forward = -forward;
-            Vector3 candidate = gate.transform.position + forward * 1f; // weak door = 1m
-            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, 1.5f, -1))
-                MovePosition = hit.position;
-            else
-                MovePosition = candidate;
+            Vector3 MovePosition;
+            RootPlayerBotAction root = BestBot.m_rootAction.ActionBase.TryCast<RootPlayerBotAction>();
+            if (root == null || !root.GetPositionInFrontOfGate(gate, vecToGate, zBotActions.defaultPrio, out MovePosition))
+            {
+                Vector3 forward = gate.transform.forward;
+                if (Vector3.Dot(forward, vecToGate) > 0f)
+                    forward = -forward;
+                Vector3 candidate = gate.transform.position + forward * 1f; // weak door = 1m
+                if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, 1.5f, -1))
+                    MovePosition = hit.position;
+                else
+                    MovePosition = candidate;
+            }
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CFOAMHERE);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Throw C-Foam here.",1f);
             zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, MovePosition, Door.transform.position, 0);
             //zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, Networking.pStructs.pThrowType.cFoam, MovePosition, Door.transform.position, 0);
             zChatHandler.sendChatMessage("Securing door.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
-            return false;
+            return true;
         }
         public bool Evaluate(PlayerAgent agent, uint itemID)
         {
