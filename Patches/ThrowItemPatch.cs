@@ -92,7 +92,9 @@ namespace BotControl.Patches
             else if (desc.GetIl2CppType().FullName == glue)
             {
                 var glueDesc = desc.Cast<PlayerBotActionUseGlueGun.Descriptor>();
-                GlueGunPatch.standPos[charId] = glueDesc.TargetObject.position;
+                GlueGunPatch.standPos[desc.Pointer] = glueDesc.TargetType == PlayerBotActionUseGlueGun.TargetTypeEnum.Position
+                    ? glueDesc.TargetObject.position
+                    : glueDesc.TargetPosition;
             }
             else if (desc.GetIl2CppType().FullName == travel)
             {
@@ -118,21 +120,7 @@ namespace BotControl.Patches
         //private static void OnButtonThrowItem(pThrowType throwType, PlayerAgent targetAgent)
         private static void OnButtonThrowItem(PlayerAgent targetAgent)
         {
-            Vector3 targetPosition = zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos;
-            if (SNet.IsMaster)
-            {
-                //zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, targetAgent, throwType, zStaticRefrences.LocalPlayer.transform.position, targetPosition, 0);
-                zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, targetAgent, zStaticRefrences.LocalPlayer.transform.position, targetPosition, 0);
-            }
-            pStructs.pThrowDataInfo info = new()
-            {
-                Commander = pStructs.Get_pStructFromRefrence(zStaticRefrences.LocalPlayer),
-                Agent = pStructs.Get_pStructFromRefrence(targetAgent),
-                //ThrowType = throwType,
-                MovePosition = zStaticRefrences.LocalPlayer.transform.position,
-                TargetPosition = targetPosition,
-            };
-            NetworkAPI.InvokeEvent<pStructs.pThrowDataInfo>("RequestToThrowItem", info);
+            zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, targetAgent, zStaticRefrences.LocalPlayer.transform.position, zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos);
         }
         [HarmonyPatch(typeof(PUI_CommunicationMenu), nameof(PUI_CommunicationMenu.OnButtonPressedUseFogRepeller))]
         [HarmonyPrefix]
@@ -148,7 +136,7 @@ namespace BotControl.Patches
         {
             zHelpers.TryGetAgentBackpackItem(targetAgent, InventorySlot.GearClass, out var item);
             if (item.ItemID == 73) // Do they have a c-foam launcher?
-                zBotActions.SendBotToUseCfoamGun(targetAgent.GetComponent<PlayerAIBot>(), zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, zStaticRefrences.LocalPlayer);
+                zBotActions.SendBotToUseCfoamGun(targetAgent.GetComponent<PlayerAIBot>(), zStaticRefrences.LocalPlayer.FPSCamera.CameraRayPos, null, zStaticRefrences.LocalPlayer);
             else
                 OnButtonThrowItem(targetAgent); 
             //OnButtonThrowItem(pThrowType.cFoam, targetAgent);

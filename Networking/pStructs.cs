@@ -171,6 +171,7 @@ namespace BotControl.Networking
             public pPlayerAgent Agent;
             public pPlayerAgent Commander;
             public Vector3 position;
+            public pEnemyAgent Enemy;
             internal uint ID;
         }
         internal struct pPlaceMineInfo
@@ -231,6 +232,7 @@ namespace BotControl.Networking
             //public pThrowType ThrowType;
             public Vector3 MovePosition;
             public Vector3 TargetPosition;
+            public pEnemyAgent Enemy;
             internal uint ID;
         }
     }

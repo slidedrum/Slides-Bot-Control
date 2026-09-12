@@ -74,13 +74,13 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
  Player/Bot ( ---Select--- / ----Share---- / -Follow/Stop- / ---Send To--- )
        Item ( ------------ / ---Pickup---- / ------------- / ------------- )
   Equipment ( ---Pickup--- / ---Refill---- / -Pickup All-- / ------------- )
-  Container ( ----Open---- / ------------- / --*Place?*--- / ------------- )
+  Container ( ------------ / ----Open----- / --*Place?*--- / ------------- )
  Floor/Wall ( ------------ / -Consumable-- / --Equipment-- / ----Move----- )
     Holding ( ------------ / --Drop Here-- / --Drop Now--- / ------------- )
-       Door ( -Open/Close- / -Throw cFoam- / --*Break?*--- / ------------- )
+       Door ( -Open/Close- / ---Secure---- / --*Break?*--- / ------------- )
        Lock ( ---Unlock--- / -Lock Melter- / ------------- / ------------- )
- Enemy/Quiet( ------------ / Sneak Attack- / --All Sync--- / ----Sync----- )
- Enemy/Loud ( ------------ / ---Target---- / ------------- / *All Target*- )
+ Enemy/Quiet( ------------ / Sneak Attack- / ----Sync----- / --All Sync--- )
+ Enemy/Loud ( ------------ / ---Target---- / ---C-Foam---- / -All Target-- )
   Generator ( ------------ / -Place Cell-- / ------------- / ------------- )
     Look Up ( Cancel Last- / --Deselect--- / -Cancel All-- / -*Select A*-- ) 
   Look Down ( ---Follow--- / -Share Self-- / ------------- / -All Follow-- ) 
@@ -96,7 +96,7 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
  - Keep this in mind if you feel like selection is inconsistent.
 
 ### Sync attack
- - Tap then hold on an enemy and a bot will walk up to that enemy without attacking.  As soon as any other enemy takes damage from any source, the bot will attack!  You can use this to make sure bots attack at the same time.
+ - Double tap on an enemy and a bot will walk up to that enemy without attacking.  As soon as any other enemy takes damage from any source, the bot will attack!  You can use this to make sure bots attack at the same time.  Tap then hold to send every bot.
 
 ### Explore action
  - When the team doesn't know about any alive enemies, bots will leave the follow radius and explore the area!  They will do this untill everything reachable has been explored, or an alive enemy has been found.  Then they will return to their leader.

@@ -249,16 +249,17 @@ namespace BotControl
             ZiMain.BotBarkBack(aiBot.Agent.CharacterID, AK.EVENTS.PLAY_CL_WILLDO, "Will Do.", 1f);
 
         }
-        public static void SendBotToUseCfoamGun(PlayerAIBot aiBot, Vector3 targetPosition, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
+        public static void SendBotToUseCfoamGun(PlayerAIBot aiBot, Vector3 targetPosition, EnemyAgent targetEnemy = null, PlayerAgent Commander = null, ulong netsender = 0, uint actionID = 0)
         {
             if (actionID == 0)
                 actionID = zHelpers.HashString($"RequestToUseCfoamGun{Commander.PlayerName}{aiBot.Agent.PlayerName}{Time.time}");
+            bool trackEnemy = targetEnemy != null && targetEnemy.Alive;
             PlayerBotActionUseGlueGun.Descriptor desc = new(aiBot)
             {
                 Prio = 15f,
-                TargetType = PlayerBotActionUseGlueGun.TargetTypeEnum.Position,
-                TargetObject = Commander.transform,
-                TargetPosition = targetPosition,
+                TargetType = trackEnemy ? PlayerBotActionUseGlueGun.TargetTypeEnum.Object : PlayerBotActionUseGlueGun.TargetTypeEnum.Position,
+                TargetObject = trackEnemy ? targetEnemy.transform : Commander.transform,
+                TargetPosition = trackEnemy ? Commander.transform.position : targetPosition,
                 Haste = 1f,
             };
             StartAction(aiBot, desc, Commander, actionID);
@@ -270,6 +271,8 @@ namespace BotControl
                 info.Agent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
                 info.Commander = pStructs.Get_pStructFromRefrence(Commander); //This might be a problem in commander is null?  Not sure. TODO look into it.
                 info.position = targetPosition;
+                if (trackEnemy)
+                    info.Enemy = pStructs.Get_pStructFromRefrence(targetEnemy);
                 info.ID = actionID;
                 NetworkAPI.InvokeEvent<pUseCfoamInfo>("RequestToUseCfoamGun", info);
                 return;
@@ -490,7 +493,7 @@ namespace BotControl
             FlexibleMethodDefinition callback = new(SendBotToClearCurrentRoom, [aiBot, commander, netsender]);
             //zActionSub.addOnTerminated(descriptor, callback);
         }
-        public static bool SendBotToThrowItem(PlayerAgent Commander, PlayerAgent botAgent, Vector3 MovePosition, Vector3 TargetPosition, ulong netSender = 0, uint actionID = 0)
+        public static bool SendBotToThrowItem(PlayerAgent Commander, PlayerAgent botAgent, Vector3 MovePosition, Vector3 TargetPosition, EnemyAgent targetEnemy = null, ulong netSender = 0, uint actionID = 0)
         {
             // TODO Alow you to supply a target object, or target position.
             // If you supply a target poisition, then move position will be set to commanders location.
@@ -504,14 +507,15 @@ namespace BotControl
                 ZiMain.log.LogWarning($"Wanted to throw an item but found nothing.");
                 return false;
             }
+            bool trackEnemy = targetEnemy != null && targetEnemy.Alive;
             PlayerBotActionThrowItem.Descriptor desc = new(aiBot)
             {
                 Prio = defaultPrio,
                 Haste = 0.8f,
                 StraightShot = item.ItemID == 115, // only c-foam grenades are a straight shot.
-                TargetPosition = TargetPosition,
-                TargetObject = Commander.transform,
-                TargetType = PlayerBotActionThrowItem.TargetTypeEnum.Position,
+                TargetPosition = trackEnemy ? MovePosition : TargetPosition,
+                TargetObject = trackEnemy ? targetEnemy.transform : Commander.transform,
+                TargetType = trackEnemy ? PlayerBotActionThrowItem.TargetTypeEnum.Object : PlayerBotActionThrowItem.TargetTypeEnum.Position,
                 Item = item.Instance.Cast<ItemEquippable>(),
                 MovementAllowed = true
             };
@@ -527,6 +531,8 @@ namespace BotControl
                 info.Commander = pStructs.Get_pStructFromRefrence(Commander);
                 info.TargetPosition = TargetPosition;
                 info.MovePosition = MovePosition;
+                if (trackEnemy)
+                    info.Enemy = pStructs.Get_pStructFromRefrence(targetEnemy);
                 info.ID = actionID;
                 NetworkAPI.InvokeEvent<pThrowDataInfo>("RequestToThrowItem", info);
                 return false;
@@ -642,6 +648,7 @@ namespace BotControl
                 info.Commander = pStructs.Get_pStructFromRefrence(Commander);
                 info.BotAgent = pStructs.Get_pStructFromRefrence(aiBot.Agent);
                 info.Enemy = pStructs.Get_pStructFromRefrence(Enemy);
+                info.Sync = Sync;
                 info.ID = actionID;
                 NetworkAPI.InvokeEvent<pAttackEnemyInfo>("RequestToSyncAttack", info);
                 return;

@@ -289,6 +289,7 @@ namespace BotControl.Networking
                 return;
             PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.Commander);
             PlayerAgent BotAgent = pStructs.Get_RefFrom_pStruct(info.Agent);
+            EnemyAgent Enemy = pStructs.Get_RefFrom_pStruct(info.Enemy);
             //pStructs.pThrowType ThrowType = info.ThrowType;
             Vector3 MovePostion = info.MovePosition;
             Vector3 TargetPosition = info.TargetPosition;
@@ -298,7 +299,7 @@ namespace BotControl.Networking
                 ZiMain.log.LogWarning("Invalid request to throw item, You can't tell a player what to do.");
                 return;
             }
-            zBotActions.SendBotToThrowItem(Commander, BotAgent, MovePostion, TargetPosition, netSender, info.ID);
+            zBotActions.SendBotToThrowItem(Commander, BotAgent, MovePostion, TargetPosition, Enemy, netSender, info.ID);
             //zBotActions.SendBotToThrowItem(Commander, BotAgent, ThrowType, MovePostion, TargetPosition, netSender);
         }
         internal static void ReciveRequestToUseCfoam(ulong netSender, pStructs.pUseCfoamInfo info)
@@ -308,6 +309,7 @@ namespace BotControl.Networking
                 return;
             PlayerAgent Commander = pStructs.Get_RefFrom_pStruct(info.Commander);
             PlayerAgent BotAgent = pStructs.Get_RefFrom_pStruct(info.Agent);
+            EnemyAgent Enemy = pStructs.Get_RefFrom_pStruct(info.Enemy);
             Vector3 MovePostion = Commander.transform.position;
             Vector3 TargetPosition = info.position;
             ZiMain.log.LogInfo($"{Commander.PlayerName} wants to tell {BotAgent.PlayerName} to use their cfoam gun from {MovePostion} to {TargetPosition}");
@@ -316,7 +318,7 @@ namespace BotControl.Networking
                 ZiMain.log.LogWarning("Invalid request to use cfoam launcher, You can't tell a player what to do.");
                 return;
             }
-            zBotActions.SendBotToUseCfoamGun(BotAgent.GetComponent<PlayerAIBot>(), TargetPosition, Commander, netSender, info.ID);
+            zBotActions.SendBotToUseCfoamGun(BotAgent.GetComponent<PlayerAIBot>(), TargetPosition, Enemy, Commander, netSender, info.ID);
         }
         internal static void ReciveRequestToPlaceMine(ulong netSender, pStructs.pPlaceMineInfo info)
         {

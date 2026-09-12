@@ -40,7 +40,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Throw C-Foam here.",1f);
             PlayerPingTarget ping = Door.GetComponentInChildren<PlayerPingTarget>();
             Transform aimT = ping != null ? ping.transform : Door.transform;
-            zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, MovePosition, aimT.position + Vector3.up * 1.5f, 0);
+            zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, MovePosition, aimT.position + Vector3.up * 1.5f, null, 0);
             //zBotActions.SendBotToThrowItem(zStaticRefrences.LocalPlayer, BestBot.Agent, Networking.pStructs.pThrowType.cFoam, MovePosition, Door.transform.position, 0);
             zChatHandler.sendChatMessage("Securing door.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
             return true;

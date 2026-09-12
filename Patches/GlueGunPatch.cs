@@ -1,5 +1,6 @@
 using HarmonyLib;
 using Player;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,11 +9,11 @@ namespace BotControl.Patches
     [HarmonyPatch]
     public static class GlueGunPatch
     {
-        public static Dictionary<int, Vector3> standPos = new();
+        public static Dictionary<IntPtr, Vector3> standPos = new();
 
         public static Vector3 GetMovePosition(PlayerBotActionUseGlueGun action)
         {
-            if (standPos.TryGetValue(action.m_bot.Agent.CharacterID, out var pos))
+            if (standPos.TryGetValue(action.m_desc.Pointer, out var pos))
                 return pos;
             var desc = action.m_desc;
             return desc.TargetType == PlayerBotActionUseGlueGun.TargetTypeEnum.Position

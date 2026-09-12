@@ -1,37 +1,43 @@
-﻿using Enemies;
+using Enemies;
 using Il2CppInterop.Runtime;
 using Player;
 using UnityEngine;
 
-namespace BotControl.SmartSelect.PressActions
+namespace BotControl.SmartSelect.PressActions.DoubleTapActions
 {
-    internal class pActionSyncAttack : IPressAction
+    public class pActionAllSyncAttack : IPressAction
     {
-        public string FriendlyName => "Sync Attack";
-        private string _FriendlyNameShort = "Sync-Att";
+        public string FriendlyName => "All Sync Attack";
+        private string _FriendlyNameShort = "All-Sync";
         public string FriendlyNameShort => $"<color=#{ColorHex}>{_FriendlyNameShort}</color>";
         private Color Color = new Color(1f, 1f, 1f, 0.25f);
         private string ColorHex => ColorUtility.ToHtmlStringRGB(Color);
         public Il2CppSystem.Type Type => Il2CppType.Of<EnemyAgent>();
-        public string pressTypeIdentifier => "Double Tap";
+        public string pressTypeIdentifier => "Tap and Hold";
         public string FriendlyIdentifier => "Sync-Att";
         public int? Priority => 15;
-        public bool Enabled => true;
 
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             EnemyAgent Enemy = BestComponent.TryCast<EnemyAgent>();
-            if (Enemy == null || BestBot == null) return false;
-            if (BestBot.Agent.Alive == false) return false;
-            zBotActions.SendBotToStealthAttack(BestBot, Enemy, true, zStaticRefrences.LocalPlayer);
+            if (Enemy == null) return false;
+            bool any = false;
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_HURRY);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Hurry.", 1f);
-            zChatHandler.sendChatMessage("On the way.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
-            return true;
+            foreach (PlayerAIBot bot in ZiMain.GetBotList())
+            {
+                if (bot == null || !bot.Agent.Alive)
+                    continue;
+                if (!zHelpers.CanBotReach(bot, Enemy.transform.position))
+                    continue;
+                zBotActions.SendBotToStealthAttack(bot, Enemy, true, zStaticRefrences.LocalPlayer);
+                zChatHandler.sendChatMessage("On the way.", FriendlyIdentifier + IPressAction.chatPermSuffix, bot.Agent, zStaticRefrences.LocalPlayer);
+                any = true;
+            }
+            return any;
         }
         public bool IsActionValid(Component candidate, PlayerAIBot BestBot)
         {
-
             EnemyAgent Enemy = candidate.TryCast<EnemyAgent>();
             if (Enemy == null || BestBot == null)
                 return false;
