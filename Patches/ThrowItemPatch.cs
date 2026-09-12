@@ -53,17 +53,9 @@ namespace BotControl.Patches
         [HarmonyPrefix]
         public static bool PreVerifyCurrentPosition(PlayerBotActionThrowItem __instance, ref bool __result)
         {
-            var MovePosition = GetMovePosition(__instance);
-            if (MovePosition != __instance.m_bot.transform.position)
-            {
-                if (__instance.CheckPositionHasView(MovePosition, __instance.GetTargetPosition(), 0.9f))
-                {
-                    __result = false;
-                    return false;
-                }
-            }
-            //__result = __instance.CheckPositionHasView(__instance.m_agent.Position, __instance.GetTargetPosition(), 0.7225f);
-            return true;
+            Vector3 delta = __instance.m_bot.transform.position - GetMovePosition(__instance);
+            __result = delta.sqrMagnitude < 0.2f * 0.2f;
+            return false;
         }
         [HarmonyPatch(typeof(PlayerBotActionThrowItem), nameof(PlayerBotActionThrowItem.FindPositionWithView))]
         [HarmonyPrefix]
@@ -94,6 +86,8 @@ namespace BotControl.Patches
             {
                 var throwDesc = desc.Cast<PlayerBotActionThrowItem.Descriptor>();
                 throwDescriptions[charId] = throwDesc;
+                if (throwDesc.MovementAllowed)
+                    throwDesc.RequiredLayers |= PlayerBotActionBase.AccessLayers.Legs | PlayerBotActionBase.AccessLayers.Hip | PlayerBotActionBase.AccessLayers.RootPosition;
             }
             else if (desc.GetIl2CppType().FullName == glue)
             {
@@ -107,6 +101,7 @@ namespace BotControl.Patches
                 if (TypeName != null && TypeName == "Player.PlayerBotActionThrowItem")
                 {
                     traveldesc.DestinationPos = GetMovePosition(traveldesc.ParentActionBase.Cast<PlayerBotActionThrowItem>());
+                    traveldesc.Radius = 0.2f;
                 }
                 else if (TypeName == "Player.PlayerBotActionUseGlueGun")
                 {
