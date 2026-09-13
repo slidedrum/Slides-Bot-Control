@@ -20,7 +20,7 @@ namespace BotControl.SmartSelect
         public static int lowerStaticSize = 16;
         public static float lowerFontSize = 10;
         public static float upperStaticSize = 15;
-        public static Color defaultColor = new Color(1f, 1f, 1f, 0.25f);
+        public static Color defaultColor = new Color(0.45f, 0.45f, 0.45f, 1f);
 
         private static IPressType Tap;
         private static IPressType Hold;
@@ -30,7 +30,7 @@ namespace BotControl.SmartSelect
         {
             if (isSetup)
                 return;
-            float scaleFactor = 2160f / Screen.height; // 2160 = your 4K reference height
+            float scaleFactor = 2160f / Screen.height; // 2160 = 4K reference height
             GameObject Donor = GameObject.Find("GUI/CellUI_Camera(Clone)/PlayerLayer/MovementRoot/PUI_LocalPlayerStatus_CellUI(Clone)/ShieldBar/");
             GameObject Clone = GameObject.Instantiate(Donor, Donor.transform.parent);
             Clone.transform.Find("ShieldFill Right").Destroy();

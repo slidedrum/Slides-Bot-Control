@@ -13,7 +13,7 @@ namespace SlideMenu
         public static GameObject menuParrent;
         private static bool playerInControll = false;
         private static Texture2D _defaultBackgroundImage;
-        public static KeyCode keybinding = KeyCode.X;
+        public static KeyCode keybind = KeyCode.X;
         public static Texture2D DefaultBackgroundImage { 
             get 
             {
@@ -172,6 +172,11 @@ namespace SlideMenu
                 }
                 if (menuOpen)
                 {
+                    if (Input.GetKey(KeyCode.Escape))
+                    {
+                        CloseAllMenus();
+                        return;
+                    }
                     menuWasOpenOnLastFrame = true;
                     currentMenu.Update();
                 }
@@ -181,7 +186,7 @@ namespace SlideMenu
                         FocusStateManager.ChangeState(FocusStateManager.PreviousState);
                     menuWasOpenOnLastFrame = false;
                 }
-                if (Input.GetKey(keybinding))
+                if (Input.GetKey(keybind))
                 {
                     if (pressable) //is this the first frame of holding the button?
                     {

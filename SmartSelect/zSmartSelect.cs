@@ -26,7 +26,8 @@ namespace BotControl.SmartSelect
         public static bool FallbackToClosest = true;
         private static float now => Time.time;
         private static float roundedTime => now - (now % slowupdateinterval);
-        private const float slowupdateinterval = 0.33f;
+        private const float slowupdateinterval = 0.16f;
+        public const KeyCode keybind = KeyCode.V;
         public enum PressTypes
         {
             Tap,
@@ -65,7 +66,7 @@ namespace BotControl.SmartSelect
             PressActionManager.Initialize();
             foreach (IPressType pressType in PressTypeManager.TypeMap.Values)
             {
-                sInputSystem.AddListener(pressType.PressSequence, new FlexibleMethodDefinition(pressType.Invoke), KeyCode.V);
+                sInputSystem.AddListener(pressType.PressSequence, new FlexibleMethodDefinition(pressType.Invoke), keybind);
             }
             //sInputSystem.AddListener(sInputSystemDefaults.OnTappedExclusive, new FlexibleMethodDefinition(OnKeyTap), KeyCode.V);
             //sInputSystem.AddListener(sInputSystemDefaults.OnHoldImmediateExclusive, new FlexibleMethodDefinition(OnKeyHold), KeyCode.V);

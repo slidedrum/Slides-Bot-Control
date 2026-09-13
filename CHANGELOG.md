@@ -8,16 +8,19 @@
  - You can now command unselected bots with smart select.  Commands will fall back to the nearest bot.
  - Added option to restrict what guns bots attack with, via a new sub menu in bullet attack menu.
  - Added Sync attack action to smart select.  Bots will charge a melee attack, and strike when any enemy takes damage.
- - Added new automatic action, open locker.
+ - Added new automatic action, open locker.  Better bots did this too, but it was tied to highlight.  This is a proper new action the bots can do.
  - Added new automatic action, explore.  When enabled, bots will explore the current area outside of their follow range.
  - Added new Zone override option in pickup permissions, letting you restrict pickups by zone/area.
+ - Added a new "stop" action, look at a bots head and double tap to completely reset what the bot is doing.
+ - Added a new prompt in the bottom left of your hud to tell you how to open the menu and command bots.
+ - Follow now also stops all actions.  
  - Stationary sleepers are now nav mesh carvers.  This was done so that bots don't walk over and wake up enemies durring manual actions. This may have some unexpected consiquences with other mods.
  - Changed how move action works, they will now return to that spot if they have to move.
- - Follow now stops all actions, if they somehow get stuck or have problems, try telling the bot to follow you.  This should reset their brain.
  - Fixed some miscellaneous bugs with attack action restrictions.
  - Fixed menu node backgrounds rendering 1 frame late.
  - Fixed smart select colliding with your own player model, making it difficult to select things below you.
- - Fixed SO MANY edge cases where bots would misbehave, or act unintuitively.
+ - Fixed SO MANY edge cases where bots would misbehave, or act unintuitively.\
+ - Pressing escape with the menu open now closes it.
  - Removed excessive debug logging.
  - Moved changelog into it's own file. (This file!)
 

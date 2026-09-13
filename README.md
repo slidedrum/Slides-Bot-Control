@@ -48,9 +48,10 @@ One of the major features of this mod is letting you change the priority of diff
  - Allow bots to remember where items are, and you could say "I need ammo" and they would go looking for ammo, or directly to the ammo if they remember where it is.
  
 ## Known issues:
+ - You can manually tell bots to pickup keycards and softlock your game.  This will be fixed by allowing bots to interact with security doors.
  - Bots will have trouble reaching some containers, FIXED?  Let me know if you still find a spot where this happens.
  - Bots leaving joining mid game is untested and may break things.  This will be supported "soon"
- - Checkpoints are untested and may have unexpected results.  But should be fine. This will be supported "soon"
+ - Checkpoints are untested and may have unexpected results.  But should be fine. This will be supported "soon" (full mission restart should be fine, but haven't tested that much)
 
 Here's an unscripted preview video:
 
