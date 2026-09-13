@@ -19,7 +19,6 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {
             LG_WeakResourceContainer container = BestComponent.TryCast<LG_WeakResourceContainer>();
-            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
             zBotActions.SendBotToOpenContainer(BestBot, container, zStaticRefrences.LocalPlayer);
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_PLEASE);
             zChatHandler.sendChatMessage("Opening container.", FriendlyIdentifier + IPressAction.chatPermSuffix, BestBot.Agent, zStaticRefrences.LocalPlayer);
@@ -30,8 +29,7 @@ namespace BotControl.SmartSelect.PressActions.HoldActions
         {
             LG_WeakResourceContainer container = candidate.TryCast<LG_WeakResourceContainer>();
             if (container == null) return false;
-            if (container.ISOpen) return false;
-            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            if (container.m_currentStatus == eResourceContainerStatus.Open) return false;
             if (BestBot == null) return false;
             if (!BestBot.Agent.Alive) return false;
             if (!zHelpers.CanBotReach(BestBot, container.transform.position)) return false;

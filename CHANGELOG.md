@@ -1,5 +1,6 @@
- ## v1.3 - The Action Expansion update!
- ### This update's headline feature is the first ever new automatic actions, Open and Explore.  Along with more manual actions, the most notable being the Sync attack! And a TON of backend fixes.
+ ## v1.3 - The Stability and Polish update!
+ ### This update's headline feature is SO MANY small changes that make the bots act more consistantly and work better.  I have found and adressed dozens of edge cases. There's still more work to do, but if you had issues before, I encourage you to try the mod again.  
+ ### This update also comes with the first ever new automatic actions, Open and Explore.  Along with more manual actions, the most notable being the Sync attack! And a TON of backend fixes.
  ### Please give me some feedback on how balanced the new sync/stealth attack is.  When bots do *any* manual action, they follow the exact same detection rules as players now, so they can and will be detected sometimes.  When not doing manual actions, bots still can't be detected, so they will only mess you up if you tell them to!
  ### These new action types are only possible because of the groundwork layed in the Custom Actions update.  Letting me give bots brand new behavor exactly the same way the devs did.
  

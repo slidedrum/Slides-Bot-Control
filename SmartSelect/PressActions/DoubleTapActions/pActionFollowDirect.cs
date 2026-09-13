@@ -17,7 +17,7 @@ namespace BotControl.SmartSelect.PressActions.DoubleTapActions
         private Color TargetColor = new Color(1f, 1f, 1f, 0.25f);
         private string TargetColorHex => ColorUtility.ToHtmlStringRGB(TargetColor);
         public Il2CppSystem.Type Type => Il2CppType.Of<PlayerAgent>();
-        public int? Priority => 25;
+        public int? Priority => 0;
         public string pressTypeIdentifier => "Double Tap";
         public bool Invoke(Component BestComponent, PlayerAIBot BestBot)
         {

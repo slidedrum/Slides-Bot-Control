@@ -1,4 +1,5 @@
-﻿using BotControl.SmartSelect.PressActions;
+﻿using BotControl.SmartSelect;
+using BotControl.SmartSelect.PressActions;
 using Enemies;
 using Gear;
 using HarmonyLib;
@@ -6,6 +7,7 @@ using Il2CppInterop.Runtime.Injection;
 using Player;
 using System;
 using UnityEngine;
+using static Player.PlayerBotActionBase.Descriptor;
 namespace BotControl.CustomActions.CustomActions
 {
 
@@ -120,6 +122,8 @@ namespace BotControl.CustomActions.CustomActions
         {
             ClassInjector.DerivedConstructorBody(this);
             InitFromDescriptor(desc);
+            TravelAction = null;
+            MeleAction = null;
             m_desc = desc;
             this.m_desc = desc;
             this.TargetAgent = desc.TargetAgent;
@@ -240,6 +244,11 @@ namespace BotControl.CustomActions.CustomActions
             if (VerifyPosition())
             {
                 state = State.Charge;
+                return;
+            }
+            if (TravelAction != null && TravelAction.IsTerminated() && TravelAction.Status != StatusType.Successful)
+            {
+                state = State.Failed;
                 return;
             }
             if (TravelAction == null || TravelAction.IsTerminated())

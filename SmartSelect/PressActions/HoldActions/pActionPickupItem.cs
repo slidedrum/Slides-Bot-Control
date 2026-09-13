@@ -1,7 +1,6 @@
 ﻿using Il2CppInterop.Runtime;
 using LevelGeneration;
 using Player;
-using System.Linq;
 using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions
@@ -22,7 +21,6 @@ namespace BotControl.SmartSelect.PressActions
             ItemInLevel Item = BestComponent.TryCast<ItemInLevel>();
             if (Item == null)
                 return false;
-            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetSelected<PlayerAIBot>().FirstOrDefault();
             if (BestBot == null)
                 return false;
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_GRABTHEITEM);
@@ -43,7 +41,13 @@ namespace BotControl.SmartSelect.PressActions
             CarryItemPickup_Core pickupCore = Item.TryCast<CarryItemPickup_Core>();
             if (pickupCore != null && !pickupCore.IsInteractable)
                 return false;
-            //PlayerAIBot BestBot = zSmartSelect.MainSelection.GetBestBot();
+            LG_ResourceContainer_Storage storage = Item.container;
+            if (storage != null)
+            {
+                LG_WeakResourceContainer locker = storage.m_core?.TryCast<LG_WeakResourceContainer>();
+                if (locker != null && locker.m_isLocker && locker.m_currentStatus != eResourceContainerStatus.Open) // TODO, do I need "locker.m_isLocker"  What else could it be?  does that include small storage 'boxes' too?
+                    return false;
+            }
             if (BestBot == null) 
                 return false;
             if (!BestBot.Agent.Alive) 
