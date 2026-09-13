@@ -1,11 +1,11 @@
  ## v1.3 - The Stability and Polish update!
- ### This update's headline feature is SO MANY small changes that make the bots act more consistantly and work better.  I have found and adressed dozens of edge cases. There's still more work to do, but if you had issues before, I encourage you to try the mod again.  
- ### This update also comes with the first ever new automatic actions, Open and Explore.  Along with more manual actions, the most notable being the Sync attack! And a TON of backend fixes.
+ ### This update's headline feature is SO MANY small changes that make the bots act more consistently and work better.  I have found and addressed dozens of edge cases. There's still more work to do, but if you had issues before, I encourage you to try the mod again.  
+ ### This update also comes with the first ever new automatic actions, Open and Explore.  Along with more manual actions, the most notable being the Sync attack! And a TON of back-end fixes.
  ### Please give me some feedback on how balanced the new sync/stealth attack is.  When bots do *any* manual action, they follow the exact same detection rules as players now, so they can and will be detected sometimes.  When not doing manual actions, bots still can't be detected, so they will only mess you up if you tell them to!
- ### These new action types are only possible because of the groundwork layed in the Custom Actions update.  Letting me give bots brand new behavor exactly the same way the devs did.
+ ### These new action types are only possible because of the groundwork laid in the Custom Actions update.  Letting me give bots brand new behavior exactly the same way the devs did.
  
  - When doing manual actions, Bots can now be detected just like players.  When doing automatic actions, bots still can not be detected no matter what.
- - You can now command unselected bots with smart select.  Commands will fall back to the nearest bot.
+ - You can now command unelected bots with smart select.  Commands will fall back to the nearest bot.
  - Added option to restrict what guns bots attack with, via a new sub menu in bullet attack menu.
  - Added Sync attack action to smart select.  Bots will charge a melee attack, and strike when any enemy takes damage.
  - Added new automatic action, open locker.  Better bots did this too, but it was tied to highlight.  This is a proper new action the bots can do.
@@ -14,7 +14,7 @@
  - Added a new "stop" action, look at a bots head and double tap to completely reset what the bot is doing.
  - Added a new prompt in the bottom left of your hud to tell you how to open the menu and command bots.
  - Follow now also stops all actions.  
- - Stationary sleepers are now nav mesh carvers.  This was done so that bots don't walk over and wake up enemies durring manual actions. This may have some unexpected consiquences with other mods.
+ - Stationary sleepers are now nav mesh carvers.  This was done so that bots don't walk over and wake up enemies during manual actions. This may have some unexpected consequences with other mods.
  - Changed how move action works, they will now return to that spot if they have to move.
  - Fixed some miscellaneous bugs with attack action restrictions.
  - Fixed menu node backgrounds rendering 1 frame late.
@@ -40,7 +40,7 @@
  - Made it so you can no longer send bots to attack anything other than standard enemies. (other enemy types coming eventually)
 
 ## V1.2.0 - The Custom Actions update!
-### This update's headline feature is the brand new actions the bots could never do before, and the groundwork to easly add more in the future! Letting me give bots brand new behavor exactly the same way the devs did.
+### This update's headline feature is the brand new actions the bots could never do before, and the groundwork to easily add more in the future! Letting me give bots brand new behavior exactly the same way the devs did.
 
  - Added completely modded actions the bots can do, things like opening doors, or inserting cells.
  - This lays the groundwork for huge potential in the future!

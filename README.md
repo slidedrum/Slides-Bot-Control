@@ -12,8 +12,13 @@ Press X to open the menu, and then press X again on a node like "automatic actio
 
 There is also smart select!  In the bottom of your screen you will see 4 potential actions you could tell a bot to do (see table below) By default the closest bot to the action will do it, or you can tap on a bot to select it, and then that bot will be the one doing the action.  Look up and hold V to deselect.  You can tell them to do things like, stand in a specific spot, hack a lock, pick up a specific item, deploy their turret, and many more!  See How To Use Smart Select for the full list of things they can do.
 
-## Important note about changing priorities
-One of the major features of this mod is letting you change the priority of different actions and item pickups.  This can be very useful, but it can also cause some unexpected and unintuitive behavior.  I generally recommend making minimal changes to these settings.  If you're having problems with the bots not doing something, or acting strangely, try setting all priorities back to their default values.
+# Latest Release notes:
+
+## v1.3 - The Stability and Polish update!
+This update's headline feature is SO MANY small changes that make the bots act more consistently and work better.  I have found and addressed dozens of edge cases. There's still more work to do, but if you had issues before, I encourage you to try the mod again.  
+This update also comes with the first ever new automatic actions, Open and Explore.  Along with more manual actions, the most notable being the Sync attack! And a TON of back-end fixes.
+Please give me some feedback on how balanced the new sync/stealth attack is.  When bots do *any* manual action, they follow the exact same detection rules as players now, so they can and will be detected sometimes.  When not doing manual actions, bots still can't be detected, so they will only mess you up if you tell them to!
+These new action types are only possible because of the groundwork laid in the Custom Actions update.  Letting me give bots brand new behavior exactly the same way the devs did.
 
 ## Current features: 
  - Directly tell a bot to pick up a specific item with smart select.
@@ -50,8 +55,8 @@ One of the major features of this mod is letting you change the priority of diff
 ## Known issues:
  - You can manually tell bots to pickup keycards and softlock your game.  This will be fixed by allowing bots to interact with security doors.
  - Bots will have trouble reaching some containers, FIXED?  Let me know if you still find a spot where this happens.
- - Bots leaving joining mid game is untested and may break things.  This will be supported "soon"
- - Checkpoints are untested and may have unexpected results.  But should be fine. This will be supported "soon" (full mission restart should be fine, but haven't tested that much)
+ - Bots leaving joining mid game is untested and may break things.  This will be properly supported "soon"
+ - Reloading the level, and using Checkpoints are untested and may have unexpected results.  But should be fine. This will be properly supported "soon"
 
 Here's an unscripted preview video:
 
@@ -66,6 +71,9 @@ https://www.youtube.com/watch?v=lrDWroqC-R0
 There is A LOT of unused code and extra stuff in this mod.  I got a little bit too ambitious with some features. I may or may not return to some of them later.
 
 ## Feature details:
+
+### Important note about changing priorities
+One of the major features of this mod is letting you change the priority of different actions and item pickups.  This can be very useful, but it can also cause some unexpected and unintuitive behavior.  I generally recommend making minimal changes to these settings.  If you're having problems with the bots not doing something, or acting strangely, try setting all priorities back to their default values.
 
 ### Smart select!
  - Depending on what you're looking at and context, you can tell the bots to do one of 4 different actions at any given time.  Tap V while looking at a bot to select them, then you can see what they can do at any time on the bottom of your screen.  You can command them by (from left to right) Tapping V, Holding V, Double tapping V, and Tapping then holding V.  There are about 2 dozen different things you can tell them to do!  With more coming eventually.  Below is the full chart of what they can do and how to tell them to do it:
@@ -92,7 +100,7 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
 
 #### Important note about how Smart Select works under the hood.
  - This system may seem to be inconsistent or not pick up on things you think you're looking at, here's why:
- - The system checks a sphere around the point you're looking at, NOT a cone infront of you.  This allows the system to run faster and perform better.
+ - The system checks a sphere around the point you're looking at, NOT a cone in front of you.  This allows the system to run faster and perform better.
  - The system only updates about 10 times per second. 
  - Keep this in mind if you feel like selection is inconsistent.
 
@@ -100,8 +108,8 @@ There is A LOT of unused code and extra stuff in this mod.  I got a little bit t
  - Double tap on an enemy and a bot will walk up to that enemy without attacking.  As soon as any other enemy takes damage from any source, the bot will attack!  You can use this to make sure bots attack at the same time.  Tap then hold to send every bot.
 
 ### Explore action
- - When the team doesn't know about any alive enemies, bots will leave the follow radius and explore the area!  They will do this untill everything reachable has been explored, or an alive enemy has been found.  Then they will return to their leader.
- - Dissabled by default to match vanilla behavior.  You can enable it in the automatic actions menu.
+ - When the team doesn't know about any alive enemies, bots will leave the follow radius and explore the area!  They will do this until everything reachable has been explored, or an alive enemy has been found.  Then they will return to their leader.
+ - Disabled by default to match vanilla behavior.  You can enable it in the automatic actions menu.
 
 ### Stop command
  - This command resets the bots brain, stopping all current actions, automatic and manual.
