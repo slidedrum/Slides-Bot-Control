@@ -1,4 +1,5 @@
-﻿using Player;
+﻿using BotControl.Patches;
+using Player;
 using SlideDrum;
 using SlideMenu;
 using System;
@@ -23,7 +24,12 @@ namespace BotControl.Menus
             AutomaticActionMenuClass.Setup(sMenuManager.createMenu("Automatic Actions", sMenuManager.mainMenu));
             sMenuManager.mainMenu.AddPannel(sMenu.sMenuPannel.Side.top, "<size=150><color=#CC840066>Slide's Bot Control</color></size>");
             sMenuManager.mainMenu.AddPannel(sMenu.sMenuPannel.Side.top, $"<color=#CC840066>[ </color><color=#26262c>V{ZiMain.version}</color><color=#CC840066> ]</color>");
-            sMenuManager.mainMenu.radius = 100f;
+            sMenuManager.mainMenu.AddPannel(sMenu.sMenuPannel.Side.bottom, $"Use <color=#CC840066>[{sMenuManager.keybind}]</color> to navigate the menu.");
+            //sMenuManager.mainMenu.AddPannel(sMenu.sMenuPannel.Side.right, $"Tap to interact");
+            //sMenuManager.mainMenu.AddPannel(sMenu.sMenuPannel.Side.right, $"Double tap for sub menus");
+            //sMenuManager.mainMenu.AddPannel(sMenu.sMenuPannel.Side.right, $"Hold to reset");
+            //sMenuManager.mainMenu.AddPannel(sMenu.sMenuPannel.Side.right, $"Scroll wheel for alt interact");
+            //sMenuManager.mainMenu.radius = 100f;
             if (ZiMain.extraActionMenus) 
             { 
                 ManualActionMenuClass.Setup(sMenuManager.createMenu("Manual Actions", sMenuManager.mainMenu));

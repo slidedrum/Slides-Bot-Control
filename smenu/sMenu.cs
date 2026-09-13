@@ -274,7 +274,7 @@ namespace SlideMenu
                 sMenuManager.previousMenu.Close();
             OnOpened.Invoke();
         }
-        public sMenuPannel AddPannel(sMenuPannel.Side side, string initialText = "")
+        public sMenuPannel AddPannel(sMenuPannel.Side side, string initialText = "") // TODO change default color to a grey.
         {
             if (pannels.ContainsKey(side))
             {

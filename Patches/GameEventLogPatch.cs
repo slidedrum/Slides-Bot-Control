@@ -44,12 +44,12 @@ namespace BotControl.Patches
             }
         }
 
-        private static string GetBindText(InputAction action)
+        public static string GetBindText(InputAction action)
         {
             return "<color=orange>[" + InputMapper.GetBindingName(action) + "]</color>";
         }
 
-        private static string GetBindText(KeyCode key)
+        public static string GetBindText(KeyCode key)
         {
             return "<color=orange>[" + key.ToString() + "]</color>";
         }
