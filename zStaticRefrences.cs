@@ -55,28 +55,29 @@ namespace BotControl
             PlayerManager.PlayerAgentsInLevel.ToArray().ToHashSet();
         public static HashSet<GameObject> AllPlayerAgentObjectsInLevel =>
             PlayerManager.PlayerAgentsInLevel.ToArray().Select(agent => agent.gameObject).ToHashSet();
-        private static HashSet<PlayerAgent> _AllBotAgents;
-        public static HashSet<PlayerAgent> AllBotAgents
-        {
-            get
-            {
-                bool dirty = (_AllBotAgents == null || _AllBotAgents.Any(obj => obj == null));
-                if (dirty)
-                    _AllBotAgents = PlayerManager.PlayerAgentsInLevel.ToArray().Where(agent => agent.Owner.IsBot).ToHashSet();
-                return _AllBotAgents;
-            }
-        }
-        private static HashSet<GameObject> _AllBotObjects;
-        public static HashSet<GameObject> AllBotObjects
-        {
-            get
-            {
-                bool dirty = (_AllBotObjects == null || _AllBotObjects.Any(obj => obj == null));
-                if (dirty)
-                    _AllBotObjects = PlayerManager.PlayerAgentsInLevel.ToArray().Where(agent => agent.Owner.IsBot).Select(agent => agent.gameObject).ToHashSet();
-                return _AllBotObjects;
-            }
-        }
+        public static IEnumerable<PlayerAgent> AllBotAgents => PlayerManager.PlayerAgentsInLevel.ToArray().Where(agent => agent != null && agent.Owner != null && agent.Owner.IsBot);
+        //private static HashSet<PlayerAgent> _AllBotAgents;
+        //public static HashSet<PlayerAgent> AllBotAgents
+        //{
+        //    get
+        //    {
+        //        bool dirty = (_AllBotAgents == null || _AllBotAgents.Any(obj => obj == null));
+        //        if (dirty)
+        //            _AllBotAgents = PlayerManager.PlayerAgentsInLevel.ToArray().Where(agent => agent.Owner.IsBot).ToHashSet();
+        //        return _AllBotAgents;
+        //    }
+        //}
+        //private static HashSet<GameObject> _AllBotObjects;
+        public static HashSet<GameObject> AllBotObjects => PlayerManager.PlayerAgentsInLevel.ToArray().Where(agent => agent.Owner.IsBot).Select(agent => agent.gameObject).ToHashSet();
+        //{
+        //    get
+        //    {
+        //        bool dirty = (_AllBotObjects == null || _AllBotObjects.Any(obj => obj == null));
+        //        if (dirty)
+        //            _AllBotObjects = 
+        //        return _AllBotObjects;
+        //    }
+        //}
         public static Transform[] _SentryRaycastCorners;
         public static Transform[] SentryRaycastCorners
         { 
