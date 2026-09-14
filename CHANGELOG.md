@@ -4,6 +4,10 @@
  ### Please give me some feedback on how balanced the new sync/stealth attack is.  When bots do *any* manual action, they follow the exact same detection rules as players now, so they can and will be detected sometimes.  When not doing manual actions, bots still can't be detected, so they will only mess you up if you tell them to!
  ### These new action types are only possible because of the groundwork laid in the Custom Actions update.  Letting me give bots brand new behavior exactly the same way the devs did.
  
+ ## V 1.3.1
+ - Fixed sleepers sometimes teleporting a short distance when waking up.
+ 
+ ## V 1.3.0
  - When doing manual actions, Bots can now be detected just like players.  When doing automatic actions, bots still can not be detected no matter what.
  - You can now command unelected bots with smart select.  Commands will fall back to the nearest bot.
  - Added option to restrict what guns bots attack with, via a new sub menu in bullet attack menu.
