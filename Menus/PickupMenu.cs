@@ -310,16 +310,20 @@ namespace BotControl.Menus
                 zSlideComputer.ActionPermissions.AddNode("PickupAreas", null, hasDefaultValue: true, parent: "Pickup");
                 foreach (LG_Zone zone in Builder.CurrentFloor.allZones)
                 {
-                    zoneMenus[zone.AliasName] = sMenuManager.createMenu(zone.AliasName, PickupZoneOveridesMenu);
-                    sMenu.sMenuNode ZoneNode = PickupZoneOveridesMenu.GetNode(zone.AliasName);
-                    ZoneNode.RemoveListener(sMenuManager.nodeEvent.OnUnpressedSelected);
-                    PickupZoneOveridesMenu.centerNode.RemoveListener(sMenuManager.nodeEvent.OnUnpressedSelected);
-                    PickupZoneOveridesMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnTapped, PickupZoneOveridesMenu.parrentMenu.Open);
-                    PickupZoneOveridesMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, ResetNode, zone.AliasName);
-                    ZoneNode.AddListener(sMenuManager.nodeEvent.OnTapped, ToggleNode, zone.AliasName);
-                    ZoneNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetNode, zone.AliasName);
-                    ZoneNode.AddListener(sMenuManager.nodeEvent.OnDoubleTapped, zoneMenus[zone.AliasName].Open);
-                    zSlideComputer.ActionPermissions.AddNode(zone.AliasName, null, hasDefaultValue: true, parent: "PickupAreas", onChanged: new FlexibleMethodDefinition(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [zone.AliasName, ZoneNode]));
+                    if (!zoneMenus.ContainsKey(zone.AliasName))
+                    {
+                        zoneMenus[zone.AliasName] = sMenuManager.createMenu(zone.AliasName, PickupZoneOveridesMenu);
+                        sMenu.sMenuNode ZoneNode = PickupZoneOveridesMenu.GetNode(zone.AliasName);
+                        ZoneNode.RemoveListener(sMenuManager.nodeEvent.OnUnpressedSelected);
+                        PickupZoneOveridesMenu.centerNode.RemoveListener(sMenuManager.nodeEvent.OnUnpressedSelected);
+                        PickupZoneOveridesMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnTapped, PickupZoneOveridesMenu.parrentMenu.Open);
+                        PickupZoneOveridesMenu.centerNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediateSelected, ResetNode, zone.AliasName);
+                        ZoneNode.AddListener(sMenuManager.nodeEvent.OnTapped, ToggleNode, zone.AliasName);
+                        ZoneNode.AddListener(sMenuManager.nodeEvent.OnHeldImmediate, ResetNode, zone.AliasName);
+                        ZoneNode.AddListener(sMenuManager.nodeEvent.OnDoubleTapped, zoneMenus[zone.AliasName].Open);
+                        zSlideComputer.ActionPermissions.AddNode(zone.AliasName, null, hasDefaultValue: true, parent: "PickupAreas", onChanged: new FlexibleMethodDefinition(AutomaticActionMenuClass.GenericUpdateNodeAllowedDisplay, args: [zone.AliasName, ZoneNode]));
+                    }
+                    
                     foreach (LG_Area area in zone.m_areas)
                     {
                         string name = $"{zone.AliasName} {area.m_geoArea}";
