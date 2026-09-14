@@ -5,7 +5,7 @@ using UnityEngine;
 namespace BotControl.CustomActions.CustomActions
 {
 
-    public class CustomBotActionGuard : CustomActionBase
+    public class CustomBotActionGuard : CustomActionBase // TODO after the bot reaches the destination for the firs time.  Should it still count as them doing a manual action when something else (like highlight) pulls them away? and when the come back?
     {
 
         //This is an example of how you can set up your own custom action!
