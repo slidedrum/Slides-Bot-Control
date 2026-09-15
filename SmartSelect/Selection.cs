@@ -12,7 +12,14 @@ namespace BotControl.SmartSelect
         public Selection() { }
         private void CleanNull()
         {
-            SelectedObjects.RemoveWhere(obj => obj == null);
+            HashSet<Component> live = new(new ComponentInstanceIdComparer());
+            foreach (Component obj in SelectedObjects)
+            {
+                if (obj == null)
+                    continue;
+                live.Add(obj);
+            }
+            SelectedObjects = live;
         }
         public void Select(Component component, bool oneBot = true)
         {
