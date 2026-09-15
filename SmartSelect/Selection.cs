@@ -10,15 +10,9 @@ namespace BotControl.SmartSelect
         private HashSet<Component> SelectedObjects = new(new ComponentInstanceIdComparer());
 
         public Selection() { }
-        private void CleanNull() // TODO this doesn't actually remove null objects
+        private void CleanNull()
         {
-            foreach(var obj in SelectedObjects)
-            {
-                if (obj == null)
-                {
-                    SelectedObjects.Remove(obj); // this line is the problem.
-                }
-            }
+            SelectedObjects.RemoveWhere(obj => obj == null);
         }
         public void Select(Component component, bool oneBot = true)
         {
