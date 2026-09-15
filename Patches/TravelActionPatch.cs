@@ -60,6 +60,18 @@ namespace BotControl.Patches
                 agentData[bot] = new AgentData();
             return agentData[bot];
         }
+        internal static void DropStaleAgentData(HashSet<IntPtr> liveBots)
+        {
+            zActions.DropKeysNotIn(agentData, liveBots);
+        }
+        internal static void DropAgentData(IntPtr bot)
+        {
+            agentData.Remove(bot);
+        }
+        internal static void DropSavedWalkState(IntPtr descPtr)
+        {
+            savedWalkState.Remove(descPtr);
+        }
         [HarmonyPatch(typeof(PlayerBotActionWalk), nameof(PlayerBotActionWalk.UpdateMovement))]
         [HarmonyPrefix]
         private static bool Pre_UpdateMovement(PlayerBotActionWalk __instance)

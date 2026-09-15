@@ -2,6 +2,7 @@
 using PrioritySet;
 using System;
 using System.Collections.Generic;
+using BotControl.Patches;
 //using Zombified_Initiative;
 
 namespace BotControl.CustomActions
@@ -34,7 +35,7 @@ namespace BotControl.CustomActions
     public static class zActions
     {
         
-        internal static readonly Dictionary<int, dataStore> ActionDataStore = new();
+        internal static readonly Dictionary<IntPtr, dataStore> ActionDataStore = new();
         private static Dictionary<IntPtr, List<ManualAction>> manualActions = new();
         public static List<ManualAction> GetPlayersManualActions(PlayerAgent playerAgent)
         {
@@ -92,13 +93,64 @@ namespace BotControl.CustomActions
         }
         internal static dataStore GetOrCreateData(PlayerAIBot botBase)
         {
-            int botId = botBase.GetInstanceID();
-            if (!ActionDataStore.TryGetValue(botId, out var data))
+            IntPtr botPtr = botBase.Pointer;
+            if (!ActionDataStore.TryGetValue(botPtr, out var data))
             {
                 data = new dataStore();
-                ActionDataStore[botId] = data;
+                ActionDataStore[botPtr] = data;
             }
             return data;
+        }
+        internal static void DropStaleActionData(HashSet<IntPtr> liveBots)
+        {
+            DropKeysNotIn(ActionDataStore, liveBots);
+        }
+        internal static void DropBotMaps(PlayerAIBot bot)
+        {
+            if (bot == null)
+                return;
+            ActionDataStore.Remove(bot.Pointer);
+            zActionSub.botActionMap.Remove(bot.Pointer);
+            TravelActionPatch.DropAgentData(bot.Pointer);
+            var root = bot.m_rootAction?.ActionBase?.TryCast<RootPlayerBotAction>();
+            if (root?.m_attackAction != null)
+                AttackActionPatch.AllowedGuns.Remove(root.m_attackAction.Pointer);
+        }
+        internal static void PruneBotMaps(List<PlayerAIBot> liveBots)
+        {
+            var live = new HashSet<IntPtr>();
+            var liveAttack = new HashSet<IntPtr>();
+            if (liveBots != null)
+            {
+                foreach (var bot in liveBots)
+                {
+                    if (bot == null)
+                        continue;
+                    live.Add(bot.Pointer);
+                    var root = bot.m_rootAction?.ActionBase?.TryCast<RootPlayerBotAction>();
+                    if (root?.m_attackAction != null)
+                        liveAttack.Add(root.m_attackAction.Pointer);
+                }
+            }
+            DropStaleActionData(live);
+            zActionSub.DropStaleBotActionMap(live);
+            TravelActionPatch.DropStaleAgentData(live);
+            AttackActionPatch.DropStaleAllowedGuns(liveAttack);
+        }
+        internal static void DropKeysNotIn<T>(Dictionary<IntPtr, T> dict, HashSet<IntPtr> live)
+        {
+            List<IntPtr> dead = null;
+            foreach (var key in dict.Keys)
+            {
+                if (live.Contains(key))
+                    continue;
+                dead ??= new List<IntPtr>();
+                dead.Add(key);
+            }
+            if (dead == null)
+                return;
+            foreach (var key in dead)
+                dict.Remove(key);
         }
         public static bool AnyCustomActionRunning(PlayerAIBot Bot)
         {

@@ -1,6 +1,7 @@
 using Gear;
 using HarmonyLib;
 using Player;
+using BotControl.CustomActions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Linq;
 namespace BotControl.Patches
 {
     [HarmonyPatch]
-    public class AttackActionPatch
+    public class AttackActionPatch // TODO allowed weapons does not override allow bullet. this is a bug.
     {
         private static PlayerBotActionBase.Descriptor originalBestAction;
         public static List<PlayerBotActionAttack.AttackMeansEnum> meansList =
@@ -17,7 +18,11 @@ namespace BotControl.Patches
                     x != PlayerBotActionAttack.AttackMeansEnum.None &&
                     ((int)x & ((int)x - 1)) == 0)
                 .ToList();
-        public static Dictionary<IntPtr, List<InventorySlot>> AllowedGuns = new(); // TODO fix the memory leak with this dict not removing old items.
+        public static Dictionary<IntPtr, List<InventorySlot>> AllowedGuns = new();
+        internal static void DropStaleAllowedGuns(HashSet<IntPtr> liveAttackDescs)
+        {
+            zActions.DropKeysNotIn(AllowedGuns, liveAttackDescs);
+        }
         [HarmonyPatch(typeof(RootPlayerBotAction), nameof(RootPlayerBotAction.UpdateActionAttack))]
         [HarmonyPrefix]
         [HarmonyPriority(Priority.Last)] //Needed for betterbots compat?

@@ -77,11 +77,20 @@ namespace BotControl.Patches
         {
             if (m_enemyAgent == null)
                 return;
+            CarvedSleepers.Remove(m_enemyAgent.Pointer);
             var obstacle = m_enemyAgent.gameObject.GetComponent<NavMeshObstacle>();
             if (obstacle == null)
                 return;
             obstacle.carving = false;
             obstacle.enabled = false;
+        }
+
+        [HarmonyPatch(typeof(EnemyAgent), nameof(EnemyAgent.OnDestroy))]
+        [HarmonyPrefix]
+        static void Pre_EnemyOnDestroy(EnemyAgent __instance)
+        {
+            if (__instance != null)
+                CarvedSleepers.Remove(__instance.Pointer);
         }
     }
 }

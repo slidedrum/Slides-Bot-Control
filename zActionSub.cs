@@ -1,5 +1,6 @@
 ﻿using Player;
 using SlideMenu;
+using BotControl.CustomActions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +13,18 @@ namespace BotControl
         //This whole class may be redundant.  I think there's a way to do this built in.  Not sure how it works yet tho.
         public static List<Action<PlayerAIBot, PlayerBotActionBase>> onAdded = new();
         public static List<Action<PlayerAIBot, PlayerBotActionBase>> onRemoved = new();
-        public static Dictionary<int, List<PlayerBotActionBase>> botActionMap = new();
+        public static Dictionary<IntPtr, List<PlayerBotActionBase>> botActionMap = new();
         public static Dictionary<IntPtr, FlexibleEvent> actionCallbacks = new Dictionary<IntPtr, FlexibleEvent>();
+        private static HashSet<IntPtr> lastLiveBotPtrs;
         public static void Update()
         {
             List<PlayerAIBot> playerAiBots = ZiMain.GetBotList();
+            PruneBotMapsIfRosterChanged(playerAiBots);
             var comparer = new Il2CppActionComparer();
             foreach (var bot in playerAiBots)
             {
                 var oldList = new List<PlayerBotActionBase>();
-                botActionMap.TryGetValue(bot.GetInstanceID(), out oldList);
+                botActionMap.TryGetValue(bot.Pointer, out oldList);
                 if (oldList == null)
                 {
                     oldList = new List<PlayerBotActionBase>();
@@ -41,8 +44,25 @@ namespace BotControl
                 {
                     onRemove(bot, item);
                 }
-                botActionMap[bot.GetInstanceID()] = newList;
+                botActionMap[bot.Pointer] = newList;
             }
+        }
+        internal static void DropStaleBotActionMap(HashSet<IntPtr> liveBots)
+        {
+            zActions.DropKeysNotIn(botActionMap, liveBots);
+        }
+        private static void PruneBotMapsIfRosterChanged(List<PlayerAIBot> liveBots)
+        {
+            var live = new HashSet<IntPtr>();
+            foreach (var bot in liveBots)
+            {
+                if (bot != null)
+                    live.Add(bot.Pointer);
+            }
+            if (lastLiveBotPtrs != null && lastLiveBotPtrs.SetEquals(live))
+                return;
+            lastLiveBotPtrs = live;
+            zActions.PruneBotMaps(liveBots);
         }
         public static void addOnAdded(Action<PlayerAIBot, PlayerBotActionBase> action)
         {

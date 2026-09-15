@@ -21,10 +21,15 @@ public class ZombifiedPatches
     [HarmonyPostfix]
     public static void InternalOnTerminated(PlayerBotActionBase.Descriptor __instance)
     {
-        if (zActionSub.actionCallbacks.ContainsKey(__instance.Pointer))
+        IntPtr ptr = __instance.Pointer;
+        if (zActionSub.actionCallbacks.TryGetValue(ptr, out var ev))
         {
-            zActionSub.actionCallbacks[__instance.Pointer].Invoke();
+            ev.Invoke();
+            zActionSub.actionCallbacks.Remove(ptr);
         }
+        TravelActionPatch.DropSavedWalkState(ptr);
+        GlueGunPatch.standPos.Remove(ptr);
+        ThrowItemPatch.standPos.Remove(ptr);
     }
     //[HarmonyPatch(typeof(PlayerManager), nameof(PlayerManager.OnObjectHighlighted))]
     //[HarmonyPrefix]

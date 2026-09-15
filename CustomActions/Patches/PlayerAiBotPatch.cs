@@ -106,6 +106,29 @@ namespace BotControl.CustomActions.Patches
             CustomActionRegistry.Setup(__instance);
             ZiMain.log.LogMessage("init playerbot");
         }
+        [HarmonyPatch(typeof(PlayerAgent), nameof(PlayerAgent.OnDespawn))]
+        [HarmonyPrefix]
+        public static void PreOnDespawn(PlayerAgent __instance)
+        {
+            if (__instance == null)
+                return;
+            PlayerAIBot bot = __instance.GetComponent<PlayerAIBot>();
+            if (bot == null)
+                return;
+            zActions.DropBotMaps(bot);
+        }
+        [HarmonyPatch(typeof(PlayerManager), nameof(PlayerManager.OnDeSpawnAll_NoSync))]
+        [HarmonyPostfix]
+        public static void PostDeSpawnAll()
+        {
+            zActions.PruneBotMaps(null);
+        }
+        [HarmonyPatch(typeof(PlayerManager), nameof(PlayerManager.OnLevelCleanup))]
+        [HarmonyPostfix]
+        public static void PostLevelCleanup()
+        {
+            zActions.PruneBotMaps(null);
+        }
         //[HarmonyPatch(typeof(PlayerAIBot), nameof(PlayerAIBot.Update))]
         //[HarmonyPrefix]
         //public static void Update(PlayerAIBot instance)
