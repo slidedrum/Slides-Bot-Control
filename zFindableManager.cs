@@ -170,10 +170,13 @@ namespace BotControl
                 if (AgentSearchIndex >= PlayerManager.PlayerAgentsInLevel.Count)
                     AgentSearchIndex = 0;
                 PlayerAgent agent = PlayerManager.PlayerAgentsInLevel[AgentSearchIndex];
-                UpdateFindables(agent);
-                UpdatefindsQue(agent);
                 AgentSearchIndex++;
                 lastSearched = Time.time;
+                if (agent != null)
+                {
+                    UpdateFindables(agent);
+                    UpdatefindsQue(agent);
+                }
             }
             FindsQueu();
             CleanFindableObjectMaps();
@@ -564,9 +567,11 @@ namespace BotControl
                 var item = findsQueue.Dequeue();
                 var agent = item.Item2;
                 var findable = item.Item1;
-                var gameObject = findable.gameObject;
+                if (agent == null || agent.Owner == null)
+                    continue;
                 if (findable == null)
                     continue;
+                var gameObject = findable.gameObject;
                 if (gameObject == null)
                     continue;
                 if (!gameObject.activeInHierarchy)
@@ -607,6 +612,8 @@ namespace BotControl
         }
         public static void UpdatefindsQue(PlayerAgent agent)
         {
+            if (agent == null)
+                return;
             Vector3 pos = agent.transform.position;
             int cellX = Mathf.FloorToInt(pos.x / MapCellSise);
             int cellZ = Mathf.FloorToInt(pos.z / MapCellSise);
