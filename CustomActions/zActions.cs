@@ -36,12 +36,15 @@ namespace BotControl.CustomActions
         
         internal static readonly Dictionary<int, dataStore> ActionDataStore = new();
         private static Dictionary<IntPtr, List<ManualAction>> manualActions = new();
-        public static List<ManualAction> GetPlayersManualActions(PlayerAgent playerPointer)
+        public static List<ManualAction> GetPlayersManualActions(PlayerAgent playerAgent)
         {
-            return GetPlayersManualActions(playerPointer.Pointer);
+            if (playerAgent == null)
+                return null;
+            return GetPlayersManualActions(playerAgent.Pointer);
         }
         public static List<ManualAction> GetPlayersManualActions(IntPtr playerPointer)
         {
+            DropStaleCommanders();
             foreach (PlayerAgent playerAgent in PlayerManager.PlayerAgentsInLevel)
             {
                 if (playerAgent == null)
@@ -60,13 +63,20 @@ namespace BotControl.CustomActions
         }
         private static void DropStaleCommanders()
         {
-            var live = new Dictionary<IntPtr, List<ManualAction>>();
+            var livePointers = new HashSet<IntPtr>();
             foreach (PlayerAgent agent in PlayerManager.PlayerAgentsInLevel)
             {
-                if (agent == null)
+                if (agent != null)
+                    livePointers.Add(agent.Pointer);
+            }
+            var live = new Dictionary<IntPtr, List<ManualAction>>();
+            foreach (var ptr in livePointers)
+            {
+                if (!manualActions.TryGetValue(ptr, out var list) || list == null)
                     continue;
-                if (manualActions.TryGetValue(agent.Pointer, out var list) && list != null)
-                    live[agent.Pointer] = list;
+                list.RemoveAll(a => a == null || a.Bot == null || a.Bot.Agent == null || !livePointers.Contains(a.Bot.Agent.Pointer));
+                if (list.Count > 0)
+                    live[ptr] = list;
             }
             manualActions = live;
         }

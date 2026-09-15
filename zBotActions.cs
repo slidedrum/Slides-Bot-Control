@@ -620,12 +620,13 @@ namespace BotControl
             {
                 var Actions = zActions.GetPlayersManualActions(PlayerAgent.Pointer);
                 if (Actions == null)
-                    return;
+                    continue;
                 foreach (ManualAction mAction in Actions)
                 {
                     if (actionID == mAction.ID)
                     {
-                        mAction.Bot.StopAction(mAction.ActionDescriptor);
+                        if (mAction.Bot != null)
+                            mAction.Bot.StopAction(mAction.ActionDescriptor);
                         return;
                     }
                 }

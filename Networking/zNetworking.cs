@@ -413,13 +413,14 @@ namespace BotControl.Networking
             {
                 var Actions = zActions.GetPlayersManualActions(Player.Pointer);
                 if (Actions == null)
-                    return;
+                    continue;
                 foreach (var action in Actions) 
                 {
                     if (action.ID == info.ID)
                     {
                         zBotActions.CancelBotAction(info.ID, netsender);
-                        ZiMain.log.LogInfo($"Remotely canceld {action.Commander.PlayerName}'s command for {action.Bot.Agent.PlayerName} to {action.ActionDescriptor.GetIl2CppType().FullName}");
+                        if (action?.Bot?.Agent != null)
+                            ZiMain.log.LogInfo($"Remotely canceld {action.Commander.PlayerName}'s command for {action.Bot.Agent.PlayerName} to {action.ActionDescriptor.GetIl2CppType().FullName}");
                         return;
                     }
                 }
