@@ -22,8 +22,8 @@ namespace BotControl
         //public static Dictionary<eDimensionIndex, Dictionary<Vector3Int, HashSet<VisitNode>>> NodeMap = new();
         public static Dictionary<Vector3Int, HashSet<VisitNode>> NodeMap = new();
         private static bool setup = false;
-        private static List<PlayerAgent> agents = new();
-        private static List<PlayerAgent> botAgents = new();
+        //private static List<PlayerAgent> agents => new();
+        //private static List<PlayerAgent> botAgents = new();
         private const int areaMask = 1 << 0;
         internal static OrderedSet<VisitNode> nodesThatNeedConnectionChecks = new();
         internal static OrderedSet<nodeToCreate> nodesToCreate = new();
@@ -126,19 +126,19 @@ namespace BotControl
             debugLines = _debugLines;
             nodesThatNeedConnectionChecks.Clear();
             nodesToCreate.Clear();
-            agents = PlayerManager.PlayerAgentsInLevel.ToArray().ToList();
-            botAgents.Clear();
-            foreach (PlayerAgent agent in agents)
-            {
-                if (agent.Owner.IsBot)
-                {
-                    botAgents.Add(agent);
-                }
-            }
+            //agents = PlayerManager.PlayerAgentsInLevel.ToArray().ToList();
+            //botAgents.Clear();
+            //foreach (PlayerAgent agent in PlayerManager.PlayerAgentsInLevel)
+            //{
+            //    if (agent.Owner.IsBot)
+            //    {
+            //        botAgents.Add(agent);
+            //    }
+            //}
             setup = true;
             if (instantNodePropigation)
             {
-                foreach (var agent in agents)
+                foreach (var agent in PlayerManager.PlayerAgentsInLevel)
                 {
                     var node = CreateNodeOnNavMesh(agent.Position);
                     if (node != null)
@@ -235,9 +235,9 @@ namespace BotControl
                 Setup();
             if (!setup)
                 return;
-            if (agents.Any(x => x == null))
-                agents = PlayerManager.PlayerAgentsInLevel.ToArray().ToList(); // This bad, TODO refactor.
-            foreach(PlayerAgent agent in agents)
+            //if (agents.Any(x => x == null))
+            //    agents = PlayerManager.PlayerAgentsInLevel.ToArray().ToList(); // This bad, TODO refactor.
+            foreach(PlayerAgent agent in PlayerManager.PlayerAgentsInLevel)
             {
                 HashSet<VisitNode> visitableNodes = GetNearByNodes(agent.transform.position, NodeVisitDistance);
                 bool nodesNearby = HasNodesnearby(agent.Position, NodeGridSize);

@@ -74,10 +74,15 @@ namespace BotControl
             if (__result)
                 return;
             var key = bot.Agent.CharacterID;
-            foreach(var kvp in zActions.manualActions)
+            foreach (PlayerAgent playerAgent in PlayerManager.PlayerAgentsInLevel)
             {
-                foreach (var action in kvp.Value)
+                List<ManualAction> actions = zActions.GetPlayersManualActions(playerAgent.Pointer);
+                if (actions == null)
+                    continue;
+                foreach (var action in actions)
                 {
+                    if (action?.Bot == null)
+                        continue;
                     if (action.Bot.Pointer == bot.Pointer)
                     {
                         __result = true;

@@ -1,5 +1,6 @@
 ﻿using Player;
 using PrioritySet;
+using System;
 using System.Collections.Generic;
 //using Zombified_Initiative;
 
@@ -32,8 +33,43 @@ namespace BotControl.CustomActions
     }
     public static class zActions
     {
-        public static Dictionary<int, List<ManualAction>> manualActions = new();
+        
         internal static readonly Dictionary<int, dataStore> ActionDataStore = new();
+        private static Dictionary<IntPtr, List<ManualAction>> manualActions = new();
+        public static List<ManualAction> GetPlayersManualActions(PlayerAgent playerPointer)
+        {
+            return GetPlayersManualActions(playerPointer.Pointer);
+        }
+        public static List<ManualAction> GetPlayersManualActions(IntPtr playerPointer)
+        {
+            foreach (PlayerAgent playerAgent in PlayerManager.PlayerAgentsInLevel)
+            {
+                if (playerAgent == null)
+                    continue;
+                if (playerAgent.Pointer != playerPointer)
+                    continue;
+                if (!manualActions.TryGetValue(playerPointer, out var actions) || actions == null)
+                {
+                    actions = new List<ManualAction>();
+                    manualActions[playerPointer] = actions;
+                }
+                return actions;
+            }
+            manualActions.Remove(playerPointer);
+            return null;
+        }
+        private static void DropStaleCommanders()
+        {
+            var live = new Dictionary<IntPtr, List<ManualAction>>();
+            foreach (PlayerAgent agent in PlayerManager.PlayerAgentsInLevel)
+            {
+                if (agent == null)
+                    continue;
+                if (manualActions.TryGetValue(agent.Pointer, out var list) && list != null)
+                    live[agent.Pointer] = list;
+            }
+            manualActions = live;
+        }
         internal static dataStore GetOrCreateData(PlayerBotActionBase.Descriptor desc)
         {
             PlayerAIBot bot = desc.Bot;
@@ -64,12 +100,13 @@ namespace BotControl.CustomActions
         }
         public static bool DoingAnyManualAction(PlayerAgent bot)
         {
+            DropStaleCommanders();
             if (manualActions == null) return false;
             foreach(List<ManualAction> actions in manualActions.Values)
             {
                 foreach( ManualAction action in actions)
                 {
-                    if (action.Bot.Agent.Pointer == bot.Pointer && !action.ActionDescriptor.IsTerminated())
+                    if (action?.Bot?.Agent?.Pointer == bot.Pointer && !(action.ActionDescriptor != null && action.ActionDescriptor.IsTerminated()))
                         return true;
                 }
             }
@@ -77,6 +114,7 @@ namespace BotControl.CustomActions
         }
         public static PlayerAgent isManualAction(PlayerBotActionBase.Descriptor descriptor)
         {
+            DropStaleCommanders();
             if (descriptor == null) return null;
             if (manualActions == null) return null;
             foreach (var key in manualActions.Keys)

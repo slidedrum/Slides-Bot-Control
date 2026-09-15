@@ -258,30 +258,26 @@ public class ZiMain : BasePlugin
     public static void onActionTerminated(PlayerAIBot bot , PlayerBotActionBase action) // TODO add options for them to notify you for more actions.  and option for manual only setting.
     { //TODO - Use a string builder
         string typeName = action.GetIl2CppType().Name;
-        bool manualAction = zActions.isManualAction(action.DescBase);
-        if (manualAction)
+        PlayerAgent manualActionCommander = zActions.isManualAction(action.DescBase);
+        if (manualActionCommander != null)
         {
-            bool found = false;
-            foreach (var key in zActions.manualActions.Keys)
+            foreach (PlayerAgent playerAgent in PlayerManager.PlayerAgentsInLevel)
             {
-                foreach (ManualAction mAction in zActions.manualActions[key])
+                List<ManualAction> actions = zActions.GetPlayersManualActions(playerAgent.Pointer);
+                int index = actions.FindIndex(mAction => mAction.ActionDescriptor.Pointer == action.DescBase.Pointer);
+                if (index >= 0)
                 {
-                    var desc = mAction.ActionDescriptor;
-                    if (desc.Pointer == action.DescBase.Pointer)
+                    ManualAction mAction = actions[index];
+                    actions.RemoveAt(index);
+
+                    pActionTerminatedInfo info = new()
                     {
-                        zActions.manualActions[key].Remove(mAction);
-                        pActionTerminatedInfo info = new()
-                        {
-                            ID = mAction.ID,
-                            status = action.DescBase.Status,
-                        };
-                        NetworkAPI.InvokeEvent<pActionTerminatedInfo>("NotifyActionTerminated", info);
-                        found = true;
-                        break;
-                    }
-                }
-                if (found)
+                        ID = mAction.ID,
+                        status = action.DescBase.Status,
+                    };
+                    NetworkAPI.InvokeEvent<pActionTerminatedInfo>("NotifyActionTerminated", info);
                     break;
+                }
             }
             if (!zActions.DoingAnyManualAction(bot.Agent))
                 CustomWakeManager.ApplyToExistingTargets(bot.Agent, false);
@@ -307,7 +303,7 @@ public class ZiMain : BasePlugin
                 actionName = "picked up";
             }
             log.LogInfo($"{bot.Agent.PlayerName} completed collect {publicName} task with status: {action.DescBase.Status}  access layers {descriptor.m_accessLayers}");
-            string article = manualAction ? "the" : "a";
+            string article = manualActionCommander ? "the" : "a";
             if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
             {
                 InventorySlot slot = descriptor.TargetItem.ItemDataBlock.inventorySlot;
@@ -346,7 +342,7 @@ public class ZiMain : BasePlugin
             log.LogInfo($" {descriptor.Item.PublicName} task with status: ");
             log.LogInfo($"{action.DescBase.Status}  ");
             log.LogInfo($"access layers {descriptor.m_accessLayers}");
-            string article = manualAction ? "the" : "a";
+            string article = manualActionCommander ? "the" : "a";
             string receverOrMyslef = descriptor.Receiver == bot.Agent ? "myself" : descriptor.Receiver.PlayerName;
             log.LogInfo($"Got receiver or myself {receverOrMyslef}");
             if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
@@ -368,7 +364,7 @@ public class ZiMain : BasePlugin
         }
         else if (typeName == "PlayerBotActionTravel")
         {
-            if (manualAction)
+            if (manualActionCommander)
             {
                 if (action.DescBase.ParentActionBase == null)
                 {
@@ -382,7 +378,7 @@ public class ZiMain : BasePlugin
         }
         else if (typeName == "PlayerBotActionAttack")
         {
-            if (manualAction)
+            if (manualActionCommander)
             {
                 string frinedlyIdent = PressActionManager.GetAction("Attack Enemy").FriendlyIdentifier;
                 if (action.DescBase.Status == PlayerBotActionBase.Descriptor.StatusType.Successful)
@@ -393,7 +389,7 @@ public class ZiMain : BasePlugin
         }
         else if (typeName == "CustomBotActionStealthAttack")
         {
-            if (manualAction)
+            if (manualActionCommander)
             {
                 var desc = action.DescBase.TryCast<CustomBotActionStealthAttack.Descriptor>();
                 var stealth = action.TryCast<CustomBotActionStealthAttack>();
@@ -455,6 +451,17 @@ public class ZiMain : BasePlugin
     }
     public static List<PlayerAIBot> GetBotList()
     {
+        var bots = new List<PlayerAIBot>();
+        foreach (PlayerAgent agent in PlayerManager.PlayerAgentsInLevel)
+        {
+            if (agent == null || agent.Owner == null || !agent.Owner.IsBot)
+                continue;
+
+            PlayerAIBot bot = agent.GetComponent<PlayerAIBot>();
+            if (bot != null)
+                bots.Add(bot);
+        }
+        return bots;
         if (LastPlayerCount != PlayerManager.PlayerAgentsInLevel.Count)
             UpdateBotList();
         else if (_botList == null)

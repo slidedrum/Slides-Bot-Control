@@ -167,15 +167,13 @@ namespace BotControl
             }
             if (Time.time - lastSearched > searchTiming)
             {
+                if (AgentSearchIndex >= PlayerManager.PlayerAgentsInLevel.Count)
+                    AgentSearchIndex = 0;
                 PlayerAgent agent = PlayerManager.PlayerAgentsInLevel[AgentSearchIndex];
                 UpdateFindables(agent);
                 UpdatefindsQue(agent);
                 AgentSearchIndex++;
                 lastSearched = Time.time;
-                if (AgentSearchIndex >= PlayerManager.PlayerAgentsInLevel.Count)
-                {
-                    AgentSearchIndex = 0;
-                }
             }
             FindsQueu();
             CleanFindableObjectMaps();
@@ -575,12 +573,12 @@ namespace BotControl
                     continue;
                 if (findable.found)
                     continue;
-                if (!findable.lastCheckedVis.TryGetValue(agent.Owner.PlayerSlotIndex(), out float lastChecked))
+                if (!findable.lastCheckedVis.TryGetValue(agent.Owner.Pointer, out float lastChecked))
                     lastChecked = 0f;
                 if (Time.time - lastChecked < searchTiming)
                     continue;
 
-                findable.lastCheckedVis[agent.Owner.PlayerSlotIndex()] = Time.time;
+                findable.lastCheckedVis[agent.Owner.Pointer] = Time.time;
 
                 // Check visibility / distance
                 zVisibilityManager.visSettings settings = new()
@@ -714,7 +712,7 @@ namespace BotControl
         }
         public eNavMarkerStyle pingSyle;
         public bool found;
-        public Dictionary<int,float> lastCheckedVis = new();
+        public Dictionary<IntPtr,float> lastCheckedVis = new();
     }
     
     public class VisitSearchNode

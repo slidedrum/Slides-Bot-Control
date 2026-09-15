@@ -51,10 +51,8 @@ namespace BotControl
                 return _CameraTransform;
             }
         }
-        public static HashSet<PlayerAgent> AllPlayerAgentsInLevel => 
-            PlayerManager.PlayerAgentsInLevel.ToArray().ToHashSet();
-        public static HashSet<GameObject> AllPlayerAgentObjectsInLevel =>
-            PlayerManager.PlayerAgentsInLevel.ToArray().Select(agent => agent.gameObject).ToHashSet();
+        public static HashSet<PlayerAgent> AllPlayerAgentsInLevel =>  PlayerManager.PlayerAgentsInLevel.ToArray().ToHashSet();
+        public static HashSet<GameObject> AllPlayerAgentObjectsInLevel => PlayerManager.PlayerAgentsInLevel.ToArray().Select(agent => agent.gameObject).ToHashSet();
         public static IEnumerable<PlayerAgent> AllBotAgents => PlayerManager.PlayerAgentsInLevel.ToArray().Where(agent => agent != null && agent.Owner != null && agent.Owner.IsBot);
         //private static HashSet<PlayerAgent> _AllBotAgents;
         //public static HashSet<PlayerAgent> AllBotAgents

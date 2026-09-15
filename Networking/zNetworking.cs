@@ -392,13 +392,14 @@ namespace BotControl.Networking
         {
             if (SNet.IsMaster)
                 return;
-            if (!zActions.manualActions.ContainsKey(zStaticRefrences.LocalPlayer.CharacterID))
+            var LocalManualActions = zActions.GetPlayersManualActions(zStaticRefrences.LocalPlayer.Pointer);
+            if (LocalManualActions.Count == 0)
                 return;
-            foreach (ManualAction action in zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID])
+            foreach (ManualAction action in LocalManualActions)
             {
                 if (action.ID == info.ID)
                 {
-                    zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Remove(action);
+                    LocalManualActions.Remove(action);
                     break;
                 }
             }
@@ -408,10 +409,13 @@ namespace BotControl.Networking
             ZiMain.log.LogInfo($"Recived request to cancel action {info.ID}!");
             if (!SNet.IsMaster)
                 return;
-            foreach (var key in zActions.manualActions.Keys)
+            foreach (PlayerAgent Player in PlayerManager.PlayerAgentsInLevel)
             {
-                foreach (var action in zActions.manualActions[key]) 
-                { 
+                var Actions = zActions.GetPlayersManualActions(Player.Pointer);
+                if (Actions == null)
+                    return;
+                foreach (var action in Actions) 
+                {
                     if (action.ID == info.ID)
                     {
                         zBotActions.CancelBotAction(info.ID, netsender);

@@ -1,6 +1,7 @@
 ﻿using BotControl.CustomActions;
 using Player;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace BotControl.SmartSelect.PressActions.TapActions
@@ -20,7 +21,7 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Cancel that.", 1);
             //if (zActions.manualActions.Count <= 1) return false;
             HashSet<PlayerAIBot> BotsWithManualActions = new();
-            foreach (var action in zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID])
+            foreach (var action in zActions.GetPlayersManualActions(zStaticRefrences.LocalPlayer.Pointer))
             {
                 zBotActions.CancelBotAction(action.ID);
                 BotsWithManualActions.Add(action.Bot);
@@ -36,9 +37,9 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             // Candidate is irrelevant for this action, we just need to check if we have any bots selected
             bool facingUp = Vector3.Angle(zStaticRefrences.CameraTransform.forward, Vector3.up) < 15f;
             if (!facingUp) return false;
-            if (zActions.manualActions.Count == 0) return false;
-            if (!zActions.manualActions.ContainsKey(zStaticRefrences.LocalPlayer.CharacterID)) return false;
-            if (zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Count <= 1) return false;
+            var Actions = zActions.GetPlayersManualActions(zStaticRefrences.LocalPlayer.Pointer);
+            if (Actions.Count <= 1) return false;
+            if (Actions.Last().Bot?.Agent?.Owner == null) return false;
             return true;
         }
     }

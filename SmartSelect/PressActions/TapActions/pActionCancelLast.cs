@@ -21,9 +21,9 @@ namespace BotControl.SmartSelect.PressActions.TapActions
         {
             PlayerVoiceManager.WantToSay(zStaticRefrences.LocalPlayer.CharacterID, AK.EVENTS.PLAY_CL_CANCELTHAT);
             zStaticRefrences.Subtitles.ShowSingleLineSubtitle("Cancel that.", 1);
-            if (zActions.manualActions.Count == 0) return false;
-            if (zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Count == 0) return false;
-            ManualAction mAction = zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Last();
+            var Actions = zActions.GetPlayersManualActions(zStaticRefrences.LocalPlayer.Pointer);
+            if (Actions.Count == 0) return false;
+            ManualAction mAction = Actions.Last();
             zBotActions.CancelBotAction(mAction.ID);
             zChatHandler.sendChatMessage("Nevermind.", FriendlyIdentifier + IPressAction.chatPermSuffix, mAction.Bot.Agent, zStaticRefrences.LocalPlayer);
             return true;
@@ -33,10 +33,10 @@ namespace BotControl.SmartSelect.PressActions.TapActions
             // Candidate is irrelevant for this action, we just need to check if we have any bots selected
             bool facingUp = Vector3.Angle(zStaticRefrences.CameraTransform.forward, Vector3.up) < 15f;
             if (!facingUp) return false;
-            if (zActions.manualActions.Count == 0) return false;
-            if (!zActions.manualActions.ContainsKey(zStaticRefrences.LocalPlayer.CharacterID)) return false;
-            if (zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Count == 0) return false;
-            Color = zActions.manualActions[zStaticRefrences.LocalPlayer.CharacterID].Last().Bot.Agent.Owner.PlayerColor;
+            var Actions = zActions.GetPlayersManualActions(zStaticRefrences.LocalPlayer.Pointer);
+            if (Actions.Count == 0) return false;
+            if (Actions.Last().Bot?.Agent?.Owner == null) return false;
+            Color = Actions.Last().Bot.Agent.Owner.PlayerColor;
             //if (zActions.manualActions.Last().IsTerminated()) return false;
             return true;
         }

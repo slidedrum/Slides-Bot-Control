@@ -21,9 +21,10 @@ namespace BotControl
         public static float defaultPrio = 14f;
         public static void StartAction(ManualAction manualAction)
         {
-            if (!zActions.manualActions.ContainsKey(manualAction.Commander.CharacterID))
-                zActions.manualActions[manualAction.Commander.CharacterID] = new();
-            zActions.manualActions[manualAction.Commander.CharacterID].Add(manualAction);
+            var Actions = zActions.GetPlayersManualActions(manualAction.Commander.Pointer);
+            if (Actions == null)
+                return;
+            Actions.Add(manualAction);
             if (SNet.IsMaster)
                 manualAction.Bot.StartAction(manualAction.ActionDescriptor);
             CustomWakeManager.ApplyToExistingTargets(manualAction.Bot.Agent, true);
@@ -615,9 +616,12 @@ namespace BotControl
                 NetworkAPI.InvokeEvent<pActionTerminatedInfo>("RequestActionCancel", info);
                 return;
             }
-            foreach (var key in zActions.manualActions.Keys)
+            foreach (var PlayerAgent in PlayerManager.PlayerAgentsInLevel)
             {
-                foreach (ManualAction mAction in zActions.manualActions[key])
+                var Actions = zActions.GetPlayersManualActions(PlayerAgent.Pointer);
+                if (Actions == null)
+                    return;
+                foreach (ManualAction mAction in Actions)
                 {
                     if (actionID == mAction.ID)
                     {
