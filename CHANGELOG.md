@@ -4,6 +4,10 @@
  ### Please give me some feedback on how balanced the new sync/stealth attack is.  When bots do *any* manual action, they follow the exact same detection rules as players now, so they can and will be detected sometimes.  When not doing manual actions, bots still can't be detected, so they will only mess you up if you tell them to!
  ### These new action types are only possible because of the groundwork laid in the Custom Actions update.  Letting me give bots brand new behavior exactly the same way the devs did.
  
+ ## V 1.3.3
+ - Added cleanup for extra data that's not needed after players/bots leave/join or level loads. 
+ - Added a bunch of prep work for full reloading/join/leave support.
+
  ## V 1.3.2
  - Fixed crash when a map contains multiple zones with the same name.
 
