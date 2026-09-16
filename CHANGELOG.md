@@ -7,6 +7,7 @@
  ## V 1.3.3
  - Added cleanup for extra data that's not needed after players/bots leave/join or level loads. 
  - Added a bunch of prep work for full reloading/join/leave support.
+ - Fixed missing version bump. (1.3.2 showed 1.3.1 in the menu)
 
  ## V 1.3.2
  - Fixed crash when a map contains multiple zones with the same name.
