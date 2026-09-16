@@ -55,8 +55,11 @@ These new action types are only possible because of the groundwork laid in the C
 ## Known issues:
  - You can manually tell bots to pickup keycards and softlock your game.  This will be fixed by allowing bots to interact with security doors.
  - Bots will have trouble reaching some containers, FIXED?  Let me know if you still find a spot where this happens.
- - Bots leaving joining mid game is untested and may break things.  This will be properly supported "soon"
- - Reloading the level, and using Checkpoints are untested and may have unexpected results.  But should be fine. This will be properly supported "soon"
+ - Bots leaving joining mid game is untested and may break things.  This should't be an issue anymore.  but if you find problems PLEASE report, this is difficult for me to test properly
+ - Reloading the level, and using Checkpoints are untested and may have unexpected results.  But should be fine. This should't be an issue anymore either.  but still, if you find problems PLEASE report, this is even more difficult for me to test properly
+ - When reloading a checkpoint what has been 'explored' does not reset.
+ - When reloading a checkpoint all settings get reset.
+ - When a player joins mid level, settings do not sync. (but changing them still works)
 
 Here's an unscripted preview video:
 
