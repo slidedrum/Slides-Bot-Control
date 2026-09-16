@@ -302,6 +302,7 @@ namespace BotControl.Menus
 
             public static void Setup(sMenu menu)
             {
+                zoneMenus.Clear();
                 PickupZoneOveridesMenu = sMenuManager.createMenu("Zone overrides", menu);
                 PickupZoneOveridesMenu.AddPannel(sMenu.sMenuPannel.Side.top, "Choose what zones bots can pick things up in.");
                 PickupZoneOveridesMenu.AddPannel(sMenu.sMenuPannel.Side.top, "Double tap into a zone to select sub areas.");
